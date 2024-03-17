@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0-preview-24080-01" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.3.0-preview.24164.4" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.3.0-preview.24164.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NumbersAPI\NumbersAPI.csproj" />
+    <ProjectReference Include="..\NumbersCore\NumbersCore.csproj" />
+    <ProjectReference Include="..\NumbersSkia\NumbersSkia.csproj" />
+  </ItemGroup>
+
+</Project>

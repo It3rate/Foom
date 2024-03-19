@@ -8,19 +8,22 @@ using Numbers.Mappers;
 using Numbers.Renderer;
 using Numbers;
 using NumbersAPI.Motion;
+using SkiaSharp;
+using Numbers.Commands;
 
 namespace NumbersSkia.Agent
 {
     /*
-     * 
-    // Arrow
-    Select
-    Deselect
-    AddToSelection
-    RemoveFromSelection
-    ClearSelection
-    SelectAreaContained
-    SelectAreaTouched
+     
+    SelectMode
+        Select
+        Deselect
+        AddToSelection
+        RemoveFromSelection
+        ClearSelection
+        SelectAreaContained
+        SelectAreaTouched
+            longdrag on blank is create domain, long drag on domain is create number? drag selected points/lines adjusts
     
     DomainMode
         Create, EditMinMax (expand, contract, set), Duplicate, Delete
@@ -36,6 +39,8 @@ namespace NumbersSkia.Agent
         MultiplyFromUnit, MultiplyFromUnot
     DrawMode
         AddPath, LockPath, EditPath (stroke, fill, points), RemovePath, AddImage, EditImage (rect, source, alpha, etc), RemoveImage
+    bjectMode
+        AddShape, EditEquation, EditFocus, SampleProperties, RemoveShape
     File
         Load, Save, SaveAs, Record, Playback, Step, Pause, NextPage, Reload, PreviousPage
     Edit
@@ -56,6 +61,47 @@ namespace NumbersSkia.Agent
     */
     public class UICommands
     {
+        #region Selection
+        public void Select()
+        {
+
+        }
+        public void Deselect()
+        {
+
+        }
+        public void AddToSelection()
+        {
+
+        }
+        public void RemoveFromSelection()
+        {
+
+        }
+        public void ClearSelection()
+        {
+
+        }
+        public void DeleteSelection()
+        {
+            //if (ActiveNumberMapper != null)
+            //{
+            //    var delCommand = new RemoveSKNumberCommand(ActiveNumberMapper);
+            //    ActiveNumberMapper = null;
+            //    Stack.Do(delCommand);
+            //    ClearHighlights(); // todo: Add the selection things to commands.
+            //    delCommand.NumberMapper?.OnChange();
+            //}
+        }
+        public void SelectAreaContained()
+        {
+
+        }
+        public void SelectAreaTouched()
+        {
+
+        }
+        #endregion
     }
 
 }

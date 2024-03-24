@@ -167,7 +167,7 @@ namespace NumbersAPI.CommandEngine
 	        {
 		        if (command.IsContinuous)
 		        {
-			        if (command.IsComplete())
+			        if (command.IsComplete)
 			        {
 				        _toDelete.Add(command);
                         command.Completed();

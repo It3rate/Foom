@@ -11,7 +11,8 @@ namespace NumbersCore.Utils
 	    Knowledge Knowledge { get; }
 	    Workspace Workspace { get; }
 
-	    void Update(MillisecondNumber currentTime, MillisecondNumber deltaTime);
+
+        void Update(MillisecondNumber currentTime, MillisecondNumber deltaTime);
 
         void ClearAll();
     }

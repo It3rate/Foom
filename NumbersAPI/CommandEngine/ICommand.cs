@@ -46,8 +46,8 @@ namespace NumbersAPI.Commands
 	    bool CanUndo { get; }
 	    bool IsRetainedCommand { get; }
 
-        bool IsRepeatable();
-        bool IsComplete();
+        bool IsRepeatable { get; }
+        bool IsComplete { get; }
 
         void Execute();
 	    void Update(MillisecondNumber currentTime, MillisecondNumber deltaTime);

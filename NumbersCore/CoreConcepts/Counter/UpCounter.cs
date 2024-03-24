@@ -16,6 +16,7 @@ namespace NumbersCore.CoreConcepts.Counter
             CounterDomain.UpCounterDomain.AddNumber(this, false);
         }
 
+        public long Step => Focal.EndPosition;
         public long Increment()
 	    {
 		    Focal.EndPosition += 1;

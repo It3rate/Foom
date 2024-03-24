@@ -1,4 +1,5 @@
 ﻿
+using NumbersAPI.CommandEngine;
 using NumbersCore.Utils;
 using NumbersSkia.Agent;
 
@@ -6,7 +7,9 @@ namespace Numbers.Agent
 {
 	public interface IMouseAgent : IAgent
     {
-	    bool IsPaused { get; set; }
+        CommandStack Stack { get; }
+
+        bool IsPaused { get; set; }
 
         HighlightSet SelBegin { get; }
         HighlightSet SelCurrent { get; }

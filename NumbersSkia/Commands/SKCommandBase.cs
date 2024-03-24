@@ -18,10 +18,10 @@ namespace Numbers.Commands
     {
 	    public List<int> PreviousSelection { get; }
 
-	    public SKMapper Mapper { get; protected set; }
-	    public SKSegment Guideline { get; }
-	    public MouseAgent MouseAgent => (MouseAgent) Agent;
-        public Evaluation HaltCondition { get; set; }
+        public MouseAgent MouseAgent => (MouseAgent)Agent;
+        public SKMapper? Mapper { get; protected set; }
+	    public SKSegment? Guideline { get; }
+        public Transform? HaltCondition { get; set; }
 
 	    public SKCommandBase(SKSegment guideline)
 	    {
@@ -42,7 +42,7 @@ namespace Numbers.Commands
 		    base.Update(currentTime, deltaTime);
 	    }
 
-	    public override bool IsComplete() => !HaltCondition?.EvaluateFlags() ?? false;
+	    public override bool IsComplete => !HaltCondition?.IsComplete ?? false;
 
 	    public override void Completed()
 	    {

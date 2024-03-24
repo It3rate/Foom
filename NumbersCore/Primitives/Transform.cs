@@ -31,19 +31,18 @@ namespace NumbersCore.Primitives
         public OperationKind OperationKind { get; set; }
         public bool IsUnary => OperationKind.IsUnary();
         public int Repeats { get; set;  } = 1;
-        public int Steps { get; set; } = 1;
 	    public Number Left { get; set; } // the object being transformed
 	    public Number Right { get; set; } // the amount to transform (can change per repeat)
-        public NumberChain Result { get; set; } // current result of transform
+        public NumberChain Result { get; set; } // current result of transform - this acts as a halt condition when it is empty (false)
 
         public UpCounter RepeatCounter { get; } = new UpCounter();
-        public UpCounter StepCounter { get; } = new UpCounter();
-        public Evaluation HaltCondition { get; set; } // the evaluation that decides if the transform can continue
         public bool IsActive { get; private set; }
 
         public bool IsSingle => Result.Count == 1;
         public bool IsTrue => Result.Count > 0;
         public bool IsFalse => Result.Count == 0;
+
+        public bool IsRepeatCommplete => RepeatCounter.Step >= Repeats;
         public bool IsEqual => IsSizeEqual && IsPolarityEqual && IsDirectionEqual;
         public bool IsSizeEqual => IsSingle && (Left.Focal.Min == Result.First().Min && Left.Focal.Max == Result.First().Max);
         public bool IsPolarityEqual => IsSingle && (Left.Polarity == Result.FirstPolarity());
@@ -99,7 +98,7 @@ namespace NumbersCore.Primitives
 	    }
 
 	    public bool Evaluate() => true;
-	    public bool IsComplete() => HaltCondition?.EvaluateFlags() ?? true;
+	    public bool IsComplete => IsRepeatCommplete || IsFalse;
 
 	    protected virtual void OnStartTransformEvent(ITransform e)
 	    {
@@ -133,6 +132,6 @@ namespace NumbersCore.Primitives
         void ApplyStart();
 	    void ApplyEnd();
 	    void ApplyPartial(long tickOffset);
-	    bool IsComplete();
+	    bool IsComplete { get; }
     }
 }

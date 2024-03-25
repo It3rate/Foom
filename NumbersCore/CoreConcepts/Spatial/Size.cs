@@ -1,12 +1,11 @@
-﻿namespace NumbersCore.CoreConcepts.Spatial
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+﻿namespace NumbersCore.CoreConcepts.Spatial;
 
-    public class Size
-    {
-    }
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+public class Size
+{
 }

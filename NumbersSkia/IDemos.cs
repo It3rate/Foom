@@ -6,16 +6,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Numbers
-{
-    public delegate SKWorkspaceMapper PageCreator();
-    public interface IDemos
-    {
-        List<PageCreator> Pages { get; }
-        SKWorkspaceMapper NextTest(MouseAgent agent);
-        SKWorkspaceMapper PreviousTest(MouseAgent agent);
-        SKWorkspaceMapper Reload(MouseAgent agent);
+namespace Numbers;
 
-        SKWorkspaceMapper LoadTest(int index, MouseAgent mouseAgent);
-    }
+public delegate SKWorkspaceMapper PageCreator();
+public interface IDemos
+{
+    List<PageCreator> Pages { get; }
+    SKWorkspaceMapper NextTest(MouseAgent agent);
+    SKWorkspaceMapper PreviousTest(MouseAgent agent);
+    SKWorkspaceMapper Reload(MouseAgent agent);
+
+    SKWorkspaceMapper LoadTest(int index, MouseAgent mouseAgent);
 }

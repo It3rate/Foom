@@ -2,22 +2,22 @@
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
 
-namespace NumbersAPI.CoreTasks
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+namespace NumbersAPI.CoreTasks;
 
-    public interface ICreateNumberTask : ICreateTask
-    {
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+public interface ICreateNumberTask : ICreateTask
+{
 	    Domain Domain { get; }
 	    Number Number { get; }
-    }
+}
 
-    public class CreateNumberByFocalIdTask : TaskBase, ICreateNumberTask
-    {
+public class CreateNumberByFocalIdTask : TaskBase, ICreateNumberTask
+{
 	    public Domain Domain { get; }
 	    public Number Number { get; private set; }
 	    public Focal Focal { get; }
@@ -42,9 +42,9 @@ namespace NumbersAPI.CoreTasks
 	    {
 		    Domain.RemoveNumber(Number);
 	    }
-    }
-    public class CreateNumberByRangeTask : TaskBase, ICreateNumberTask
-    {
+}
+public class CreateNumberByRangeTask : TaskBase, ICreateNumberTask
+{
 	    public Domain Domain { get; }
 	    public Number Number { get; private set; }
 
@@ -69,17 +69,17 @@ namespace NumbersAPI.CoreTasks
 	    public override void UnRunTask()
 	    {
 		    Domain.RemoveNumber(Number);
-        }
     }
-    public class CreateNumberByPositionsTask : TaskBase, ICreateNumberTask
-    {
+}
+public class CreateNumberByPositionsTask : TaskBase, ICreateNumberTask
+{
 	    public Domain Domain { get; }
 	    public Number Number { get; private set; }
 
 	    public long StartPosition { get; set; }
 	    public long EndPosition { get; set; }
 
-        public override bool IsValid => true;
+    public override bool IsValid => true;
 
 	    public CreateNumberByPositionsTask(Domain domain, long startPosition, long endPosition)
 	    {
@@ -100,5 +100,4 @@ namespace NumbersAPI.CoreTasks
 	    {
 		    Domain.RemoveNumber(Number);
 	    }
-    }
 }

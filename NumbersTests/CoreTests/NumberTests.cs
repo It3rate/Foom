@@ -2,20 +2,20 @@
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
 
-namespace NumbersTests
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+namespace NumbersTests;
 
-    [TestClass]
-    public class NumberTests
-    {
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+[TestClass]
+public class NumberTests
+{
 	    private Brain _brain;
 	    private Trait _trait;
-        private Focal _unitFocal;
+    private Focal _unitFocal;
 	    private Focal _maxMin;
 	    private Domain _domain;
 
@@ -24,7 +24,7 @@ namespace NumbersTests
 	    {
 		    _brain = Brain.ActiveBrain;
 		    _trait = Trait.CreateIn(_brain, "number tests");
-            _unitFocal = new Focal(0, 10);
+        _unitFocal = new Focal(0, 10);
 		    _maxMin = new Focal(-1000, 1010);
 		    _domain = new Domain(_trait, _unitFocal, _maxMin, "NumberTests");
 	    }
@@ -71,16 +71,16 @@ namespace NumbersTests
 		    Assert.AreEqual(-1, n3.StartValue);
 		    Assert.AreEqual(2, n3.EndValue);
 		    _unitFocal.StartPosition = 2000; // unot perspective
-            _unitFocal.EndPosition = -2000; // forces things to about the middle
-            Assert.AreEqual(-0.5, n0.StartValue);
-            Assert.AreEqual(0.495, n0.EndValue);
-            Assert.AreEqual(-0.495, n1.StartValue);
-            Assert.AreEqual(0.5, n1.EndValue);
-            Assert.AreEqual(-0.5075, n2.StartValue);
-            Assert.AreEqual(0.495, n2.EndValue);
-            Assert.AreEqual(-0.505, n3.StartValue);
-            Assert.AreEqual(0.5075, n3.EndValue);
-        }
+        _unitFocal.EndPosition = -2000; // forces things to about the middle
+        Assert.AreEqual(-0.5, n0.StartValue);
+        Assert.AreEqual(0.495, n0.EndValue);
+        Assert.AreEqual(-0.495, n1.StartValue);
+        Assert.AreEqual(0.5, n1.EndValue);
+        Assert.AreEqual(-0.5075, n2.StartValue);
+        Assert.AreEqual(0.495, n2.EndValue);
+        Assert.AreEqual(-0.505, n3.StartValue);
+        Assert.AreEqual(0.5075, n3.EndValue);
+    }
 	    [TestMethod]
 	    public void UnitChangeValueTests()
 	    {
@@ -106,9 +106,9 @@ namespace NumbersTests
 		    Assert.AreEqual(-1, n2.EndValue);
 		    Assert.AreEqual(1, n3.StartValue);
 		    Assert.AreEqual(4, n3.EndValue);
-        }
+    }
 
-        [TestMethod]
+    [TestMethod]
 	    public void CoreNumberTests()
 	    {
 		    var f0 = new Focal(0, 20);
@@ -166,6 +166,4 @@ namespace NumbersTests
 		    n4.DivideValue(n5);
 		    Assert.AreEqual(new PRange(-0.8, -0.1), n4.Value);
 	    }
-    }
-
 }

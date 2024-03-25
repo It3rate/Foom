@@ -1,12 +1,11 @@
-﻿namespace NumbersCore.Primitives
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+﻿namespace NumbersCore.Primitives;
 
-    public class Repeat
-    {
-    }
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+public class Repeat
+{
 }

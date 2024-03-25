@@ -2,16 +2,16 @@
 using NumbersCore.CoreConcepts.Time;
 using NumbersCore.Primitives;
 
-namespace NumbersAPI.CoreTasks
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+namespace NumbersAPI.CoreTasks;
 
-    public class CreateTraitCommand : CommandBase
-    {
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+public class CreateTraitCommand : CommandBase
+{
 	    private CreateTraitTask TraitTask;
 	    public Trait Trait => TraitTask?.Trait;
 
@@ -44,5 +44,4 @@ namespace NumbersAPI.CoreTasks
 	    public override void Completed()
 	    {
 	    }
-    }
 }

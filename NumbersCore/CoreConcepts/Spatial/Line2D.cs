@@ -1,12 +1,11 @@
-﻿namespace NumbersCore.CoreConcepts.Spatial
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+﻿namespace NumbersCore.CoreConcepts.Spatial;
 
-    public class Line2D
-    {
-    }
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+public class Line2D
+{
 }

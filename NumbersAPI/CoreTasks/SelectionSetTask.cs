@@ -7,10 +7,9 @@ using NumbersAPI.CommandEngine;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
 
-namespace NumbersAPI.CoreTasks
+namespace NumbersAPI.CoreTasks;
+
+public class SelectionSetTask : TaskBase, ICreateTask
 {
-    public class SelectionSetTask : TaskBase, ICreateTask
-    {
-        public override bool IsValid => throw new NotImplementedException();
-    }
+    public override bool IsValid => throw new NotImplementedException();
 }

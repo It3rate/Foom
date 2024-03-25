@@ -6,13 +6,13 @@ using NumbersCore.Primitives;
 using NumbersCore.Utils;
 using Timer = System.Timers.Timer;
 
-namespace NumbersAPI.Motion
-{
+namespace NumbersAPI.Motion;
+
 	public interface IRunner
 	{
 		MillisecondNumber CurrentMS { get; }
 		MillisecondNumber DeltaMS { get; }
-    }
+}
 
 	public class Runner : IRunner
 	{
@@ -23,9 +23,9 @@ namespace NumbersAPI.Motion
 		public Brain Brain => Agent.Brain;
 		public Workspace Workspace => Agent.Workspace;
 
-        public string lbEquation; // todo: callback event
+    public string lbEquation; // todo: callback event
 
-        private bool _isPaused;
+    private bool _isPaused;
 		private static DateTime _pauseTime;
 		private static TimeSpan _delayTime = new TimeSpan(0);
 		public static DateTime StartTime { get; private set; }
@@ -46,13 +46,13 @@ namespace NumbersAPI.Motion
 			Reset();
 		}
 
-        //private float t = 0;
-        private bool _isBusy = false;
-        private bool _needsUpdate = true;
-        public bool HasUpdated { get; set; } = false;
-        public bool NeedsUpdate() => _needsUpdate = true;
+    //private float t = 0;
+    private bool _isBusy = false;
+    private bool _needsUpdate = true;
+    public bool HasUpdated { get; set; } = false;
+    public bool NeedsUpdate() => _needsUpdate = true;
 
-        private void Tick(object sender, ElapsedEventArgs e)
+    private void Tick(object sender, ElapsedEventArgs e)
 		{
 			if (!_isPaused && !_isBusy) // && _needsUpdate)
 			{
@@ -61,7 +61,7 @@ namespace NumbersAPI.Motion
 				CurrentMS.EndTicks = (long)_currentTime.TotalMilliseconds;
 				DeltaMS.EndTicks = (long)(CurrentMS.EndTicks - _lastTime.TotalMilliseconds);
 
-                Agent.Update(CurrentMS, DeltaMS);
+            Agent.Update(CurrentMS, DeltaMS);
 
 				_lastTime = _currentTime;
 				_needsUpdate = !HasUpdated;
@@ -92,9 +92,9 @@ namespace NumbersAPI.Motion
 		public void Clear()
 		{
 			_sysTimer?.Stop();
-            _sysTimer.Close();
-            _sysTimer = null;
-            Reset();
+        _sysTimer.Close();
+        _sysTimer = null;
+        Reset();
 		}
 
 		public void Reset()
@@ -109,7 +109,7 @@ namespace NumbersAPI.Motion
 			_sysTimer.Elapsed += Tick;
 			_sysTimer.Interval = 8;
 			_sysTimer.Enabled = true;
-        }
+    }
 
 		public void Pause()
 		{
@@ -131,7 +131,7 @@ namespace NumbersAPI.Motion
 			OnPause(this, null);
 		}
 
-        private void OnPause(object sender, EventArgs e)
+    private void OnPause(object sender, EventArgs e)
 		{
 			_isPaused = !_isPaused;
 			if (_isPaused)
@@ -160,4 +160,3 @@ namespace NumbersAPI.Motion
 		}
 
 	}
-}

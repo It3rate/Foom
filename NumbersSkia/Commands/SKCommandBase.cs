@@ -5,27 +5,27 @@ using NumbersAPI.Motion;
 using NumbersCore.CoreConcepts.Time;
 using NumbersCore.Primitives;
 
-namespace Numbers.Commands
+namespace Numbers.Commands;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Numbers.Drawing;
+
+public class SKCommandBase : CommandBase
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using Numbers.Drawing;
+	    public List<int>? PreviousSelection { get; }
 
-    public class SKCommandBase : CommandBase
-    {
-	    public List<int> PreviousSelection { get; }
-
-        public MouseAgent MouseAgent => (MouseAgent)Agent;
-        public SKMapper? Mapper { get; protected set; }
+    public MouseAgent MouseAgent => (MouseAgent)Agent;
+    public SKMapper? Mapper { get; protected set; }
 	    public SKSegment? Guideline { get; }
-        public Transform? HaltCondition { get; set; }
+    public Transform? HaltCondition { get; set; }
 
 	    public SKCommandBase(SKSegment guideline)
 	    {
-            Guideline = guideline;
+        Guideline = guideline;
 	    }
 	    public override void Execute()
 	    {
@@ -47,6 +47,5 @@ namespace Numbers.Commands
 	    public override void Completed()
 	    {
 		    base.Completed();
-        }
     }
 }

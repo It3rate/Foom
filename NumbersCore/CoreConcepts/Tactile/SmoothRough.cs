@@ -1,12 +1,11 @@
-﻿namespace NumbersCore.CoreConcepts.Tactile
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+﻿namespace NumbersCore.CoreConcepts.Tactile;
 
-    public class SmoothRough
-    {
-    }
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+public class SmoothRough
+{
 }

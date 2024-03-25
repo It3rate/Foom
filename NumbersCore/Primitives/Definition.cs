@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 
-namespace NumbersCore.Primitives
-{
+namespace NumbersCore.Primitives;
+
 	public class Definition
 	{
 		public int Id { get; }
 		public Brain Brain { get; }
-        public List<Number> Numbers; // numbers belong to traits and domains
+    public List<Number> Numbers; // numbers belong to traits and domains
 		public List<Transform> Relations;
 
 		public Definition(Brain brain)
@@ -14,5 +14,4 @@ namespace NumbersCore.Primitives
 			Brain = brain;
 			Id = Brain.NextDefinitionId();
 		}
-    }
 }

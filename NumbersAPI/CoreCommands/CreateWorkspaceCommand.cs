@@ -2,16 +2,16 @@
 using NumbersAPI.CoreTasks;
 using NumbersCore.Primitives;
 
-namespace NumbersAPI.CoreCommands
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+namespace NumbersAPI.CoreCommands;
 
-    public class CreateWorkspaceCommand : CommandBase
-    {
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+public class CreateWorkspaceCommand : CommandBase
+{
 	    private CreateWorkspaceTask WorkspaceTask;
 	    public new Workspace Workspace => WorkspaceTask?.CreatedWorkspace;
 
@@ -37,5 +37,4 @@ namespace NumbersAPI.CoreCommands
 	    public override void Completed()
 	    {
 	    }
-    }
 }

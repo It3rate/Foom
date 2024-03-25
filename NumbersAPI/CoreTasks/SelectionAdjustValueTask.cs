@@ -1,12 +1,11 @@
-﻿namespace NumbersAPI.CoreTasks
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+﻿namespace NumbersAPI.CoreTasks;
 
-    internal class SelectionAdjustValueTask
-    {
-    }
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+internal class SelectionAdjustValueTask
+{
 }

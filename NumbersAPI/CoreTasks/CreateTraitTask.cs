@@ -1,19 +1,19 @@
 ﻿using NumbersAPI.CommandEngine;
 using NumbersCore.Primitives;
 
-namespace NumbersAPI.CoreTasks
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+namespace NumbersAPI.CoreTasks;
 
-    public class CreateTraitTask : TaskBase, ICreateTask
-    {
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+public class CreateTraitTask : TaskBase, ICreateTask
+{
 	    public Trait Trait;
 	    public string Name;
-        public override bool IsValid => true;
+    public override bool IsValid => true;
 	    public CreateTraitTask(string name = "")
 	    {
 		    Name = name;
@@ -33,6 +33,5 @@ namespace NumbersAPI.CoreTasks
 	    public override void UnRunTask()
 	    {
 		    Agent.Brain.RemoveTrait(Trait);
-        }
     }
 }

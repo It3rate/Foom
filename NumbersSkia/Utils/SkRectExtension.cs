@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Numbers.Utils
-{
-    public static class SkRectExtension
+namespace Numbers.Utils;
+
+public static class SkRectExtension
 	{
 		public static SKRect SKRect(this RectangleF rectF) =>
 			new SKRect(rectF.Left, rectF.Top, rectF.Right, rectF.Bottom);
@@ -22,4 +22,3 @@ namespace Numbers.Utils
 		public static SKSegment BottomLine(this SKRect self) => new SKSegment(self.Left, self.Bottom, self.Right, self.Bottom);
 		public static SKSegment RightLine(this SKRect self) => new SKSegment(self.Right, self.Bottom, self.Right, self.Top);
 	}
-}

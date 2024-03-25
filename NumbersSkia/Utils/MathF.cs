@@ -1,7 +1,7 @@
 ﻿using System;
 
-namespace Numbers.Utils
-{
+namespace Numbers.Utils;
+
 	public class MathFUtils
 	{
 		public static float tolerance = 0.0001f;
@@ -15,4 +15,3 @@ namespace Numbers.Utils
 		public static float ToDegrees(float radAngle) => (radAngle / MathF.PI) * 180f;
 		public static float ToRadians(float degAngle) => (degAngle * MathF.PI) / 180f;
 	}
-}

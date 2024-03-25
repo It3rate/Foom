@@ -1,21 +1,21 @@
 ﻿using NumbersAPI.CommandEngine;
 using NumbersCore.Primitives;
 
-namespace NumbersAPI.CoreTasks
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+namespace NumbersAPI.CoreTasks;
 
-    public class CreateFocalTask : TaskBase, ICreateTask
-    {
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+public class CreateFocalTask : TaskBase, ICreateTask
+{
 	    public Focal CreatedFocal;
 
 	    private  Trait Trait { get; }
-        public long StartPosition { get; }
-        public long EndPosition { get; }
+    public long StartPosition { get; }
+    public long EndPosition { get; }
 
 	    public override bool IsValid => true;
 
@@ -24,7 +24,7 @@ namespace NumbersAPI.CoreTasks
 		    StartPosition = startPosition;
 		    EndPosition = endPosition;
 	    }
-        public override void RunTask()
+    public override void RunTask()
 	    {
 		    if (CreatedFocal == null)
 		    {
@@ -38,5 +38,4 @@ namespace NumbersAPI.CoreTasks
 	    {
 		    Trait?.FocalStore.Remove(CreatedFocal.Id);
 	    }
-    }
 }

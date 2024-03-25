@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NumbersAPI.CoreTasks
+namespace NumbersAPI.CoreTasks;
+
+internal class SelectionClearTask
 {
-    internal class SelectionClearTask
-    {
-    }
 }

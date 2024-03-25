@@ -1,16 +1,16 @@
 ﻿using NumbersAPI.CommandEngine;
 using NumbersCore.Primitives;
 
-namespace NumbersAPI.CoreTasks
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+namespace NumbersAPI.CoreTasks;
 
-    public class CreateBrainTask : TaskBase, ICreateTask
-    {
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+public class CreateBrainTask : TaskBase, ICreateTask
+{
 	    public Brain CreatedBrain;
 
 	    public override bool IsValid => true;
@@ -34,5 +34,4 @@ namespace NumbersAPI.CoreTasks
 	    {
 		    Brain.Brains.Remove(CreatedBrain);
 	    }
-    }
 }

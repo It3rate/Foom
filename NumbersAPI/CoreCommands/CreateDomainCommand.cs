@@ -4,50 +4,50 @@ using NumbersAPI.CoreTasks;
 using NumbersCore.CoreConcepts.Time;
 using NumbersCore.Primitives;
 
-namespace NumbersAPI.CoreCommands
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+namespace NumbersAPI.CoreCommands;
 
-    public class CreateDomainCommand : CommandBase
-    {
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+public class CreateDomainCommand : CommandBase
+{
 	    public Domain Domain => DomainTask?.Domain;
 
-        // combine tasks that are in core for common commands that require multiple tasks
+    // combine tasks that are in core for common commands that require multiple tasks
 	    private CreateFocalTask BasisTask;
 	    private CreateFocalTask MinMaxTask;
 	    private CreateDomainTask DomainTask;
 
-        public Trait Trait { get; }
+    public Trait Trait { get; }
 
-        public long BasisStart { get; }
-        public long BasisEnd { get; }
-        public long MinMaxStart { get; }
-        public long MinMaxEnd { get; }
-        public string Name { get; }
+    public long BasisStart { get; }
+    public long BasisEnd { get; }
+    public long MinMaxStart { get; }
+    public long MinMaxEnd { get; }
+    public string Name { get; }
 
 	    public Focal BasisFocal { get; private set; }
-        public Focal MinMaxFocal { get; private set; }
+    public Focal MinMaxFocal { get; private set; }
 
 
-        public CreateDomainCommand(Trait trait, long basisStart, long basisEnd, long minMaxStart, long minMaxEnd, string name)
-        {
+    public CreateDomainCommand(Trait trait, long basisStart, long basisEnd, long minMaxStart, long minMaxEnd, string name)
+    {
 	        Trait = trait;
 	        BasisStart = basisStart;
 	        BasisEnd = basisEnd;
 	        MinMaxStart = minMaxStart;
 	        MinMaxEnd = minMaxEnd;
-            Name = name;
-        }
+        Name = name;
+    }
 	    public CreateDomainCommand(Trait trait, Focal basisFocal, Focal minMax, string name)
-        {
+    {
 		    Trait = trait;
 		    BasisFocal = basisFocal;
 		    MinMaxFocal = minMax;
-            Name = name;
+        Name = name;
 	    }
 
 	    public override void Execute()
@@ -75,9 +75,9 @@ namespace NumbersAPI.CoreCommands
 			    BasisTask = null;
 			    MinMaxTask = null;
 			    BasisFocal = null;
-                MinMaxFocal = null;
-                // todo: undo should probably roll back all index counters as well.
-            }
+            MinMaxFocal = null;
+            // todo: undo should probably roll back all index counters as well.
+        }
 	    }
 
 	    public override void Update(MillisecondNumber currentTime, MillisecondNumber deltaTime)
@@ -87,6 +87,5 @@ namespace NumbersAPI.CoreCommands
 	    public override void Completed()
 	    {
 	    }
-    }
 }
 

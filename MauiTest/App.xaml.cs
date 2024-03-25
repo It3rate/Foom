@@ -1,25 +1,24 @@
 ﻿
 
-namespace MauiTest
+namespace MauiTest;
+
+public partial class App : Application
 {
-    public partial class App : Application
+    public App()
     {
-        public App()
-        {
-            InitializeComponent();
+        InitializeComponent();
 
-            MainPage = new AppShell();
-        }
-        protected override Window CreateWindow(IActivationState? activationState)
-        {
-            var window = base.CreateWindow(activationState);
-            window.Width = 1280; window.Height = 720;
+        MainPage = new AppShell();
+    }
+    protected override Window CreateWindow(IActivationState? activationState)
+    {
+        var window = base.CreateWindow(activationState);
+        window.Width = 1280; window.Height = 720;
 
-            // center   
-            var displayInfo = DeviceDisplay.Current.MainDisplayInfo;
-            window.X = (displayInfo.Width / displayInfo.Density - window.Width) / 2;
-            window.Y = (displayInfo.Height / displayInfo.Density - window.Height) / 2;
-            return window;
-        }
+        // center   
+        var displayInfo = DeviceDisplay.Current.MainDisplayInfo;
+        window.X = (displayInfo.Width / displayInfo.Density - window.Width) / 2;
+        window.Y = (displayInfo.Height / displayInfo.Density - window.Height) / 2;
+        return window;
     }
 }

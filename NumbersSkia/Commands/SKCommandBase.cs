@@ -42,7 +42,7 @@ public class SKCommandBase : CommandBase
 		    base.Update(currentTime, deltaTime);
 	    }
 
-	    public override bool IsComplete => !HaltCondition?.IsComplete ?? false;
+	    public override bool IsComplete => HaltCondition?.IsFalse ?? false;
 
 	    public override void Completed()
 	    {

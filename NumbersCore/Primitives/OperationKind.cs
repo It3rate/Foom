@@ -29,8 +29,8 @@ public enum OperationKind
     // unary
     Negate, // multiplicative inverse of negative
     NegateInPlace, // Flip arrow in place, additive inverse of negation
-    Obverse, // multiplicative inverse of polarity (*i)
-    ObverseInPlace,  // Flip polarity in place, additive inverse of polarity 
+    FlipPolarity, // multiplicative inverse of polarity (*i)
+    FlipPolarityInPlace,  // Flip polarity in place, additive inverse of polarity 
     Reciprocal, // multiplicative inverse of multiplication (additive reciprocal would be length becomes 1/len, in place)
     ReciprocalInPlace, // additive inverse of multiplication (length becomes 1/len, in place)
 
@@ -387,10 +387,10 @@ public static class OperationKindExtension
             case OperationKind.Reciprocal:
                 result = "1/";
                 break;
-            case OperationKind.ObverseInPlace:
+            case OperationKind.FlipPolarityInPlace:
                 result = "ObverseInPlace";
                 break;
-            case OperationKind.Obverse:
+            case OperationKind.FlipPolarity:
                 result = "Obverse";
                 break;
             case OperationKind.MirrorOnUnit:
@@ -530,10 +530,10 @@ public static class OperationKindExtension
             case OperationKind.Reciprocal:
                 result = "Reciprocal";
                 break;
-            case OperationKind.ObverseInPlace:
+            case OperationKind.FlipPolarityInPlace:
                 result = "ObverseInPlace";
                 break;
-            case OperationKind.Obverse:
+            case OperationKind.FlipPolarity:
                 result = "Obverse";
                 break;
             case OperationKind.MirrorOnUnit:

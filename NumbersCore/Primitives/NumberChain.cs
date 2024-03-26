@@ -123,9 +123,9 @@ public class NumberChain : Number, IMathElement
                     break;
                 case OperationKind.Reciprocal:
                     break;
-                case OperationKind.ObverseInPlace:
+                case OperationKind.FlipPolarityInPlace: // switch polarity only, arrow same
                     break;
-                case OperationKind.Obverse:
+                case OperationKind.FlipPolarity:
                     break;
                 case OperationKind.MirrorOnUnit:
                     break;
@@ -144,7 +144,7 @@ public class NumberChain : Number, IMathElement
                 case OperationKind.FilterEnd:
                     break;
                 case OperationKind.NegateInPlace:
-                    _focalChain.ComputeWith(Focal, operationKind);
+                    _focalChain.ComputeWith(Focal, operationKind); // change arrow dir
                     break;
             }
         }

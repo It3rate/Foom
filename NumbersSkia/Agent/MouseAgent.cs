@@ -900,10 +900,7 @@ public class MouseAgent : CommandAgent, IMouseAgent
     private void UpdateText(Highlight highlight)
     {
         Text = highlight?.GetNumberMapper()?.Number.ToString() ?? "";
-        if (Runner.lbEquation != null)
-        {
-            Runner.lbEquation = Text;
-        }
+        Runner.SetEquationText(Text);
     }
     public void ToggleBasisVisible()
     {

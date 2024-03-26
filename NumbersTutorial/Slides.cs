@@ -71,12 +71,11 @@ public class Slides : DemoBase
         wm.ShowAll();
         wm.DefaultShowNumbersOffset = true;
 
-        var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Animation", 1,-10,20,0));
+        var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Animation", 4,-10f,20f,0));
         var left = hd.CreateNumberFromFloats(0, 2, true);
         var right = hd.CreateNumberFromFloats(0, 3, true);
         Transform transform = Brain.AddTransform(left.Number, right.Number, OperationKind.Multiply);
-        transform.Repeats = new Counter(2);
-        transform.Repeats.SetToEnd();
+        transform.Repeats = hd.CreateNumberFromFloats(0, 1.5f).Number;
         var tm = wm.GetOrCreateTransformMapper(transform);
         hd.Domain.AddNumber(transform.Result);
 

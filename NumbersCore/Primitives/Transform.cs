@@ -33,7 +33,16 @@ public class Transform : ITransform
     public Number Left { get; set; } // the object being transformed
     public Number? Right { get; set; } // the amount to transform (can change per repeat)
     public NumberChain Result { get; set; }  // current result of transform - this acts as a halt condition when it is empty (false)
-    public Counter Repeats { get; set; } // power - start with whole numbers, but will eventually allow any number (pow of complex number)
+    
+    /// <summary>
+    /// Repeats are powers, but can extend to any operation. Repeated ADD is like multiply, repeated multiply is pow.
+    /// Other ops, like GT, LT can also have repeats. Repeate of zero is just a comparison, with the result being the true part.
+    /// Repeat of one forces the result to be fully valid with a transform.
+    /// More than one is applying that xform n times (and negative is 1/n).
+    /// A complex number of repeats is the start to end result segment.
+    /// GT, LT, GTE will preserve length, EQ, CONTAINS will not.
+    /// </summary>
+    public Number Repeats { get; set; } // power - start with whole numbers, but will eventually allow any number (pow of complex number)
 
     public bool IsActive { get; private set; }
 
@@ -41,7 +50,6 @@ public class Transform : ITransform
     public bool IsTrue => !IsFalse;
     public bool IsFalse => Result.Count == 0;
 
-    public bool IsRepeatCommplete => Repeats.IsComplete;
     public bool IsEqual => IsSizeEqual && IsPolarityEqual && IsDirectionEqual;
     public bool IsSizeEqual => IsSingle && (Left.Focal.Min == Result.First().Min && Left.Focal.Max == Result.First().Max);
     public bool IsPolarityEqual => IsSingle && (Left.Polarity == Result.FirstPolarity());
@@ -95,7 +103,7 @@ public class Transform : ITransform
         {
             Result.ComputeWith(Right, OperationKind);
         }
-        else if (Right != null) // expressions like 3x^2, perhaps this should be two transforms and pow a separate unary operationKind
+        else if (Right != null) 
         {
             Number val;
             switch (OperationKind)
@@ -150,7 +158,6 @@ public class Transform : ITransform
     }
 
     public bool Evaluate() => true;
-    public bool IsComplete => IsRepeatCommplete || IsFalse;
 
     protected virtual void OnStartTransformEvent(ITransform e)
     {
@@ -188,5 +195,4 @@ public interface ITransform : IMathElement
     void ApplyStart();
     void ApplyEnd();
     void ApplyPartial(long tickOffset);
-    bool IsComplete { get; }
 }

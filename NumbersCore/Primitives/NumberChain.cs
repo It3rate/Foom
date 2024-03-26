@@ -39,10 +39,10 @@ public class NumberChain : Number, IMathElement
     public NumberChain(Domain domain, Focal[] focals = null, Polarity[] polarities = null) : base(new FocalChain(), Polarity.Aligned)
     {
         Domain = domain;
-        if(focals != null)
+        if (focals != null)
         {
             int i = 0;
-            foreach(Focal focal in focals)
+            foreach (Focal focal in focals)
             {
                 var polarity = polarities != null && polarities.Length > i ? polarities[i] : Polarity.Aligned;
                 _focalChain.AddPosition(focal);
@@ -59,7 +59,7 @@ public class NumberChain : Number, IMathElement
     public override IEnumerable<PRange> InternalRanges()
     {
         var i = 0;
-        foreach(var focal in _focalChain.Focals())
+        foreach (var focal in _focalChain.Focals())
         {
             var val = Domain.GetValueOf(_focalChain, PolarityAt(i));
             yield return val;
@@ -96,7 +96,7 @@ public class NumberChain : Number, IMathElement
     public Number FirstNumber()
     {
         Number result = null;
-        if(Count > 0)
+        if (Count > 0)
         {
             result = new Number(First(), PolarityAt(0));
             result.Domain = Domain;
@@ -110,17 +110,9 @@ public class NumberChain : Number, IMathElement
     // todo: account for polarity
     public Focal CreateFocalFromRange(PRange value) => Domain.CreateFocalFromRange(value);
 
-    public void ComputeWith(Number num, OperationKind operationKind)
+    public void ComputeWith(Number? num, OperationKind operationKind)
     {
-        if (operationKind.IsBoolOp())
-        {
-            ComputeBoolOp(num, operationKind);
-        }
-        else if (operationKind.IsBoolCompare())
-        {
-            ComputeBoolCompare(num.Focal, operationKind);
-        }
-        else if (operationKind.IsUnary())
+        if (operationKind.IsUnary())
         {
             switch (operationKind)
             {
@@ -152,60 +144,72 @@ public class NumberChain : Number, IMathElement
                 case OperationKind.FilterEnd:
                     break;
                 case OperationKind.NegateInPlace:
-                    _focalChain.ComputeWith(num.Focal, operationKind);
+                    _focalChain.ComputeWith(Focal, operationKind);
                     break;
             }
         }
-        else if (operationKind.IsBinary())
+        else if (num != null)
         {
-            switch (operationKind)
+
+            if (operationKind.IsBoolOp())
             {
-                case OperationKind.Add:
-                    AddValue(num);
-                    break;
-                case OperationKind.Subtract:
-                    SubtractValue(num);
-                    break;
-                case OperationKind.Multiply:
-                    MultiplyValue(num);
-                    break;
-                case OperationKind.Divide:
-                    DivideValue(num);
-                    break;
-                case OperationKind.Root:
-                    break;
-                case OperationKind.Wedge:
-                    break;
-                case OperationKind.DotProduct:
-                    break;
-                case OperationKind.GeometricProduct:
-                    break;
-                case OperationKind.Blend:
-                    break;
+                ComputeBoolOp(num, operationKind);
             }
-        }
-        else if (operationKind.IsTernary())
-        {
-            switch (operationKind)
+            else if (operationKind.IsBoolCompare())
             {
-                case OperationKind.PowerAdd:
-                    break;
-                case OperationKind.PowerMultiply:
-                    break;
+                ComputeBoolCompare(num.Focal, operationKind);
             }
-        }
-        else
-        {
-            switch (operationKind)
+            else if (operationKind.IsBinary())
             {
-                case OperationKind.None:
-                    break;
-                case OperationKind.AppendAll:
-                    break;
-                case OperationKind.MultiplyAll:
-                    break;
-                case OperationKind.Average:
-                    break;
+                switch (operationKind)
+                {
+                    case OperationKind.Add:
+                        AddValue(num);
+                        break;
+                    case OperationKind.Subtract:
+                        SubtractValue(num);
+                        break;
+                    case OperationKind.Multiply:
+                        MultiplyValue(num);
+                        break;
+                    case OperationKind.Divide:
+                        DivideValue(num);
+                        break;
+                    case OperationKind.Root:
+                        break;
+                    case OperationKind.Wedge:
+                        break;
+                    case OperationKind.DotProduct:
+                        break;
+                    case OperationKind.GeometricProduct:
+                        break;
+                    case OperationKind.Blend:
+                        break;
+                }
+            }
+            else if (operationKind.IsTernary())
+            {
+                switch (operationKind)
+                {
+                    case OperationKind.PowerAdd:
+                        break;
+                    case OperationKind.PowerMultiply:
+                        break;
+                }
+            }
+            else
+            {
+                switch (operationKind)
+                {
+                    case OperationKind.None:
+                        break;
+                    case OperationKind.AppendAll:
+                        break;
+                    case OperationKind.MultiplyAll:
+                        break;
+                    case OperationKind.Average:
+                        break;
+                }
             }
         }
     }
@@ -222,7 +226,7 @@ public class NumberChain : Number, IMathElement
         // however, this requires they have the same resolutions, so really should be on number chains.
         //_focalChain.ComputeWith(focal, operationKind);
         var (_, table) = SegmentedTable(Domain, this, other);
-        var(focals, polarities) = ApplyOpToSegmentedTable(table, operationKind);
+        var (focals, polarities) = ApplyOpToSegmentedTable(table, operationKind);
         Clear();
         _focalChain.AddPositions(focals);
         _polarityChain.AddRange(polarities);
@@ -237,7 +241,7 @@ public class NumberChain : Number, IMathElement
     }
     public void AddPosition(Focal focal)
     {
-       AddPosition(focal.StartPosition, focal.EndPosition);
+        AddPosition(focal.StartPosition, focal.EndPosition);
     }
     public void AddPosition(Number num)
     {
@@ -264,7 +268,7 @@ public class NumberChain : Number, IMathElement
 
     public Number SumAll()
     {
-        var result = Domain.CreateNumber(new Focal(0,0));
+        var result = Domain.CreateNumber(new Focal(0, 0));
         foreach (var number in InternalNumbers())
         {
             result.AddValue(number);
@@ -275,8 +279,8 @@ public class NumberChain : Number, IMathElement
     // todo: Add/Multiply all the internal segments as well. Adding may be ok as is, multiply needs to interpolate stretches
     public override void AddValue(Number q) { base.AddValue(q); }
     public override void SubtractValue(Number q) { base.SubtractValue(q); }
-    public override void MultiplyValue(Number q) { base.MultiplyValue(q); } 
-    public override void DivideValue(Number q) { base.DivideValue(q);}
+    public override void MultiplyValue(Number q) { base.MultiplyValue(q); }
+    public override void DivideValue(Number q) { base.DivideValue(q); }
 
     public void Not(Number q) { Reset(Focal.UnaryNot(q.Focal)); }
 
@@ -292,7 +296,7 @@ public class NumberChain : Number, IMathElement
         var sPositions = new SortedSet<long>();
         foreach (var number in numbers)
         {
-            if(number.IsValid)
+            if (number.IsValid)
             {
                 internalNumberSets.Add(number.InternalNumbers().ToArray());
                 sPositions.UnionWith(number.GetPositions());
@@ -308,7 +312,7 @@ public class NumberChain : Number, IMathElement
         {
             var focal = new Focal(positions[i - 1], positions[i]);
             var matches = new List<Number>();
-            foreach(var numSet in internalNumberSets)
+            foreach (var numSet in internalNumberSets)
             {
                 if (numSet.Length == 0)
                 {
@@ -350,7 +354,7 @@ public class NumberChain : Number, IMathElement
 
         foreach (var seg in data)
         {
-            if(seg.Length == 0)
+            if (seg.Length == 0)
             {
             }
             else

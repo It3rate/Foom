@@ -31,17 +31,17 @@ public class Brain
     public List<Workspace> Workspaces { get; } = new List<Workspace>();
 
     public readonly Dictionary<int, Network> NetworkStore = new Dictionary<int, Network>(); 
-    public readonly Dictionary<int, Formula> FormulaStore = new Dictionary<int, Formula>();
+    public readonly Dictionary<int, Equation> EquationStore = new Dictionary<int, Equation>();
     public readonly Dictionary<int, Definition> DefinitionStore = new Dictionary<int, Definition>();
     public readonly Dictionary<int, Trait> TraitStore = new Dictionary<int, Trait>();
 	    public readonly Dictionary<int, Transform> TransformStore = new Dictionary<int, Transform>();
 
     private int _brainCounter = 1 + (int)MathElementKind.Brain;
-	    private int _formulaCounter = 1 + (int)MathElementKind.Formula;
+	    private int _equationCounter = 1 + (int)MathElementKind.Equation;
 	    private int _definitionCounter = 1 + (int)MathElementKind.Definition;
 	    private int _transformCounter = 1 + (int)MathElementKind.Transform;
     public int NextNetworkId() => _brainCounter++;
-    public int NextFormulaId() => _formulaCounter++;
+    public int NextEquationId() => _equationCounter++;
     public int NextDefinitionId() => _definitionCounter++;
 	    public int NextTransformId() => _transformCounter++;
 
@@ -112,7 +112,7 @@ public class Brain
 
 
         NetworkStore.Clear();
-        FormulaStore.Clear();
+        EquationStore.Clear();
         TraitStore.Clear();
         TransformStore.Clear();
     }

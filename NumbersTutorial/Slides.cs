@@ -9,6 +9,7 @@ using Numbers.Agent;
 using Numbers.Drawing;
 using Numbers.Mappers;
 using Numbers.Renderer;
+using NumbersCore.CoreConcepts.Counter;
 using NumbersCore.CoreConcepts.Temperature;
 using NumbersCore.Primitives;
 using SkiaSharp;
@@ -24,9 +25,10 @@ public class Slides : DemoBase
         Brain = brain;
         SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
         SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-        _testIndex = 24;
+        _testIndex = 0;// 24;
         Pages.AddRange(new PageCreator[]
         {
+            AnimationTest,
             RandomVsOrder_A,
             RandomVsOrder_B,
             GradientLine_A,
@@ -61,6 +63,24 @@ public class Slides : DemoBase
             Area_A,
             Area_B,
         });
+    }
+
+    private SKWorkspaceMapper AnimationTest()
+    {
+        var wm = new SKWorkspaceMapper(_currentMouseAgent, 100, 300, 1050, 350);
+        wm.ShowAll();
+        wm.DefaultShowNumbersOffset = true;
+
+        var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Animation", 1,-10,20,0));
+        var left = hd.CreateNumberFromFloats(0, 2, true);
+        var right = hd.CreateNumberFromFloats(0, 3, true);
+        Transform transform = Brain.AddTransform(left.Number, right.Number, OperationKind.Multiply);
+        transform.Repeats = new Counter(2);
+        transform.Repeats.SetToEnd();
+        var tm = wm.GetOrCreateTransformMapper(transform);
+        hd.Domain.AddNumber(transform.Result);
+
+        return wm;
     }
 
     private SKWorkspaceMapper RandomVsOrder_A()

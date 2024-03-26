@@ -21,28 +21,27 @@ namespace NumbersCore.Primitives;
 
 public class Transform : ITransform
 {
-	    public MathElementKind Kind => MathElementKind.Transform;
+    public MathElementKind Kind => MathElementKind.Transform;
 
-	    public int Id { get; set; }
-	    public int CreationIndex => Id - (int)Kind - 1;
+    public int Id { get; set; }
+    public int CreationIndex => Id - (int)Kind - 1;
     public Brain Brain { get; }
 
     public bool IsDirty { get; set; } = true;
     public OperationKind OperationKind { get; set; }
-    public bool IsUnary => OperationKind.IsUnary();
-    public int Repeats { get; set;  } = 1;
-	    public Number Left { get; set; } // the object being transformed
-	    public Number Right { get; set; } // the amount to transform (can change per repeat)
-    public NumberChain Result { get; set; } // current result of transform - this acts as a halt condition when it is empty (false)
+    public bool IsUnary => Right == null;// OperationKind.IsUnary();
+    public Number Left { get; set; } // the object being transformed
+    public Number? Right { get; set; } // the amount to transform (can change per repeat)
+    public NumberChain Result { get; set; }  // current result of transform - this acts as a halt condition when it is empty (false)
+    public Counter Repeats { get; set; } // power - start with whole numbers, but will eventually allow any number (pow of complex number)
 
-    public UpCounter RepeatCounter { get; } = new UpCounter();
     public bool IsActive { get; private set; }
 
     public bool IsSingle => Result.Count == 1;
-    public bool IsTrue => Result.Count > 0;
+    public bool IsTrue => !IsFalse;
     public bool IsFalse => Result.Count == 0;
 
-    public bool IsRepeatCommplete => RepeatCounter.Step >= Repeats;
+    public bool IsRepeatCommplete => Repeats.IsComplete;
     public bool IsEqual => IsSizeEqual && IsPolarityEqual && IsDirectionEqual;
     public bool IsSizeEqual => IsSingle && (Left.Focal.Min == Result.First().Min && Left.Focal.Max == Result.First().Max);
     public bool IsPolarityEqual => IsSingle && (Left.Polarity == Result.FirstPolarity());
@@ -60,60 +59,113 @@ public class Transform : ITransform
         yield return Result;
     }
 
-    public Transform(Number left, Number right, OperationKind kind) // todo: add default numbers (0, 1, unot, -1 etc) in global domain.
+    public Transform(Number left, Number? right, OperationKind kind) // todo: add default numbers (0, 1, unot, -1 etc) in global domain.
     {
-	        Left = left;
-	        Right = right;
+        Left = left;
+        Right = right;
 
-        Result = new NumberChain(Right.Domain.MinMaxNumber);// left.Clone(false);
-	        OperationKind = kind;
-	        Brain = right.Brain;
-	        Id = Brain.NextTransformId();
+        Result = new NumberChain(Left.Domain.MinMaxNumber);// left.Clone(false);
+        OperationKind = kind;
+        Brain = Left.Brain;
+        Id = Brain.NextTransformId();
     }
 
     public event TransformEventHandler StartTransformEvent;
-	    public event TransformEventHandler TickTransformEvent;
-	    public event TransformEventHandler EndTransformEvent;
+    public event TransformEventHandler TickTransformEvent;
+    public event TransformEventHandler EndTransformEvent;
 
-    public bool Involves(Number num) => (Left.Id == num.Id || Right.Id == num.Id || Result.Id == num.Id);
+    public bool Involves(Number num) => (Left.Id == num.Id || Right?.Id == num.Id || Result.Id == num.Id);
     public void Apply()
     {
         ApplyStart();
         ApplyEnd();
     }
-	    public void ApplyStart()
+    public void ApplyStart()
     {
         Result.Reset(Left, OperationKind.None);
         //Result.SetWith(Left);
         OnStartTransformEvent(this);
-		    IsActive = true;
-		    RepeatCounter.Increment();
-	    }
-	    public void ApplyPartial(long tickOffset) { OnTickTransformEvent(this); }
-	    public void ApplyEnd()
-	    {
-        Result.ComputeWith(Right, OperationKind);
-		    OnEndTransformEvent(this);
-		    IsActive = false;
-	    }
+        IsActive = true;
+        //Repeats?.Increment();
+    }
+    public void ApplyPartial(long tickOffset) { OnTickTransformEvent(this); }
+    public void ApplyEnd()
+    {
+        if (Repeats.EndValue == 1)
+        {
+            Result.ComputeWith(Right, OperationKind);
+        }
+        else if (Right != null) // expressions like 3x^2, perhaps this should be two transforms and pow a separate unary operationKind
+        {
+            Number val;
+            switch (OperationKind)
+            {
+                case OperationKind.Add:
+                case OperationKind.Subtract:
+                    val = Right.Clone();
+                    val.MultiplyValue(Repeats);
+                    Result.ComputeWith(val, OperationKind);
+                    break;
+                case OperationKind.Multiply:
+                    val = Number.Pow(Right, Repeats);
+                    Result.ComputeWith(val, OperationKind);
+                    break;
+                case OperationKind.Divide:
+                    var one = Right.Domain.CreateNumberFromFloats(0, 1);
+                    var recip = Repeats.Clone();
+                    recip.DivideValue(one);
+                    val = Number.Pow(Right, recip);
+                    Result.ComputeWith(val, OperationKind);
+                    break;
+                default:
+                    Result.ComputeWith(Right, OperationKind);
+                    break;
+            }
+        }
+        else
+        {
+            Number val;
+            switch (OperationKind)
+            {
+                case OperationKind.Add:
+                case OperationKind.Subtract:
+                    Result.ComputeWith(Repeats, OperationKind.Multiply);
+                    break;
+                case OperationKind.Multiply:
+                    Result.Pow(Repeats);
+                    break;
+                case OperationKind.Divide:
+                    var one = Left.Domain.CreateNumberFromFloats(0, 1);
+                    var recip = Repeats.Clone();
+                    recip.DivideValue(one);
+                    Result.Pow(recip);
+                    break;
+                default:
+                    Result.ComputeWith(Left, OperationKind);
+                    break;
+            }
+        }
+        OnEndTransformEvent(this);
+        IsActive = false;
+    }
 
-	    public bool Evaluate() => true;
-	    public bool IsComplete => IsRepeatCommplete || IsFalse;
+    public bool Evaluate() => true;
+    public bool IsComplete => IsRepeatCommplete || IsFalse;
 
-	    protected virtual void OnStartTransformEvent(ITransform e)
-	    {
-		    StartTransformEvent?.Invoke(this, e);
-	    }
+    protected virtual void OnStartTransformEvent(ITransform e)
+    {
+        StartTransformEvent?.Invoke(this, e);
+    }
 
-	    protected virtual void OnTickTransformEvent(ITransform e)
-	    {
-		    TickTransformEvent?.Invoke(this, e);
-	    }
+    protected virtual void OnTickTransformEvent(ITransform e)
+    {
+        TickTransformEvent?.Invoke(this, e);
+    }
 
-	    protected virtual void OnEndTransformEvent(ITransform e)
-	    {
-		    EndTransformEvent?.Invoke(this, e);
-	    }
+    protected virtual void OnEndTransformEvent(ITransform e)
+    {
+        EndTransformEvent?.Invoke(this, e);
+    }
     public override string ToString()
     {
         var symbol = OperationKind.GetSymbol();
@@ -124,13 +176,17 @@ public class Transform : ITransform
 public delegate void TransformEventHandler(object sender, ITransform e);
 public interface ITransform : IMathElement
 {
-	    Number Right { get; set; }
-	    event TransformEventHandler StartTransformEvent;
-	    event TransformEventHandler TickTransformEvent;
-	    event TransformEventHandler EndTransformEvent;
+    Number Left { get; set; } // the object being transformed
+    Number Right { get; set; } // the amount to transform (can change per repeat)
+    NumberChain Result { get; set; } // current result of transform - this acts as a halt condition when it is empty (false)
+    //Number Repeats { get; set; } 
+
+    event TransformEventHandler StartTransformEvent;
+    event TransformEventHandler TickTransformEvent;
+    event TransformEventHandler EndTransformEvent;
     void Apply();
     void ApplyStart();
-	    void ApplyEnd();
-	    void ApplyPartial(long tickOffset);
-	    bool IsComplete { get; }
+    void ApplyEnd();
+    void ApplyPartial(long tickOffset);
+    bool IsComplete { get; }
 }

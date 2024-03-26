@@ -3,9 +3,9 @@ using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives;
 
-public class Formula : IMathElement
+public class Equation : IMathElement
 {
-    public MathElementKind Kind => MathElementKind.Formula;
+    public MathElementKind Kind => MathElementKind.Equation;
     public int Id { get; set; }
     public int CreationIndex => Id - (int)Kind - 1;
     public Brain Brain { get; }
@@ -26,9 +26,9 @@ public class Formula : IMathElement
     public void ApplyEnd() { }
     public void ApplyPartial(long tickOffset) { }
 
-    public Formula(Brain brain)
+    public Equation(Brain brain)
     {
 	        Brain = brain;
-	        Id = Brain.NextFormulaId();
+	        Id = Brain.NextEquationId();
     }
 }

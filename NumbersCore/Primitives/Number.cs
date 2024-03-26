@@ -42,10 +42,10 @@ public class Number : IMathElement
     /// <summary>
     /// Determines if this number has an aligned or inverted perspective relative to the domain basis. 
     /// </summary>
-    public Polarity Polarity 
+    public Polarity Polarity
     {
         get => IsBasis ? Polarity.Aligned : _polarity;
-        set => _polarity = value; 
+        set => _polarity = value;
     }
     public int PolarityDirection => IsAligned ? 1 : IsInverted ? -1 : 0;
     public bool IsAligned => Polarity == Polarity.Aligned;
@@ -56,40 +56,40 @@ public class Number : IMathElement
     {
         get => Focal.StartPosition;
         set => Focal.StartPosition = value;
-		}
-		protected long EndTickPosition
+    }
+    protected long EndTickPosition
     {
         get => Focal.EndPosition;
         set => Focal.EndPosition = value;
-		}
-		public long StartTicks
-		{
-			get => -StartTickPosition + ZeroTick;
-			set => StartTickPosition = ZeroTick - value;
-		}
-		public long EndTicks
-		{
-			get => EndTickPosition - ZeroTick;
-			set => EndTickPosition = value + ZeroTick;
+    }
+    public long StartTicks
+    {
+        get => -StartTickPosition + ZeroTick;
+        set => StartTickPosition = ZeroTick - value;
+    }
+    public long EndTicks
+    {
+        get => EndTickPosition - ZeroTick;
+        set => EndTickPosition = value + ZeroTick;
     }
     public long MinTickPosition => Math.Min(StartTickPosition, EndTickPosition);
     public long MaxTickPosition => Math.Max(StartTickPosition, EndTickPosition);
     public long TickCount => EndTickPosition - StartTickPosition;
 
-		public double StartValue
-		{
-			get => Value.Start;
-			set => Value = new PRange(value, Value.End, IsAligned);
+    public double StartValue
+    {
+        get => Value.Start;
+        set => Value = new PRange(value, Value.End, IsAligned);
 
-		}
-		public double EndValue
-		{
-			get => Value.End;
-			set => Value = new PRange(Value.Start, value, IsAligned);
-		}
-		public PRange Value 
-		{
-			get => Domain.GetValueOf(this);
+    }
+    public double EndValue
+    {
+        get => Value.End;
+        set => Value = new PRange(Value.Start, value, IsAligned);
+    }
+    public PRange Value
+    {
+        get => Domain.GetValueOf(this);
         set => Domain.SetValueOf(this, value);
     }
     public long ZeroTick => BasisFocal.StartPosition;
@@ -110,19 +110,19 @@ public class Number : IMathElement
     public bool IsMinMax => Domain.MinMaxNumber.Id == Id;
     public bool IsDomainNumber => IsBasis || IsMinMax;
     public bool IsPositivePointing => HasPolairty && (IsAligned && EndTickPosition > StartTickPosition) || (!IsAligned && EndTickPosition < StartTickPosition);
-    public bool IsUnitPositivePointing =>  HasPolairty && (EndTickPosition > StartTickPosition);
+    public bool IsUnitPositivePointing => HasPolairty && (EndTickPosition > StartTickPosition);
 
     public int StoreIndex { get; set; } // order added to domain
 
     public Number(Focal focal, Polarity polarity = Polarity.Aligned)
-		{
-			Focal = focal;
+    {
+        Focal = focal;
         Polarity = polarity;
-		}
+    }
 
     public virtual long[] GetPositions()
     {
-        return new long[] {StartTickPosition, EndTickPosition};
+        return new long[] { StartTickPosition, EndTickPosition };
     }
     public virtual IEnumerable<PRange> InternalRanges()
     {
@@ -161,15 +161,15 @@ public class Number : IMathElement
         get
         {
             var v = Value;
-            var len = (float) Math.Sqrt(v.Start * v.Start + v.End * v.End);
-            var ratio =(v.EndF) / v.AbsLength();
+            var len = (float)Math.Sqrt(v.Start * v.Start + v.End * v.End);
+            var ratio = (v.EndF) / v.AbsLength();
             var lr = ratio <= 0 ? Math.Abs(ratio) : (1f - ratio);
             var rr = ratio <= 0 ? Math.Abs(ratio + 1f) : (ratio);
-            return new PRange( lr * len, rr * len);
+            return new PRange(lr * len, rr * len);
         }
     }
 
-    public PRange ValueInRenderPerspective => IsAligned ? new PRange(-StartValue, EndValue) : new PRange(StartValue , -EndValue); //: new PRange(-EndValue, StartValue);
+    public PRange ValueInRenderPerspective => IsAligned ? new PRange(-StartValue, EndValue) : new PRange(StartValue, -EndValue); //: new PRange(-EndValue, StartValue);
 
     public Number SetWith(Number other)
     {
@@ -210,19 +210,19 @@ public class Number : IMathElement
         Reverse();
     }
 
-    public long WholeStartValue => (long) StartValue;
-		public long WholeEndValue => (long) EndValue;
-		public long RemainderStartValue => Domain.BasisIsReciprocal ? 0 : (long)(Math.Abs(StartValue % 1) * AbsBasisTicks);
-		public long RemainderEndValue => Domain.BasisIsReciprocal ? 0 : (long)(Math.Abs(EndValue % 1) * AbsBasisTicks);
-		public PRange RangeInMinMax => Focal.UnitTRangeIn(Domain.MinMaxFocal);
+    public long WholeStartValue => (long)StartValue;
+    public long WholeEndValue => (long)EndValue;
+    public long RemainderStartValue => Domain.BasisIsReciprocal ? 0 : (long)(Math.Abs(StartValue % 1) * AbsBasisTicks);
+    public long RemainderEndValue => Domain.BasisIsReciprocal ? 0 : (long)(Math.Abs(EndValue % 1) * AbsBasisTicks);
+    public PRange RangeInMinMax => Focal.UnitTRangeIn(Domain.MinMaxFocal);
 
     public PRange FloorRange => new PRange(Math.Ceiling(StartValue), Math.Floor(EndValue));
-		public PRange CeilingRange => new PRange(Math.Floor(StartValue), Math.Ceiling(EndValue));
-		public PRange RoundedRange => new PRange(Math.Round(StartValue), Math.Round(EndValue));
-		public PRange RemainderRange => Value - FloorRange;
+    public PRange CeilingRange => new PRange(Math.Floor(StartValue), Math.Ceiling(EndValue));
+    public PRange RoundedRange => new PRange(Math.Round(StartValue), Math.Round(EndValue));
+    public PRange RemainderRange => Value - FloorRange;
 
-		public void PlusTick() => EndTickPosition += 1;
-		public void MinusTick() => EndTickPosition -= 1;
+    public void PlusTick() => EndTickPosition += 1;
+    public void MinusTick() => EndTickPosition -= 1;
     public void AddStartTicks(long ticks) => StartTickPosition += ticks;
     public void AddEndTicks(long ticks) => EndTickPosition += ticks;
     public void AddTicks(long startTicks, long endTicks) { StartTickPosition += startTicks; EndTickPosition += endTicks; }
@@ -235,19 +235,29 @@ public class Number : IMathElement
     public virtual void AddValue(Number other)
     {
         // todo: eventually all math on Numbers will be in ticks, allowing preservation of precision etc. Requires syncing of basis, domains.
-	        Value += other.Value;
+        Value += other.Value;
     }
     public virtual void SubtractValue(Number other)
-		{
-			Value -= other.Value;
+    {
+        Value -= other.Value;
     }
     public virtual void MultiplyValue(Number other)
-		{
-			Value *= other.Value;
+    {
+        Value *= other.Value;
     }
     public virtual void DivideValue(Number other)
-		{
-			Value /= other.Value;
+    {
+        Value /= other.Value;
+    }
+    public virtual void Pow(Number other)
+    {
+        Value = PRange.Pow(Value, other.Value);
+    }
+    public static Number Pow(Number left,Number right)
+    {
+        var result = left.Clone(false);
+        result.Pow(right);
+        return result;
     }
 
     public static Number GetMaxRange(Number a, Number b)
@@ -263,62 +273,62 @@ public class Number : IMathElement
 
 
     public void ChangeDomain(Domain newDomain)
-		{
-			if(newDomain != Domain)
-			{
-				var value = Value;
-				Domain = newDomain; 
-				Value = value;
-			}
-		}
+    {
+        if (newDomain != Domain)
+        {
+            var value = Value;
+            Domain = newDomain;
+            Value = value;
+        }
+    }
 
-		public bool FullyContains(Number toTest, bool includeEndpoints = true) => toTest != null ? Value.FullyContains(toTest.Value, includeEndpoints) : false;
-		public Number AlignedDomainCopy(Number toCopy) => AlignToDomain(toCopy, Domain);
-		public static Number AlignToDomain(Number target, Domain domain)
-		{
-			var result = target.Clone();
-			result.ChangeDomain(domain);
-			return result;
-		}
+    public bool FullyContains(Number toTest, bool includeEndpoints = true) => toTest != null ? Value.FullyContains(toTest.Value, includeEndpoints) : false;
+    public Number AlignedDomainCopy(Number toCopy) => AlignToDomain(toCopy, Domain);
+    public static Number AlignToDomain(Number target, Domain domain)
+    {
+        var result = target.Clone();
+        result.ChangeDomain(domain);
+        return result;
+    }
 
-		public void InterpolateFromZero(Number t, Number result) => InterpolateFromZero(this, t, result);
+    public void InterpolateFromZero(Number t, Number result) => InterpolateFromZero(this, t, result);
     public void InterpolateFrom(Number source, Number t, Number result) => Interpolate(source, this, t, result);
     public void InterpolateTo(Number target, Number t, Number result) => Interpolate(this, target, t, result);
     public static void InterpolateFromZero(Number target, Number t, Number result)
     {
-	        var targetValue = target.Value;
-	        var tValue = t.Value;
-	        result.StartValue = targetValue.Start * tValue.Start;
-	        result.EndValue = targetValue.End * tValue.End;
+        var targetValue = target.Value;
+        var tValue = t.Value;
+        result.StartValue = targetValue.Start * tValue.Start;
+        result.EndValue = targetValue.End * tValue.End;
     }
     public static void InterpolateFromOne(Number target, Number t, Number result)
     {
-	        var targetValue = target.Value;
-	        var tValue = t.Value;
-	        result.StartValue = targetValue.Start * tValue.Start;
-	        result.EndValue = (targetValue.End - 1.0) * tValue.End + 1.0;
+        var targetValue = target.Value;
+        var tValue = t.Value;
+        result.StartValue = targetValue.Start * tValue.Start;
+        result.EndValue = (targetValue.End - 1.0) * tValue.End + 1.0;
     }
     public void InterpolateFromOne(Number target, double t)
     {
-	        if (target != null)
-	        {
-		        var targetValue = target.Value;
-		        StartValue = targetValue.Start * t;
-		        EndValue = (targetValue.End - 1.0) * t + 1.0;
-	        }
+        if (target != null)
+        {
+            var targetValue = target.Value;
+            StartValue = targetValue.Start * t;
+            EndValue = (targetValue.End - 1.0) * t + 1.0;
+        }
     }
     public void InterpolateFromOne(PRange range, double t)
     {
-	        if (range != null)
-	        {
-		        StartValue = range.Start * t;
-		        EndValue = (range.End - 1.0) * t + 1.0;
-	        }
+        if (range != null)
+        {
+            StartValue = range.Start * t;
+            EndValue = (range.End - 1.0) * t + 1.0;
+        }
     }
     public static void Interpolate(Number source, Number target, Number t, Number result)
     {
-	        var sourceValue = source.Value;
-	        var targetValue = target.Value;
+        var sourceValue = source.Value;
+        var targetValue = target.Value;
         var tValue = t.Value;
         result.StartValue = (targetValue.Start - sourceValue.Start) * tValue.Start + sourceValue.Start;
         result.EndValue = (targetValue.End - sourceValue.End) * tValue.End + sourceValue.End;
@@ -372,52 +382,52 @@ public class Number : IMathElement
     // convert values to first param's domain's context
     // result in first params's domain
     public virtual NumberChain Never(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Never(Focal, q.Focal));
-		public virtual void Never(Number q, NumberChain result) => result.Reset(Focal.Never(Focal, q.Focal));
+    public virtual void Never(Number q, NumberChain result) => result.Reset(Focal.Never(Focal, q.Focal));
 
-		public virtual NumberChain And(Number q) => new NumberChain(GetMaxRange(this, q), Focal.And(Focal, q.Focal));
-		public virtual void And(Number q, NumberChain result) => result.Reset(Focal.And(Focal, q.Focal));
+    public virtual NumberChain And(Number q) => new NumberChain(GetMaxRange(this, q), Focal.And(Focal, q.Focal));
+    public virtual void And(Number q, NumberChain result) => result.Reset(Focal.And(Focal, q.Focal));
 
-		public virtual NumberChain B_Inhibits_A(Number q) => new NumberChain(GetMaxRange(this, q), Focal.B_Inhibits_A(Focal, q.Focal));
-		public virtual void B_Inhibits_A(Number q, NumberChain result) => result.Reset(Focal.B_Inhibits_A(Focal, q.Focal));
+    public virtual NumberChain B_Inhibits_A(Number q) => new NumberChain(GetMaxRange(this, q), Focal.B_Inhibits_A(Focal, q.Focal));
+    public virtual void B_Inhibits_A(Number q, NumberChain result) => result.Reset(Focal.B_Inhibits_A(Focal, q.Focal));
 
-		public virtual NumberChain Transfer_A(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Transfer_A(Focal, q.Focal));
-		public virtual void Transfer_A(Number q, NumberChain result) => result.Reset(Focal.Transfer_A(Focal, q.Focal));
+    public virtual NumberChain Transfer_A(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Transfer_A(Focal, q.Focal));
+    public virtual void Transfer_A(Number q, NumberChain result) => result.Reset(Focal.Transfer_A(Focal, q.Focal));
 
-		public virtual NumberChain A_Inhibits_B(Number q) => new NumberChain(GetMaxRange(this, q), Focal.A_Inhibits_B(Focal, q.Focal));
-		public virtual void A_Inhibits_B(Number q, NumberChain result) => result.Reset(Focal.A_Inhibits_B(Focal, q.Focal));
+    public virtual NumberChain A_Inhibits_B(Number q) => new NumberChain(GetMaxRange(this, q), Focal.A_Inhibits_B(Focal, q.Focal));
+    public virtual void A_Inhibits_B(Number q, NumberChain result) => result.Reset(Focal.A_Inhibits_B(Focal, q.Focal));
 
-		public virtual NumberChain Transfer_B(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Transfer_B(Focal, q.Focal));
-		public virtual void Transfer_B(Number q, NumberChain result) => result.Reset(Focal.Transfer_B(Focal, q.Focal));
+    public virtual NumberChain Transfer_B(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Transfer_B(Focal, q.Focal));
+    public virtual void Transfer_B(Number q, NumberChain result) => result.Reset(Focal.Transfer_B(Focal, q.Focal));
 
-		public virtual NumberChain Xor(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Xor(Focal, q.Focal));
-		public virtual void Xor(Number q, NumberChain result) => result.Reset(Focal.Xor(Focal, q.Focal));
+    public virtual NumberChain Xor(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Xor(Focal, q.Focal));
+    public virtual void Xor(Number q, NumberChain result) => result.Reset(Focal.Xor(Focal, q.Focal));
 
-		public virtual NumberChain Or(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Or(Focal, q.Focal));
-		public virtual void Or(Number q, NumberChain result) => result.Reset(Focal.Or(Focal, q.Focal));
+    public virtual NumberChain Or(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Or(Focal, q.Focal));
+    public virtual void Or(Number q, NumberChain result) => result.Reset(Focal.Or(Focal, q.Focal));
 
-		public virtual NumberChain Nor(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Nor(Focal, q.Focal));
-		public virtual void Nor(Number q, NumberChain result) => result.Reset(Focal.Nor(Focal, q.Focal));
+    public virtual NumberChain Nor(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Nor(Focal, q.Focal));
+    public virtual void Nor(Number q, NumberChain result) => result.Reset(Focal.Nor(Focal, q.Focal));
 
-		public virtual NumberChain Xnor(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Xnor(Focal, q.Focal));
-		public virtual void Xnor(Number q, NumberChain result) => result.Reset(Focal.Xnor(Focal, q.Focal));
+    public virtual NumberChain Xnor(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Xnor(Focal, q.Focal));
+    public virtual void Xnor(Number q, NumberChain result) => result.Reset(Focal.Xnor(Focal, q.Focal));
 
-		public virtual NumberChain Not_B(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Not_B(Focal, q.Focal));
-		public virtual void Not_B(Number q, NumberChain result) => result.Reset(Focal.Not_B(Focal, q.Focal));
+    public virtual NumberChain Not_B(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Not_B(Focal, q.Focal));
+    public virtual void Not_B(Number q, NumberChain result) => result.Reset(Focal.Not_B(Focal, q.Focal));
 
-		public virtual NumberChain B_Implies_A(Number q) => new NumberChain(GetMaxRange(this, q), Focal.B_Implies_A(Focal, q.Focal));
-		public virtual void B_Implies_A(Number q, NumberChain result) => result.Reset(Focal.B_Implies_A(Focal, q.Focal));
+    public virtual NumberChain B_Implies_A(Number q) => new NumberChain(GetMaxRange(this, q), Focal.B_Implies_A(Focal, q.Focal));
+    public virtual void B_Implies_A(Number q, NumberChain result) => result.Reset(Focal.B_Implies_A(Focal, q.Focal));
 
-		public virtual NumberChain Not_A(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Not_A(Focal, q.Focal));
-		public virtual void Not_A(Number q, NumberChain result) => result.Reset(Focal.Not_A(Focal, q.Focal));
+    public virtual NumberChain Not_A(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Not_A(Focal, q.Focal));
+    public virtual void Not_A(Number q, NumberChain result) => result.Reset(Focal.Not_A(Focal, q.Focal));
 
-		public virtual NumberChain A_Implies_B(Number q) => new NumberChain(GetMaxRange(this, q), Focal.A_Implies_B(Focal, q.Focal));
-		public virtual void A_Implies_B(Number q, NumberChain result) => result.Reset(Focal.A_Implies_B(Focal, q.Focal));
+    public virtual NumberChain A_Implies_B(Number q) => new NumberChain(GetMaxRange(this, q), Focal.A_Implies_B(Focal, q.Focal));
+    public virtual void A_Implies_B(Number q, NumberChain result) => result.Reset(Focal.A_Implies_B(Focal, q.Focal));
 
-		public virtual NumberChain Nand(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Nand(Focal, q.Focal));
-		public virtual void Nand(Number q, NumberChain result) => result.Reset(Focal.Nand(Focal, q.Focal));
+    public virtual NumberChain Nand(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Nand(Focal, q.Focal));
+    public virtual void Nand(Number q, NumberChain result) => result.Reset(Focal.Nand(Focal, q.Focal));
 
-		public virtual NumberChain Always(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Always(Focal, q.Focal));
-		public virtual void Always(Number q, NumberChain result) => result.Reset(Focal.Always(Focal, q.Focal));
+    public virtual NumberChain Always(Number q) => new NumberChain(GetMaxRange(this, q), Focal.Always(Focal, q.Focal));
+    public virtual void Always(Number q, NumberChain result) => result.Reset(Focal.Always(Focal, q.Focal));
 
 
     public Number Clone(bool addToStore = true)
@@ -426,7 +436,7 @@ public class Number : IMathElement
         return Domain.AddNumber(result, addToStore);
     }
 
-    public static bool operator ==(Number a, Number b)
+    public static bool operator ==(Number? a, Number? b)
     {
         if (a is null && b is null)
         {
@@ -439,43 +449,44 @@ public class Number : IMathElement
         return a.Equals(b);
     }
 
-    public static bool operator !=(Number a, Number b)
+    public static bool operator !=(Number? a, Number? b)
     {
         return !(a == b);
     }
-    public override bool Equals(object obj)
-		{
-			return obj is Number other && Equals(other);
-		}
-    public bool Equals(Number value)
+    public override bool Equals(object? obj)
     {
+        return obj is Number other && Equals(other);
+    }
+    public bool Equals(Number? value)
+    {
+        if (value is null) { return false; }
         return ReferenceEquals(this, value) ||
                 (
                 //IsValid && value.IsValid &&
                 Polarity == value.Polarity &&
                 Focal.Equals(this.Focal, value.Focal)
                 );
-		}
+    }
 
-		public override int GetHashCode()
-		{
-			unchecked
-			{
+    public override int GetHashCode()
+    {
+        unchecked
+        {
             var hashCode = Focal.GetHashCode() * 17 ^ ((int)Polarity + 27) * 397;// + (IsValid ? 77 : 33);
             return hashCode;
-			}
-		}
+        }
+    }
     public override string ToString()
-		{
+    {
         var result = "x";
         if (IsValid)
         {
-			    var v = Value;
+            var v = Value;
             var midSign = v.End > 0 ? " + " : " ";
             result = IsAligned ?
                 $"({v.UnotValue:0.##}i{midSign}{v.UnitValue}r)" :
                 $"~({v.UnitValue:0.##}r{midSign}{v.UnotValue:0.##}i)";
         }
         return result;
-		}
+    }
 }

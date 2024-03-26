@@ -20,7 +20,7 @@ public enum MathElementKind
     PolyDomain      = 0x05000000,
 	    Domain          = 0x06000000,
 	    Transform       = 0x07000000,
-    Formula         = 0x08000000,
+    Equation         = 0x08000000,
     Trait           = 0x09000000,
     Definition      = 0x0A000000,
     Workspace       = 0x0B000000,

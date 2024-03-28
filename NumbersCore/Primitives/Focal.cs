@@ -71,7 +71,6 @@ public class Focal : IMathElement, IEquatable<Focal>
 
     public bool IsPositiveDirection => Direction > 0;
     public virtual long InvertedEndPosition => StartPosition - LengthInTicks;
-    public virtual long[] Positions => new long[] { StartPosition, EndPosition };
 
     /// <summary>
     /// Will be true other than MaskedFocals, where a bool operation can start with false (like with an empty result).
@@ -92,6 +91,13 @@ public class Focal : IMathElement, IEquatable<Focal>
         StartPosition = startTickPosition;
         EndPosition = endTickPosition;
     }
+
+    public virtual IEnumerable<long> Positions()
+    {
+        yield return StartPosition;
+        yield return EndPosition;
+    }
+    public virtual long[] GetPositions() => new long[] { StartPosition, EndPosition };
 
     public long LengthInTicks => EndPosition - StartPosition;
     public long AbsLengthInTicks => Math.Abs(LengthInTicks);
@@ -487,8 +493,8 @@ public class Focal : IMathElement, IEquatable<Focal>
     public static List<(long, BoolState, BoolState)> BuildTruthTable(Focal left, Focal right)
     {
         var result = new List<(long, BoolState, BoolState)>();
-        var leftPositions = left.Positions;
-        var rightPositions = right.Positions;
+        var leftPositions = left.GetPositions();
+        var rightPositions = right.GetPositions();
         if (leftPositions.Length > 0)
         {
             var sortedAll = new SortedSet<long>(leftPositions);

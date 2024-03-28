@@ -53,6 +53,15 @@ public class FocalGroup : Focal
     {
     }
 
+    public FocalGroup(IEnumerable<Focal> focals = null)
+    {
+        if (focals != null)
+        {
+            var positions = GetPositions(focals);
+            RegenerateFocals(positions);
+        }
+    }
+
     public Focal this[int index]
     {
         get
@@ -65,14 +74,6 @@ public class FocalGroup : Focal
             return result;
         }
     }
-    public FocalGroup(IEnumerable<Focal> focals = null)
-    {
-        if (focals != null)
-        {
-            var positions = GetPositions(focals);
-            RegenerateFocals(positions);
-        }
-    }
     public IEnumerable<Focal> Focals()
     {
         for (int i = 0; i < Count; i++)
@@ -80,7 +81,8 @@ public class FocalGroup : Focal
             yield return _focals[i];
         }
     }
-    public IEnumerable<long> Positions()
+
+    public override IEnumerable<long> Positions()
     {
         for (int i = 0; i < Count; i++)
         {
@@ -88,7 +90,8 @@ public class FocalGroup : Focal
             yield return _focals[i].EndPosition;
         }
     }
-    public long[] GetPositions() => Positions().ToArray();
+    public override long[] GetPositions() => Positions().ToArray();
+
     public long MaxPosition => Positions().Max();
     public long MinPosition => Positions().Min();
 

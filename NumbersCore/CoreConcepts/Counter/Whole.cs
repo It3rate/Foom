@@ -8,7 +8,7 @@ public class Whole : Number
     public Whole(long value) : base(new Focal(0, value))
     {
         _orgValue = value;
-        Domain = new CounterDomain(new Focal(0, 1), new Focal(0, value), "Whole");
+        Domain = new CounterDomain(new Focal(0, 1), new Focal(0, long.MaxValue), "Whole");
         Domain.AddNumber(this, false);
     }
 

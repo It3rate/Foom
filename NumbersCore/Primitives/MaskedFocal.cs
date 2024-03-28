@@ -7,11 +7,8 @@ using System.Threading.Tasks;
 namespace NumbersCore.Primitives;
 public class MaskedFocal : Focal
 {
-    private long[] _maskPositions;
-
-    public bool IsEmpty => StartState == BoolState.False && _maskPositions.Length == 0;
-    public long First => _maskPositions[0];
-    public long Last => _maskPositions[_maskPositions.Length - 1];
+    private long[] _positions;
+    public bool IsEmpty => StartState == BoolState.False && _positions.Length == 0;
 
     /// <summary>
     /// A MaskedFocal is a single focal with multiple masks, can be used for the result of bool operations.
@@ -22,33 +19,40 @@ public class MaskedFocal : Focal
     public MaskedFocal(bool firstMaskIsTrue, params long[] maskPositions) : base()
     {
         ValidatePositions(maskPositions);
-        _maskPositions = maskPositions;
-        StartPosition = First;
-        EndPosition = Last;
+        _positions = maskPositions;
         StartState = firstMaskIsTrue ? BoolState.True : BoolState.False;
     }
+
+    public override IEnumerable<long> Positions()
+    {
+        for (int i = 0; i < _positions.Length; i++)
+        {
+            yield return _positions[i];
+        }
+    }
+    public override long[] GetPositions() => (long[])_positions.Clone();
 
     public BoolState GetMaskAtPosition(long position)
     {
         var result = BoolState.Unknown;
-        if (Direction == 1 && (position < First || position > Last))
+        if (Direction == 1 && (position < StartPosition || position > EndPosition))
         {
             result = StartState;
-            for (int i = 1; i < _maskPositions.Length; i++)
+            for (int i = 1; i < _positions.Length; i++)
             {
-                if (position < _maskPositions[i])
+                if (position < _positions[i])
                 {
                     break;
                 }
                 result.Invert();
             }
         }
-        else if (Direction == -1 && (position > First || position < Last))
+        else if (Direction == -1 && (position > StartPosition || position < EndPosition))
         {
             result = StartState;
-            for (int i = 1; i < _maskPositions.Length; i++)
+            for (int i = 1; i < _positions.Length; i++)
             {
-                if (position > _maskPositions[i])
+                if (position > _positions[i])
                 {
                     break;
                 }

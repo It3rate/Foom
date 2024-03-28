@@ -73,6 +73,10 @@ public class Focal : IMathElement, IEquatable<Focal>
     public virtual long InvertedEndPosition => StartPosition - LengthInTicks;
     public virtual long[] Positions => new long[] { StartPosition, EndPosition };
 
+    /// <summary>
+    /// Will be true other than MaskedFocals, where a bool operation can start with false (like with an empty result).
+    /// </summary>
+    public BoolState StartState { get; protected set; } = BoolState.True;
 
     /// <summary>
     /// Focals are pre-number segments, not value interpretations.
@@ -475,6 +479,66 @@ public class Focal : IMathElement, IEquatable<Focal>
     public static Focal MinMaxFocal => new Focal(long.MinValue, long.MaxValue);
     public static Focal OneFocal => new Focal(0, 1);
     public static Focal UpMaxFocal => new Focal(0, long.MaxValue);
+
+    /// <summary>
+    /// Creates table with all stops, giving left and right position states for each stop.
+    /// A truth table only acts on valid parts of segments. -10i+5 has two parts, 0 to -10i and 0 to 5. This is the area bools apply to.
+    /// </summary>
+    public static List<(long, BoolState, BoolState)> BuildTruthTable(Focal left, Focal right)
+    {
+        var result = new List<(long, BoolState, BoolState)>();
+        var leftPositions = left.Positions;
+        var rightPositions = right.Positions;
+        if (leftPositions.Length > 0)
+        {
+            var sortedAll = new SortedSet<long>(leftPositions);
+            sortedAll.UnionWith(rightPositions);
+            var leftSideState = BoolState.False;
+            var rightSideState = BoolState.False;
+            int index = 0;
+            foreach (var pos in sortedAll)
+            {
+                if (leftPositions.Contains(pos)) { leftSideState = leftSideState.Invert(); }
+                if (rightPositions.Contains(pos)) { rightSideState = rightSideState.Invert(); }
+                result.Add((pos, leftSideState, rightSideState));
+                index++;
+            }
+        }
+        return result;
+    }
+    /// <summary>
+    /// Runs bool op over truth table (all stop positions of two sets, with the boolState for each side).
+    /// </summary>
+    public static long[] ApplyOpToTruthTable(List<(long, BoolState, BoolState)> data, Func<bool, bool, bool> operation)
+    {
+        var result = new List<long>();
+        var lastResult = false;
+        var hadFirstTrue = false;
+        for (int i = 0; i < data.Count - 1; i++)
+        {
+            var item = data[i];
+            var valid = BoolStateExtension.AreBool(item.Item2, item.Item3);
+            var opResult = operation(item.Item2.BoolValue(), item.Item3.BoolValue());
+            if (!hadFirstTrue && opResult == true)
+            {
+                result.Add(item.Item1);
+                hadFirstTrue = true;
+                lastResult = opResult;
+
+            }
+            else if (lastResult != opResult)
+            {
+                result.Add(item.Item1);
+                lastResult = opResult;
+            }
+        }
+
+        if (lastResult == true && result.Count > 0) // always close
+        {
+            result.Add(data.Last().Item1);
+        }
+        return result.ToArray();
+    }
 
 
     public Focal Clone()

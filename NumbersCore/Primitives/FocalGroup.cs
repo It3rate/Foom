@@ -121,16 +121,12 @@ public class FocalGroup : Focal
     }
     public void ComputeWith(Focal focal, OperationKind operationKind)
     {
-        ComputeWith(focal.StartPosition, focal.EndPosition, operationKind);
-    }
-    public void ComputeWith(long startB, long endB, OperationKind operationKind)
-    {
         // bool ops are just comparing state, so they don't care about direction or polarity
         // add, multiply etc, require polarity, so must happen on a higher level.
         // this assumes the two focals have the same resolutions
         if (operationKind.IsBoolOp())
         {
-            var tt = BuildTruthTable(Positions().ToArray(), new long[] { startB, endB });
+            var tt = BuildTruthTable(this, focal);
             var positions = ApplyOpToTruthTable(tt, operationKind.GetFunc());
             RegenerateFocals(positions);
         }
@@ -138,8 +134,8 @@ public class FocalGroup : Focal
         {
             var maxA = MaxPosition;
             var minA = MinPosition;
-            var maxB = startB > endB ? startB : endB;
-            var minB = startB < endB ? startB : endB;
+            var maxB = focal.Max;// startB > endB ? startB : endB;
+            var minB = focal.Min;// startB < endB ? startB : endB;
             long resultStart = 0;
             long resultEnd = 0;
             Clear();
@@ -269,30 +265,6 @@ public class FocalGroup : Focal
             result.Add(data.Last().Item1);
         }
         return result.ToArray();
-    }
-
-    // truth table only acts on valid parts of segments. Remember a -10i+5 has two parts, 0 to -10i and 0 to 5. This is the area bools apply to.
-    public List<(long, BoolState, BoolState)> BuildTruthTable(long[] leftPositions, long[] rightPositions)
-    {
-        var result = new List<(long, BoolState, BoolState)>();
-        if (leftPositions.Length > 0)
-        {
-            var sortedAll = new SortedSet<long>(leftPositions);
-            sortedAll.UnionWith(rightPositions);
-            var leftSideState = BoolState.False;
-            var rightSideState = BoolState.False;
-            int index = 0;
-            foreach (var pos in sortedAll)
-            {
-                if (leftPositions.Contains(pos)) { leftSideState = leftSideState.Invert(); }
-                if (rightPositions.Contains(pos)) { rightSideState = rightSideState.Invert(); }
-                //var left = index == 0 ? BoolState.Underflow : leftSideState;
-                //var right = index == sortedAll.Count - 1 ? BoolState.Overflow : rightSideState;
-                result.Add((pos, leftSideState, rightSideState));
-                index++;
-            }
-        }
-        return result;
     }
 
     private Focal FillNextPosition(long startPosition, long endPosition)

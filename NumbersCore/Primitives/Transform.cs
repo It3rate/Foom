@@ -71,6 +71,7 @@ public class Transform : ITransform
     {
         Left = left;
         Right = right;
+        Repeats = new Whole(1);
 
         Result = new NumberGroup(Left.Domain.MinMaxNumber);// left.Clone(false);
         OperationKind = kind;

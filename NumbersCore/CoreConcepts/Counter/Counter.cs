@@ -9,8 +9,10 @@ public class Counter : Number
     public long StepSize { get; }
     public bool IsDirectionUp { get; set; } = true;
 
-    public Counter(long maxCount, long resolution = 1, long stepSize = 1) : 
-        this(new CounterDomain(new Focal(0, resolution), new Focal(0, maxCount * resolution), "Counter"), stepSize) { }
+    public Counter(long maxCount, long resolution = 1, long stepSize = 1) :
+        this(new CounterDomain(new Focal(0, resolution), new Focal(0, maxCount * resolution), "Counter"), stepSize)
+    { }
+
 
     public Counter(Domain domain, long stepSize = 1) : base(new Focal(0, 0))
     {

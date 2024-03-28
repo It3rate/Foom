@@ -9,7 +9,6 @@ public class MaskedFocal : Focal
 {
     private long[] _maskPositions;
 
-    public BoolState StartState { get; }
     public bool IsEmpty => StartState == BoolState.False && _maskPositions.Length == 0;
     public long First => _maskPositions[0];
     public long Last => _maskPositions[_maskPositions.Length - 1];
@@ -58,6 +57,7 @@ public class MaskedFocal : Focal
         }
         return result;
     }
+
 
 
     private static Focal ValidatePositions(long[] maskPositions)

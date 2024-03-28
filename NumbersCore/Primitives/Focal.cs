@@ -38,7 +38,7 @@ public class Focal : IMathElement, IEquatable<Focal>
     private static int _focalCounter = 1 + (int)MathElementKind.Focal;
     public int CreationIndex => Id - (int)Kind - 1;
 
-    public virtual bool IsDirty { get; set; } = true;
+    public virtual bool IsDirty { get; set; } = true; // remove IsDirty once transforms propogate correctly
 
     private long _startPosition;
     public virtual long StartPosition
@@ -66,23 +66,13 @@ public class Focal : IMathElement, IEquatable<Focal>
             }
         }
     }
+
+    public int Direction => StartPosition < EndPosition ? 1 : StartPosition > EndPosition ? -1 : 0;
+
+    public bool IsPositiveDirection => Direction > 0;
     public virtual long InvertedEndPosition => StartPosition - LengthInTicks;
     public virtual long[] Positions => new long[] { StartPosition, EndPosition };
 
-    public int Direction => StartPosition < EndPosition ? 1 : StartPosition > EndPosition ? -1 : 0;
-    public bool IsPositiveDirection => Direction > 0;
-
-    // todo: add a digits per tick value to disconnect tick size from underlying representation
-    public long LengthInTicks => EndPosition - StartPosition;
-    public long AbsLengthInTicks => Math.Abs(LengthInTicks);
-    public long NonZeroLength => LengthInTicks == 0 ? 1 : LengthInTicks;
-    public virtual long AlignedEndPosition(bool isAligned) => isAligned ? EndPosition : InvertedEndPosition;
-    public virtual long AlignedLengthInTicks(bool isAligned) => AlignedEndPosition(isAligned) - StartPosition;
-    public long AlignedNonZeroLength(bool isAligned)
-    {
-        var result = AlignedLengthInTicks(isAligned);
-        return result == 0 ? (isAligned ? 1 : -1) : result;
-    }
 
     /// <summary>
     /// Focals are pre-number segments, not value interpretations.
@@ -99,19 +89,16 @@ public class Focal : IMathElement, IEquatable<Focal>
         EndPosition = endTickPosition;
     }
 
-
-    public static Focal CreateZeroFocal(long ticks) { return new Focal(0, ticks); }
-    public static Focal CreateBalancedFocal(long halfTicks) { return new Focal(-halfTicks, halfTicks); }
-    private static Focal _minMaxFocal;
-    public static Focal MinMaxFocal => _minMaxFocal ?? (_minMaxFocal = new Focal(long.MinValue, long.MaxValue));
-    public static Focal OneFocal => new Focal(0, 1);
-    private static Focal _upMaxFocal;
-    public static Focal UpMaxFocal => _upMaxFocal ?? (_upMaxFocal = new Focal(0, long.MaxValue));
-
-
-
-
-
+    public long LengthInTicks => EndPosition - StartPosition;
+    public long AbsLengthInTicks => Math.Abs(LengthInTicks);
+    public long NonZeroLength => LengthInTicks == 0 ? 1 : LengthInTicks;
+    public virtual long AlignedEndPosition(bool isAligned) => isAligned ? EndPosition : InvertedEndPosition;
+    public virtual long AlignedLengthInTicks(bool isAligned) => AlignedEndPosition(isAligned) - StartPosition;
+    public long AlignedNonZeroLength(bool isAligned)
+    {
+        var result = AlignedLengthInTicks(isAligned);
+        return result == 0 ? (isAligned ? 1 : -1) : result;
+    }
 
     public virtual void Reset(long start, long end)
     {
@@ -482,6 +469,12 @@ public class Focal : IMathElement, IEquatable<Focal>
     public long LessThanOrEqual(long a, long b) { return a | ~b; } // b implies a
 
 
+
+    public static Focal CreateZeroFocal(long ticks) { return new Focal(0, ticks); }
+    public static Focal CreateBalancedFocal(long halfTicks) { return new Focal(-halfTicks, halfTicks); }
+    public static Focal MinMaxFocal => new Focal(long.MinValue, long.MaxValue);
+    public static Focal OneFocal => new Focal(0, 1);
+    public static Focal UpMaxFocal => new Focal(0, long.MaxValue);
 
 
     public Focal Clone()

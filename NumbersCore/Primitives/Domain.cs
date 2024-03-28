@@ -38,7 +38,7 @@ public class Domain : IMathElement
     public bool IsVisible { get; set; } = true;
 
     public readonly Dictionary<int, Number> NumberStore = new Dictionary<int, Number>();
-    public readonly Dictionary<int, NumberChain> NumberSetStore = new Dictionary<int, NumberChain>();
+    public readonly Dictionary<int, NumberGroup> NumberSetStore = new Dictionary<int, NumberGroup>();
 
     // todo: need a tick size (defaults to 1), that can be overriden by numbers. This allows tick sizes larger than unit where
     // a unit of 1 mile and a tick size of 10 (miles) means you must round to the nearest 10 miles.
@@ -145,9 +145,9 @@ public class Domain : IMathElement
     }
 
 
-    private int _numberSetCounter = 1 + (int)MathElementKind.NumberChain;
+    private int _numberSetCounter = 1 + (int)MathElementKind.NumberGroup;
     public int NextNumberSetId() => _numberSetCounter++ + Id;
-    public NumberChain AddNumberSet(NumberChain numberSet, bool addToStore = true)
+    public NumberGroup AddNumberSet(NumberGroup numberSet, bool addToStore = true)
     {
         numberSet.Domain = this;
         numberSet.Id = numberSet.Id == 0 ? NextNumberSetId() : numberSet.Id;
@@ -157,7 +157,7 @@ public class Domain : IMathElement
         }
         return numberSet;
     }
-    public bool RemoveNumberSet(NumberChain numberSet)
+    public bool RemoveNumberSet(NumberGroup numberSet)
     {
         numberSet.Domain = null;
         return NumberSetStore.Remove(numberSet.Id);

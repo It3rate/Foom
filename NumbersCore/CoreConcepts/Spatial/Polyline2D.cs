@@ -9,13 +9,13 @@ using NumbersCore.Primitives;
 
 public class Polyline2D
 {
-    private NumberChain _x;
-    private NumberChain _y;
+    private NumberGroup _x;
+    private NumberGroup _y;
     public PolyDomain XYValues { get; }
 
     public Polyline2D()
     {
         //var xDomain = 
-        //_x = new NumberChain()
+        //_x = new NumberGroup()
     }
 }

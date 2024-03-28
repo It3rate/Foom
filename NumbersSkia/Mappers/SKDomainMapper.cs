@@ -155,7 +155,7 @@ public class SKDomainMapper : SKMapper
 	        }
 	        return (SKNumberMapper)result;
     }
-    public SKNumberSetMapper GetOrCreateNumberSetMapper(NumberChain numberSet)
+    public SKNumberSetMapper GetOrCreateNumberSetMapper(NumberGroup numberSet)
     {
 	        if (!NumberSetMappers.TryGetValue(numberSet.Id, out SKNumberSetMapper result))
 	        {
@@ -361,7 +361,7 @@ public class SKDomainMapper : SKMapper
         {
             var isSelected = Agent.SelSelection.ActiveHighlight?.Mapper == nm;
             // todo: give numberChains their own number mappers.
-            if (nm.Number is NumberChain numberSet)
+            if (nm.Number is NumberGroup numberSet)
             {
                var pts = new SKPoint[2];
                 int index = 0;

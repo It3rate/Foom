@@ -15,7 +15,7 @@ public class SKNumberChainMapper : SKNumberMapper
 
     private List<SKSegment> _renderSegments = new List<SKSegment>();
     private List<SKNumberMapper> _activeMappers = new List<SKNumberMapper>();
-    public SKNumberChainMapper(MouseAgent agent, NumberChain number) : base(agent, number)
+    public SKNumberChainMapper(MouseAgent agent, NumberGroup number) : base(agent, number)
     {
     }
 }

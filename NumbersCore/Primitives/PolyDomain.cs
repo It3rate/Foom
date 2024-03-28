@@ -26,42 +26,42 @@ public abstract class PolyDomain : IMathElement
             {
                 domain.IsDirty = value;
             }
-            foreach (var chain in _numberChains)
+            foreach (var group in _numberGroup)
             {
-                chain.IsDirty = value;
+                group.IsDirty = value;
             }
         }
     }
     public List<Domain> Domains { get; } = new List<Domain>(); // todo: sync with PolyNumberChain
-    protected List<NumberChain> _numberChains { get; } = new List<NumberChain>(); // these sets always have the same number of elements.
+    protected List<NumberGroup> _numberGroup { get; } = new List<NumberGroup>(); // these sets always have the same number of elements.
 
     public int PolyCount => Domains.Count;
-    public int Count => _numberChains[0].Count;
+    public int Count => _numberGroup[0].Count;
 
     public PolyDomain(params Domain[] domains)
     {
         Id = _idCounter++;
         if (domains.Length == 0)
         {
-            throw new ArgumentException("Must have at least one number chain in poly domain.");
+            throw new ArgumentException("Must have at least one number group in poly domain.");
         }
         foreach (var domain in domains)
         {
             Domains.Add(domain);
-            var nc = new NumberChain(domain);
-            _numberChains.Add(nc);
+            var nc = new NumberGroup(domain);
+            _numberGroup.Add(nc);
             domain.AddNumber(nc, false);
         }
     }
 
-    public Domain GetDomainOf(NumberChain chain) { var idx = GetChainIndex(chain); return idx > -1 ? Domains[idx] : null; }
+    public Domain GetDomainOf(NumberGroup group) { var idx = GetGroupIndex(group); return idx > -1 ? Domains[idx] : null; }
     protected Domain GetDomainByName(string name) => Domains.FirstOrDefault(dm => dm.Name == name);
     protected int GetDomainIndex(Domain domain) => Domains.IndexOf(domain);
     protected Domain GetDomainByIndex(int index) => (index >= 0 && index < Domains.Count) ? Domains[index] : null;
-    public NumberChain GetChainOf(Domain domain) { var idx = GetDomainIndex(domain); return idx > -1 ? _numberChains[idx] : null; }
-    protected NumberChain GetChainByName(string name) { var idx = Domains.FindIndex(dm => dm.Name == name); return idx > -1 ? _numberChains[idx] : null; }
-    protected int GetChainIndex(NumberChain chain) => _numberChains.IndexOf(chain); // can't use Id as there could be repeats of the same chain eventually.
-    protected NumberChain GetChainByIndex(int index) => (index >=0 && index < _numberChains.Count) ? _numberChains[index] : null;
+    public NumberGroup GetChainOf(Domain domain) { var idx = GetDomainIndex(domain); return idx > -1 ? _numberGroup[idx] : null; }
+    protected NumberGroup GetGroupByName(string name) { var idx = Domains.FindIndex(dm => dm.Name == name); return idx > -1 ? _numberGroup[idx] : null; }
+    protected int GetGroupIndex(NumberGroup group) => _numberGroup.IndexOf(group); // can't use Id as there could be repeats of the same group eventually.
+    protected NumberGroup GetChainByIndex(int index) => (index >=0 && index < _numberGroup.Count) ? _numberGroup[index] : null;
 
 
 
@@ -73,9 +73,9 @@ public abstract class PolyDomain : IMathElement
         if (index < Count)
         {
             var list = new List<Number>();
-            foreach (var chain in _numberChains)
+            foreach (var group in _numberGroup)
             {
-                list.Add(chain[index]);
+                list.Add(group[index]);
             }
             result = list.ToArray();
         }
@@ -87,9 +87,9 @@ public abstract class PolyDomain : IMathElement
         if (index < Count)
         {
             var list = new List<Focal>();
-            foreach (var chain in _numberChains)
+            foreach (var group in _numberGroup)
             {
-                list.Add(chain.FocalAt(index));
+                list.Add(group.FocalAt(index));
             }
             result = list.ToArray();
         }
@@ -100,9 +100,9 @@ public abstract class PolyDomain : IMathElement
         if (values.Length == PolyCount)
         {
             int i = 0;
-            foreach (var chain in _numberChains)
+            foreach (var group in _numberGroup)
             {
-                chain.AddPosition(values[i++]);
+                group.AddPosition(values[i++]);
             }
         }
     }
@@ -111,9 +111,9 @@ public abstract class PolyDomain : IMathElement
         if (values.Length == PolyCount)
         {
             int i = 0;
-            foreach (var chain in _numberChains)
+            foreach (var group in _numberGroup)
             {
-                chain.AddPosition(values[i++]);
+                group.AddPosition(values[i++]);
             }
         }
     }
@@ -122,9 +122,9 @@ public abstract class PolyDomain : IMathElement
         if (values.Length == PolyCount * 2)
         {
             int i = 0;
-            foreach (var chain in _numberChains)
+            foreach (var group in _numberGroup)
             {
-                chain.AddPosition(values[i++], values[i++]); // these are segments, so (start, end)
+                group.AddPosition(values[i++], values[i++]); // these are segments, so (start, end)
             }
         }
     }
@@ -133,9 +133,9 @@ public abstract class PolyDomain : IMathElement
         if (values.Length == PolyCount)
         {
             int i = 0;
-            foreach (var chain in _numberChains)
+            foreach (var group in _numberGroup)
             {
-                chain.AddPosition(values[i]);
+                group.AddPosition(values[i]);
                 i++;
             }
         }
@@ -148,7 +148,7 @@ public abstract class PolyDomain : IMathElement
             {
                 for (var j = 0; j < PolyCount; j++)
                 {
-                    _numberChains[j].AddPosition(values[i * PolyCount + j]);
+                    _numberGroup[j].AddPosition(values[i * PolyCount + j]);
                 }
             }
         }
@@ -161,7 +161,7 @@ public abstract class PolyDomain : IMathElement
             {
                 for (var j = 0; j < PolyCount; j++)
                 {
-                    _numberChains[j].AddPosition(values[i * PolyCount + j]);
+                    _numberGroup[j].AddPosition(values[i * PolyCount + j]);
                 }
             }
         }
@@ -174,16 +174,16 @@ public abstract class PolyDomain : IMathElement
             {
                 for (var j = 0; j < PolyCount; j++)
                 {
-                    _numberChains[j].AddPosition(values[i * PolyCount + j * 2], values[i * PolyCount + j * 2 + 1]);
+                    _numberGroup[j].AddPosition(values[i * PolyCount + j * 2], values[i * PolyCount + j * 2 + 1]);
                 }
             }
         }
     }
     public void RemoveLastPosition()
     {
-        foreach (var chain in _numberChains)
+        foreach (var group in _numberGroup)
         {
-            chain.RemoveLastPosition();
+            group.RemoveLastPosition();
         }
     }
     /// <summary>
@@ -195,10 +195,10 @@ public abstract class PolyDomain : IMathElement
         if (Count > 0 && values.Length == PolyCount)
         {
             int i = 0;
-            foreach (var chain in _numberChains)
+            foreach (var group in _numberGroup)
             {
-                var start = chain.Last().EndPosition;
-                chain.AddPosition(start, values[i++]);
+                var start = group.Last().EndPosition;
+                group.AddPosition(start, values[i++]);
             }
         }
     }
@@ -210,7 +210,7 @@ public abstract class PolyDomain : IMathElement
         {
             for (var j = 0; j < PolyCount; j++)
             {
-                result.Add(_numberChains[j][i]);
+                result.Add(_numberGroup[j][i]);
             }
         }
         return result;
@@ -222,7 +222,7 @@ public abstract class PolyDomain : IMathElement
         {
             for (var j = 0; j < PolyCount; j++)
             {
-                result.Add(_numberChains[j].FocalAt(i));
+                result.Add(_numberGroup[j].FocalAt(i));
             }
         }
         return result;
@@ -356,9 +356,9 @@ public abstract class PolyDomain : IMathElement
     }
     public void Reset()
     {
-        foreach (var chain in _numberChains)
+        foreach (var group in _numberGroup)
         {
-            chain.Reset();
+            group.Reset();
         }
 
     }

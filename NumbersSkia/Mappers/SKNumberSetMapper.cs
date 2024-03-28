@@ -14,11 +14,11 @@ using Numbers.Drawing;
 
 public class SKNumberSetMapper : SKMapper
 {
-	    public NumberChain NumberSet => (NumberChain)MathElement;
+	    public NumberGroup NumberSet => (NumberGroup)MathElement;
 	    public SKDomainMapper DomainMapper => WorkspaceMapper.GetDomainMapper(NumberSet.Domain);
     public List<SKNumberMapper> NumberMappers { get; } = new List<SKNumberMapper>();
 
-    public SKNumberSetMapper(MouseAgent agent, NumberChain numberSet, SKSegment guideline = default) : base(agent, numberSet, guideline)
+    public SKNumberSetMapper(MouseAgent agent, NumberGroup numberSet, SKSegment guideline = default) : base(agent, numberSet, guideline)
 	    {
 	    }
 

@@ -32,7 +32,7 @@ public class Transform : ITransform
     public bool IsUnary => Right == null;// OperationKind.IsUnary();
     public Number Left { get; set; } // the object being transformed
     public Number? Right { get; set; } // the amount to transform (can change per repeat)
-    public NumberChain Result { get; set; }  // current result of transform - this acts as a halt condition when it is empty (false)
+    public NumberGroup Result { get; set; }  // current result of transform - this acts as a halt condition when it is empty (false)
     
     /// <summary>
     /// Repeats are powers, but can extend to any operation. Repeated ADD is like multiply, repeated multiply is pow.
@@ -72,7 +72,7 @@ public class Transform : ITransform
         Left = left;
         Right = right;
 
-        Result = new NumberChain(Left.Domain.MinMaxNumber);// left.Clone(false);
+        Result = new NumberGroup(Left.Domain.MinMaxNumber);// left.Clone(false);
         OperationKind = kind;
         Brain = Left.Brain;
         Id = Brain.NextTransformId();
@@ -185,7 +185,7 @@ public interface ITransform : IMathElement
 {
     Number Left { get; set; } // the object being transformed
     Number Right { get; set; } // the amount to transform (can change per repeat)
-    NumberChain Result { get; set; } // current result of transform - this acts as a halt condition when it is empty (false)
+    NumberGroup Result { get; set; } // current result of transform - this acts as a halt condition when it is empty (false)
     //Number Repeats { get; set; } 
 
     event TransformEventHandler StartTransformEvent;

@@ -15,18 +15,18 @@ public class HSLDomain : PolyDomain
     public OpticalDomain SaturationDomain;
     public OpticalDomain LightnessDomain;
 
-    public NumberChain Hue;
-    public NumberChain Saturation;
-    public NumberChain Lightness;
+    public NumberGroup Hue;
+    public NumberGroup Saturation;
+    public NumberGroup Lightness;
     public HSLDomain() : base(OpticalDomain.GetHueDomain(), OpticalDomain.GetSaturationDomain(), OpticalDomain.GetLightnessDomain())
     {
         HueDomain = (OpticalDomain)Domains[0];
         SaturationDomain = (OpticalDomain)Domains[1];
         LightnessDomain = (OpticalDomain)Domains[2];
 
-        Hue = _numberChains[0];
-        Saturation = _numberChains[1];
-        Lightness = _numberChains[2];
+        Hue = _numberGroup[0];
+        Saturation = _numberGroup[1];
+        Lightness = _numberGroup[2];
     }
     public void AddHsl(Number h, Number s, Number l)
     {

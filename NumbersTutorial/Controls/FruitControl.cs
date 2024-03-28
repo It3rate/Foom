@@ -18,7 +18,7 @@ public class FruitControl : UIControlBase
     public Number Size { get; private set; }
     public Number AspectRatio { get; private set; }
     public HSLDomain Fill { get; private set; } = new HSLDomain();
-    public NumberChain Convexity { get;private set; }
+    public NumberGroup Convexity { get;private set; }
     private SpatialDomain _convexityDomain = SpatialDomain.Get2DCenteredDomain(32, 1, "Convexity");
 
     private float[] _samplesX => _samples[0];
@@ -40,7 +40,7 @@ public class FruitControl : UIControlBase
         var aspectDomain = Domain.CreateDomain("Aspect", 50, -1, 1, 0, "Aspect", false);
         AspectRatio = aspectDomain.CreateNumber(new PRange(0.2f, 0.2f));
 
-        Convexity = new NumberChain(_convexityDomain);
+        Convexity = new NumberGroup(_convexityDomain);
         Convexity.AddPosition(32, 32);
         AddPolyProperty(Fill, 0, 360, 70, 100, 40, 60);
 

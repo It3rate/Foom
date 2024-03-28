@@ -12,10 +12,9 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 
 /// <summary>
-/// A series of ordered positions. These can be merged with other Focals using bool operations if OperationKind is not None.
-/// Can be empty (e.g result of bool AND with no overlap)
+/// A group of indexed Focals. Can be empty.
 /// </summary>
-public class FocalChain : Focal
+public class FocalGroup : Focal
 {
     // todo: account for direction of focal line?
     // Perhaps the number store and bool segment capabilities should be separated? The first is like a bidirectional relative accumulator, the second a non overlapping ordered group of segments.
@@ -23,7 +22,7 @@ public class FocalChain : Focal
     //     the main difference is the bool case only allows forward direction for segments, while a path can meander. Both must be tip to tail.
     //     relative encoding may make more sense as this enforces tip to tail (2,4,3,1 vs 2,6,9,10)
     // todo: Maybe bool results need to be segments of alternating polarity? Currently there is a confusion between 'not considered' and 'false'.
-    public virtual MathElementKind Kind => MathElementKind.FocalChain;
+    public virtual MathElementKind Kind => MathElementKind.FocalGroup;
 
 
     protected List<Focal> _focals = new List<Focal>();
@@ -50,7 +49,7 @@ public class FocalChain : Focal
     }
     public bool HasValue => Count > 0;
 
-    public FocalChain(long startTickPosition, long endTickPosition) : base(startTickPosition, endTickPosition)
+    public FocalGroup(long startTickPosition, long endTickPosition) : base(startTickPosition, endTickPosition)
     {
     }
 
@@ -66,7 +65,7 @@ public class FocalChain : Focal
             return result;
         }
     }
-    public FocalChain(IEnumerable<Focal> focals = null)
+    public FocalGroup(IEnumerable<Focal> focals = null)
     {
         if (focals != null)
         {
@@ -319,7 +318,7 @@ public class FocalChain : Focal
 
 
 
-    public static bool operator ==(FocalChain a, FocalChain b)
+    public static bool operator ==(FocalGroup a, FocalGroup b)
     {
         if (a is null && b is null)
         {
@@ -332,15 +331,15 @@ public class FocalChain : Focal
         return a.Equals(b);
     }
 
-    public static bool operator !=(FocalChain a, FocalChain b)
+    public static bool operator !=(FocalGroup a, FocalGroup b)
     {
         return !(a == b);
     }
     public override bool Equals(object obj)
     {
-        return obj is FocalChain other && Equals(other);
+        return obj is FocalGroup other && Equals(other);
     }
-    public bool Equals(FocalChain value)
+    public bool Equals(FocalGroup value)
     {
         var result = false;
         if( ReferenceEquals(this, value))

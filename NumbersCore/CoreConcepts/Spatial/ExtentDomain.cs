@@ -23,16 +23,16 @@ public class ExtentDomain : PolyDomain
     // The poly domains aren't specific to traits, but maybe can require matching traits (like X,Y must both be distance, but the combo works for e.g. gear ratios as well.)
     public SpatialDomain HorizontalDomain { get; }
     public SpatialDomain VerticalDomain { get; }
-    public NumberChain Horizontal { get; }
-    public NumberChain Vertical { get; }
+    public NumberGroup Horizontal { get; }
+    public NumberGroup Vertical { get; }
     public ExtentDomain(int xSize, int ySize) : base(
             SpatialDomain.GetPixelDomain(xSize, "Horizontal"),
             SpatialDomain.GetPixelDomain(ySize, "Vertical"))
     {
         HorizontalDomain = (SpatialDomain)GetDomainByName("Horizontal");
         VerticalDomain = (SpatialDomain)GetDomainByName("Vertical");
-        Horizontal = GetChainByName("Horizontal");
-        Vertical = GetChainByName("Vertical");
+        Horizontal = GetGroupByName("Horizontal");
+        Vertical = GetGroupByName("Vertical");
     }
     public void AddExtent(Number horz, Number vert)
     {

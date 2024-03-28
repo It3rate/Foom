@@ -1,29 +1,21 @@
-﻿using NumbersCore.Utils;
-
-namespace NumbersCore.Primitives;
+﻿namespace NumbersCore.Primitives;
 
 using System.Collections.Generic;
 using System.Linq;
+using NumbersCore.Utils;
 
 /// <summary>
-/// Ordered numbers, array style, clamped to base Number size. Optionally can be merged and ordered with bool Operations.
-/// All Numbers are probably NumberChain, with zero based Unit and Unot values cancelling on overlap.
-/// Can represent a boolean evaluation of two numbers that result in non overlapping ordered segments, which share polarity and domain.
-/// Can also represent the start/endpoints of mergable repeats, like 3+3+3 or 3*3*3. 
+/// These are an ordered Group of numbers. They share a domain, but can have any polarity and direction. Can be empty.
 /// </summary>
-public class NumberChain : Number, IMathElement
+public class NumberGroup : Number, IMathElement
 {
-    // should be able to access and update proportionally, where 8 even subdivisions will remain so even when changing the base number.
-    // they can be recorded as on/off/on/off along the line, allowing construction of 2D continuous paths (though this would just be an optimization).
-    // knowing if focals are touching (contiguous) matters.
-    // all clamping, overlap removal and repears should be done in the focalSet
-    public override MathElementKind Kind => MathElementKind.NumberChain;
+    public override MathElementKind Kind => MathElementKind.NumberGroup;
 
-    public new bool IsDirty { get => _focalChain.IsDirty; set => _focalChain.IsDirty = value; } // base just calls this
+    public new bool IsDirty { get => _focalGroup.IsDirty; set => _focalGroup.IsDirty = value; } // base just calls this
 
-    private FocalChain _focalChain => (FocalChain)Focal;
-    private List<Polarity> _polarityChain { get; } = new List<Polarity>();
-    public int Count => _focalChain.Count;
+    private FocalGroup _focalGroup => (FocalGroup)Focal;
+    private List<Polarity> _polarityGroup { get; } = new List<Polarity>();
+    public int Count => _focalGroup.Count;
 
     public override Domain Domain // todo: lookup domain on PolyDomain
     {
@@ -31,12 +23,12 @@ public class NumberChain : Number, IMathElement
         set => base.Domain = value;
     }
 
-    public NumberChain(Number targetNumber, params Focal[] focals) : base(new FocalChain(), targetNumber.Polarity)
+    public NumberGroup(Number targetNumber, params Focal[] focals) : base(new FocalGroup(), targetNumber.Polarity)
     {
         Domain = targetNumber.Domain;
-        _focalChain.MergeRange(focals);
+        _focalGroup.MergeRange(focals);
     }
-    public NumberChain(Domain domain, Focal[] focals = null, Polarity[] polarities = null) : base(new FocalChain(), Polarity.Aligned)
+    public NumberGroup(Domain domain, Focal[] focals = null, Polarity[] polarities = null) : base(new FocalGroup(), Polarity.Aligned)
     {
         Domain = domain;
         if (focals != null)
@@ -45,23 +37,23 @@ public class NumberChain : Number, IMathElement
             foreach (Focal focal in focals)
             {
                 var polarity = polarities != null && polarities.Length > i ? polarities[i] : Polarity.Aligned;
-                _focalChain.AddPosition(focal);
-                _polarityChain.Add(polarity);
+                _focalGroup.AddPosition(focal);
+                _polarityGroup.Add(polarity);
             }
         }
     }
-    public Polarity PolarityAt(int index) => _polarityChain.Count > index ? _polarityChain[index] : Polarity.Aligned;
+    public Polarity PolarityAt(int index) => _polarityGroup.Count > index ? _polarityGroup[index] : Polarity.Aligned;
 
     public override long[] GetPositions()
     {
-        return _focalChain.GetPositions();
+        return _focalGroup.GetPositions();
     }
     public override IEnumerable<PRange> InternalRanges()
     {
         var i = 0;
-        foreach (var focal in _focalChain.Focals())
+        foreach (var focal in _focalGroup.Focals())
         {
-            var val = Domain.GetValueOf(_focalChain, PolarityAt(i));
+            var val = Domain.GetValueOf(_focalGroup, PolarityAt(i));
             yield return val;
 
         }
@@ -69,7 +61,7 @@ public class NumberChain : Number, IMathElement
     public override IEnumerable<Number> InternalNumbers()
     {
         var i = 0;
-        foreach (var focal in _focalChain.Focals())
+        foreach (var focal in _focalGroup.Focals())
         {
             var nm = new Number(focal, PolarityAt(i));
             nm.Domain = Domain;
@@ -83,14 +75,14 @@ public class NumberChain : Number, IMathElement
         Clear();
         if (value.IsValid)
         {
-            _focalChain.Reset(value.Focal);
-            _polarityChain.Add(value.Polarity);
+            _focalGroup.Reset(value.Focal);
+            _polarityGroup.Add(value.Polarity);
         }
     }
     public void Clear()
     {
-        _focalChain.Clear();
-        _polarityChain.Clear();
+        _focalGroup.Clear();
+        _polarityGroup.Clear();
     }
 
     public Number FirstNumber()
@@ -103,10 +95,10 @@ public class NumberChain : Number, IMathElement
         }
         return result;
     }
-    public Focal First() => _focalChain.First();
-    public Polarity FirstPolarity() => _polarityChain.Count > 0 ? _polarityChain[0] : Polarity.None;
+    public Focal First() => _focalGroup.First();
+    public Polarity FirstPolarity() => _polarityGroup.Count > 0 ? _polarityGroup[0] : Polarity.None;
     public int FirstDirection() => FirstNumber()?.PolarityDirection ?? 0;
-    public Focal Last() => _focalChain.Last();
+    public Focal Last() => _focalGroup.Last();
     // todo: account for polarity
     public Focal CreateFocalFromRange(PRange value) => Domain.CreateFocalFromRange(value);
 
@@ -144,7 +136,7 @@ public class NumberChain : Number, IMathElement
                 case OperationKind.FilterEnd:
                     break;
                 case OperationKind.NegateInPlace:
-                    _focalChain.ComputeWith(Focal, operationKind); // change arrow dir
+                    _focalGroup.ComputeWith(Focal, operationKind); // change arrow dir
                     break;
             }
         }
@@ -213,12 +205,12 @@ public class NumberChain : Number, IMathElement
             }
         }
     }
-    public void ComputeWith(Focal focal, OperationKind operationKind) => _focalChain.ComputeWith(focal, operationKind);
+    public void ComputeWith(Focal focal, OperationKind operationKind) => _focalGroup.ComputeWith(focal, operationKind);
     public void ComputeWith(long start, long end, OperationKind operationKind) => ComputeWith(new Focal(start, end), operationKind);
     public void ComputeWith(PRange range, OperationKind operationKind)
     {
         var focal = Domain.CreateFocalFromRange(range);
-        _focalChain.ComputeWith(focal, operationKind);
+        _focalGroup.ComputeWith(focal, operationKind);
     }
     public void ComputeBoolOp(Number other, OperationKind operationKind)
     {
@@ -228,16 +220,16 @@ public class NumberChain : Number, IMathElement
         var (_, table) = SegmentedTable(Domain, this, other);
         var (focals, polarities) = ApplyOpToSegmentedTable(table, operationKind);
         Clear();
-        _focalChain.AddPositions(focals);
-        _polarityChain.AddRange(polarities);
+        _focalGroup.AddPositions(focals);
+        _polarityGroup.AddRange(polarities);
     }
     public void ComputeBoolCompare(Focal focal, OperationKind operationKind)
     {
-        _focalChain.ComputeWith(focal, operationKind);
+        _focalGroup.ComputeWith(focal, operationKind);
     }
     public void AddPosition(long start, long end)
     {
-        _focalChain.AddPosition(start, end);
+        _focalGroup.AddPosition(start, end);
     }
     public void AddPosition(Focal focal)
     {
@@ -252,19 +244,19 @@ public class NumberChain : Number, IMathElement
         var focal = Domain.CreateFocalFromRange(range);
         AddPosition(focal.StartPosition, focal.EndPosition);
     }
-    public void RemoveLastPosition() => _focalChain.RemoveLastPosition();
+    public void RemoveLastPosition() => _focalGroup.RemoveLastPosition();
 
     public void Reset(params Focal[] focals)
     {
         Clear();
-        _focalChain.MergeRange(focals);
+        _focalGroup.MergeRange(focals);
         foreach (var focal in focals)
         {
-            _polarityChain.Add(Polarity.Aligned);
+            _polarityGroup.Add(Polarity.Aligned);
         }
     }
-    public Number this[int index] => index < Count ? Domain.CreateNumber(_focalChain[index], false) : null;
-    public Focal FocalAt(int index) => index < Count ? _focalChain[index] : null;
+    public Number this[int index] => index < Count ? Domain.CreateNumber(_focalGroup[index], false) : null;
+    public Focal FocalAt(int index) => index < Count ? _focalGroup[index] : null;
 
     public Number SumAll()
     {
@@ -443,7 +435,7 @@ public class NumberChain : Number, IMathElement
     //    return result;
     //}
 
-    public static bool operator ==(NumberChain a, NumberChain b)
+    public static bool operator ==(NumberGroup a, NumberGroup b)
     {
         if (a is null && b is null)
         {
@@ -456,20 +448,20 @@ public class NumberChain : Number, IMathElement
         return a.Equals(b);
     }
 
-    public static bool operator !=(NumberChain a, NumberChain b)
+    public static bool operator !=(NumberGroup a, NumberGroup b)
     {
         return !(a == b);
     }
     public override bool Equals(object obj)
     {
-        return obj is NumberChain other && Equals(other);
+        return obj is NumberGroup other && Equals(other);
     }
-    public bool Equals(NumberChain value)
+    public bool Equals(NumberGroup value)
     {
         return ReferenceEquals(this, value) ||
             (
                 Polarity == value.Polarity &&
-                FocalChain.Equals(this._focalChain, value._focalChain)
+                FocalGroup.Equals(this._focalGroup, value._focalGroup)
             );
     }
 
@@ -477,7 +469,7 @@ public class NumberChain : Number, IMathElement
     {
         unchecked
         {
-            var hashCode = _focalChain.GetHashCode() * 17 ^ ((int)Polarity + 27) * 397;
+            var hashCode = _focalGroup.GetHashCode() * 17 ^ ((int)Polarity + 27) * 397;
             return hashCode;
         }
     }

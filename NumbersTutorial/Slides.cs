@@ -24,7 +24,7 @@ public class Slides : DemoBase
         Brain = brain;
         SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
         SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-        _testIndex = 1;// 24;
+        _testIndex = 24;
         Pages.AddRange(new PageCreator[]
         {
             AnimationTest,

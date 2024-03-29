@@ -98,7 +98,7 @@ public class SKDomainMapper : SKMapper
     public SKNumberMapper NumberMapperFor(Number number) => GetOrCreateNumberMapper(number);
     public SKNumberMapper NumberMapperFor(int numId) => GetOrCreateNumberMapper(Domain.GetNumber(numId));
 
-    protected Dictionary<int, SKNumberGroupMapper> NumberSetMappers = new Dictionary<int, SKNumberGroupMapper>();
+    //protected Dictionary<int, SKNumberGroupMapper> NumberSetMappers = new Dictionary<int, SKNumberGroupMapper>();
 
     public SKNumberMapper AddNumberMapper(SKNumberMapper numberMapper)
     {
@@ -142,19 +142,28 @@ public class SKDomainMapper : SKMapper
     }
     public SKNumberMapper GetOrCreateNumberMapper(Number number)
     {
+        if(number is NumberGroup ng){
+            return GetOrCreateNumberGroupMapper(ng);
+        }
+
         if (!_numberMappers.TryGetValue(number.Id, out var result))
         {
             result = new SKNumberMapper(Agent, number);
             AddNumberMapper(result);
         }
-        return (SKNumberMapper)result;
+        return result;
     }
-    public SKNumberGroupMapper GetOrCreateNumberSetMapper(NumberGroup numberSet)
+    public SKNumberMapper GetOrCreateNumberGroupMapper(NumberGroup numberGroup)
     {
-        if (!NumberSetMappers.TryGetValue(numberSet.Id, out SKNumberGroupMapper result))
+        SKNumberGroupMapper result;
+        if (_numberMappers.TryGetValue(numberGroup.Id, out SKNumberMapper? nm) && nm is SKNumberGroupMapper ngm)
         {
-            result = new SKNumberGroupMapper(Agent, numberSet);
-            NumberSetMappers[numberSet.Id] = result;
+             result = ngm;
+        }
+        else
+        { 
+            result = new SKNumberGroupMapper(Agent, numberGroup);
+            AddNumberMapper(result);
         }
         return result;
     }
@@ -281,7 +290,6 @@ public class SKDomainMapper : SKMapper
             DrawMarkers();
             DrawTicks();
             DrawNumbers();
-            DrawNumberSets();
         }
     }
     protected virtual void DrawNumberLine()
@@ -353,65 +361,35 @@ public class SKDomainMapper : SKMapper
         step *= topDir;
         foreach (var nm in OrderedValidNumbers())
         {
-            var isSelected = Agent.SelSelection.ActiveHighlight?.Mapper == nm;
-            // todo: give numberChains their own number mappers.
-            if (nm.Number is NumberGroup numberSet)
-            {
-                var pts = new SKPoint[2];
-                int index = 0;
-                foreach (var num in numberSet.InternalNumbers())
-                {
-                    //if (num.IsAligned)// || num.IsPositivePointing) // don't draw default false numbers (they point unit right, so negative).
-                    //{
-                    var numMap = new SKNumberMapper(Agent, num);
-                    DrawNumber(numMap, offset + topDir * 2, isSelected);
-                    if (index == 0)
-                    {
-                        pts[0] = numMap.RenderSegment.StartPoint;
-                        index++;
-                    }
-                    pts[1] = numMap.RenderSegment.EndPoint;
-                    //}
-                }
-                if (index > 0 && pts.Length > 1)
-                {
-                    nm.RenderSegment = new SKSegment(pts[0], pts[1]);
-                }
-            }
-            else
-            {
-                DrawNumber(nm, offset + topDir * 2, isSelected);
-            }
+            nm.DrawNumber(offset + topDir * 2);
+            //if (nm.Number is NumberGroup numberSet)
+            //{
+            //    var pts = new SKPoint[2];
+            //    int index = 0;
+            //    foreach (var num in numberSet.InternalNumbers())
+            //    {
+            //        //if (num.IsAligned)// || num.IsPositivePointing) // don't draw default false numbers (they point unit right, so negative).
+            //        //{
+            //        var numMap = new SKNumberMapper(Agent, num);
+            //        nm.DrawNumber(offset + topDir * 2);
+            //        if (index == 0)
+            //        {
+            //            //pts[0] = numMap.RenderSegment.StartPoint;
+            //            index++;
+            //        }
+            //        //pts[1] = numMap.RenderSegment.EndPoint;
+            //        //}
+            //    }
+            //    if (index > 0 && pts.Length > 1)
+            //    {
+            //       // nm.RenderSegment = new SKSegment(pts[0], pts[1]);
+            //    }
+            //}
+            //else
+            //{
+            //    nm.DrawNumber(offset + topDir * 2);
+            //}
             offset += step;
-        }
-    }
-    protected virtual void DrawNumberSets()
-    {
-        foreach (var numSet in Domain.NumberSetStore.Values)
-        {
-            var nsm = GetOrCreateNumberSetMapper(numSet);
-            nsm.DrawNumberSet();
-        }
-    }
-
-    public virtual void DrawNumber(SKNumberMapper nm, float offset, bool isSelected = false)
-    {
-        if (nm != null)
-        {
-            var pen = isSelected ? Pens.SegPenHighlight : Pens.SegPens[nm.Number.StoreIndex % Pens.SegPens.Count];
-            //nm.DrawNumber(offset - (pen.StrokeWidth / 3f * Math.Sign(offset)), pen); // background
-            nm.DrawNumber(offset, pen); // background
-
-            if (nm.Number.IsAligned)
-            {
-                var invPen = ShowPolarity ? Pens.UnotInlinePen : Pens.UnitInlinePen;
-                nm.DrawNumber(offset, Pens.UnitInlinePen, invPen);
-            }
-            else
-            {
-                var invPen = ShowPolarity ? Pens.UnitInlinePen : Pens.UnotInlinePen;
-                nm.DrawNumber(offset, Pens.UnotInlinePen, invPen);
-            }
         }
     }
 

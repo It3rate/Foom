@@ -476,11 +476,15 @@ public class NumberGroup : Number, IMathElement
 
     public override string ToString()
     {
-        var v = Value;
-        var midSign = v.End > 0 ? " + " : " ";
-        var result = IsAligned ?
-            $"nc:({v.UnotValue:0.##}i {midSign}{v.UnitValue}r)" :
-            $"nc:~({v.UnitValue:0.##}r {midSign}{v.UnotValue:0.##}i)";
+        var result = "ng(0)";
+        if (Count > 0)
+        {
+            var v = Value;
+            var midSign = v.End > 0 ? " + " : " ";
+            result = IsAligned ?
+                $"ng{Count}:({v.UnotValue:0.##}i {midSign}{v.UnitValue}r)" :
+                $"ng{Count}:~({v.UnitValue:0.##}r {midSign}{v.UnotValue:0.##}i)";
+        }
         return result;
     }
 }

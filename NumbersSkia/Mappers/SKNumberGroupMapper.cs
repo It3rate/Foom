@@ -5,6 +5,7 @@ using SkiaSharp;
 namespace Numbers.Mappers;
 
 using Numbers.Drawing;
+using System;
 using System.Collections.Generic;
 
 public class SKNumberGroupMapper : SKNumberMapper
@@ -37,14 +38,15 @@ public class SKNumberGroupMapper : SKNumberMapper
         }
     }
 
-    public void DrawNumberSet()
+    public override void DrawNumber(float offset)
     {
-        EnsureNumberMappers();
-        foreach (var skNumberMapper in NumberMappers)
+        var isSelected = IsSelected();
+        foreach (var num in NumberGroup.InternalNumbers())
         {
-            DomainMapper.DrawNumber(skNumberMapper, 0f, false);
+            DrawSingleNumber(offset, isSelected);
         }
     }
+
     public override SKPath GetHighlightAt(Highlight highlight)
     {
         var result = new SKPath();
@@ -56,7 +58,7 @@ public class SKNumberGroupMapper : SKNumberMapper
         return result;
     }
 
-    public override void Draw()
+    public override void Draw() // drawn by domain with offset
     {
     }
 }

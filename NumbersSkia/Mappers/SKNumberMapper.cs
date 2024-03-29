@@ -54,8 +54,31 @@ public class SKNumberMapper : SKMapper
         OnChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    public override void Draw() { }
-    public void DrawNumber(float offset, SKPaint paint, SKPaint invertPaint = null)
+    public override void Draw() { } // drawn by domain with offset
+
+    protected bool IsSelected() => Agent.SelSelection.ActiveHighlight?.Mapper == this;
+    public virtual void DrawNumber(float offset)
+    {
+        DrawSingleNumber(offset, IsSelected());
+    }
+    protected void DrawSingleNumber(float offset, bool isSelected)
+    {
+        var pen = isSelected ? Pens.SegPenHighlight : Pens.SegPens[Number.StoreIndex % Pens.SegPens.Count];
+        //nm.DrawNumber(offset - (pen.StrokeWidth / 3f * Math.Sign(offset)), pen); // background
+        DrawNumberStroke(offset, pen); // background
+
+        if (Number.IsAligned)
+        {
+            var invPen = DomainMapper.ShowPolarity ? Pens.UnotInlinePen : Pens.UnitInlinePen;
+            DrawNumberStroke(offset, Pens.UnitInlinePen, invPen);
+        }
+        else
+        {
+            var invPen = DomainMapper.ShowPolarity ? Pens.UnitInlinePen : Pens.UnotInlinePen;
+            DrawNumberStroke(offset, Pens.UnotInlinePen, invPen);
+        }
+    }
+    protected void DrawNumberStroke(float offset, SKPaint paint, SKPaint invertPaint = null)
     {
         EnsureSegment();
         var pen2 = invertPaint ?? paint;

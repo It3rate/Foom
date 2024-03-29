@@ -37,7 +37,6 @@ public class SKNumberMapper : SKMapper
         var val = Number.ValueInRenderPerspective;
         Reset(UnitSegment.SegmentAlongLine(val.StartF, val.EndF));
     }
-
     public event EventHandler OnSelected;
     public void OnSelect()
     {
@@ -59,33 +58,35 @@ public class SKNumberMapper : SKMapper
     protected bool IsSelected() => Agent.SelSelection.ActiveHighlight?.Mapper == this;
     public virtual void DrawNumber(float offset)
     {
-        DrawSingleNumber(offset, IsSelected());
+        EnsureSegment();
+        RenderSegment = DrawNumber(Number, offset, IsSelected());
     }
-    protected void DrawSingleNumber(float offset, bool isSelected)
+
+    // passing in number to allow rendering grouped numbers individually
+    public SKSegment DrawNumber(Number num, float offset, bool isSelected)
     {
         var pen = isSelected ? Pens.SegPenHighlight : Pens.SegPens[Number.StoreIndex % Pens.SegPens.Count];
-        //nm.DrawNumber(offset - (pen.StrokeWidth / 3f * Math.Sign(offset)), pen); // background
-        DrawNumberStroke(offset, pen); // background
+        var result = DrawNumberStroke(num, offset, pen); // background
 
-        if (Number.IsAligned)
+        if (num.IsAligned)
         {
             var invPen = DomainMapper.ShowPolarity ? Pens.UnotInlinePen : Pens.UnitInlinePen;
-            DrawNumberStroke(offset, Pens.UnitInlinePen, invPen);
+            DrawNumberStroke(num, offset, Pens.UnitInlinePen, invPen);
         }
         else
         {
             var invPen = DomainMapper.ShowPolarity ? Pens.UnitInlinePen : Pens.UnotInlinePen;
-            DrawNumberStroke(offset, Pens.UnotInlinePen, invPen);
+            DrawNumberStroke(num, offset, Pens.UnotInlinePen, invPen);
         }
+        return result;
     }
-    protected void DrawNumberStroke(float offset, SKPaint paint, SKPaint invertPaint = null)
+    protected SKSegment DrawNumberStroke(Number num, float offset, SKPaint paint, SKPaint invertPaint = null)
     {
-        EnsureSegment();
+        SKSegment result;
         var pen2 = invertPaint ?? paint;
+        var val = num.ValueInRenderPerspective;
         if (DomainMapper.ShowSeparatedSegment)
         {
-            var val = Number.ValueInRenderPerspective;
-
             var segEndDir = val.EndF >= 0 ? 1 : -1;
             var endSeg = UnitSegment.SegmentAlongLine(0, val.EndF).ShiftOffLine((offset + 10) * segEndDir);
             Renderer.DrawHalfLine(endSeg, paint);
@@ -97,14 +98,15 @@ public class SKNumberMapper : SKMapper
             Renderer.DrawEndCap(endSeg, paint);
             Renderer.DrawStartCap(startSeg, pen2);
 
-            RenderSegment = new SKSegment(startSeg.EndPoint, endSeg.EndPoint);
+            result = new SKSegment(startSeg.EndPoint, endSeg.EndPoint);
         }
         else
         {
             var dir = UnitDirectionOnDomainLine;
-            RenderSegment = Guideline.ShiftOffLine(offset * dir);
-            Renderer.DrawDirectedLine(RenderSegment, paint, pen2);
+            result = UnitSegment.SegmentAlongLine(val.StartF, val.EndF).ShiftOffLine(offset * dir);
+            Renderer.DrawDirectedLine(result, paint, pen2);
         }
+        return result;
     }
 
     public void DrawUnit(bool aboveLine, bool showPolarity)

@@ -741,6 +741,7 @@ public class Slides : DemoBase
         List<Transform> transforms = new List<Transform>();
         List<SKPathMapper> paths = new List<SKPathMapper>();
 
+        //var kind = OperationKind.NAND;
         foreach (var kind in OperationKindExtension.BoolOpKinds())
         {
             var bdm = hd.Duplicate();

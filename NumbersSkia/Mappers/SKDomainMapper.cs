@@ -142,7 +142,8 @@ public class SKDomainMapper : SKMapper
     }
     public SKNumberMapper GetOrCreateNumberMapper(Number number)
     {
-        if(number is NumberGroup ng){
+        if(number is NumberGroup ng)
+        {
             return GetOrCreateNumberGroupMapper(ng);
         }
 

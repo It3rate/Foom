@@ -64,6 +64,7 @@ public partial class CoreForm : Form
     {
         await Task.Delay(timeoutInMilliseconds);
         ReloadTest();
+        NeedsUpdate();
     }
     public void PreviousTest()
     {

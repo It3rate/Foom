@@ -7,6 +7,7 @@ namespace Numbers.Mappers;
 using Numbers.Drawing;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 public class SKNumberGroupMapper : SKNumberMapper
 {
@@ -18,44 +19,29 @@ public class SKNumberGroupMapper : SKNumberMapper
     {
     }
 
-    public void EnsureNumberMappers()
-    {
-        if (NumberGroup.Count > NumberMappers.Count)
-        {
-            for (int i = NumberMappers.Count; i < NumberGroup.Count; i++)
-            {
-                NumberMappers.Add(new SKNumberMapper(Agent, NumberGroup[i]));
-            }
-        }
-        else if ((NumberGroup.Count < NumberMappers.Count))
-        {
-            NumberMappers.RemoveRange(NumberGroup.Count, NumberMappers.Count - NumberGroup.Count);
-        }
-
-        for (int i = 0; i < NumberMappers.Count; i++)
-        {
-            NumberMappers[i].ResetNumber(NumberGroup[i]);
-        }
-    }
-
+    private List<SKSegment> _segPaths = new List<SKSegment>();
     public override void DrawNumber(float offset)
     {
+        EnsureSegment();
         var isSelected = IsSelected();
+        _segPaths.Clear();
         foreach (var num in NumberGroup.InternalNumbers())
         {
-            DrawSingleNumber(offset, isSelected);
+            _segPaths.Add( DrawNumber(num, offset, isSelected) );
         }
     }
 
     public override SKPath GetHighlightAt(Highlight highlight)
     {
-        var result = new SKPath();
-        foreach (var skNumberMapper in NumberMappers)
+        var path = new SKPath();
+        foreach (var segment in _segPaths) // todo: highlights should involve all segments if one is selected?
         {
-            var path = skNumberMapper.GetHighlightAt(highlight);
-            result.AddPath(path);
+            var (pt0, pt1) = segment.PerpendicularLine(0, 0);
+            var ptDiff = pt1 - pt0;
+            path.AddPoly([segment.StartPoint + ptDiff, segment.EndPoint + ptDiff,
+                      segment.EndPoint - ptDiff, segment.StartPoint - ptDiff], true);
         }
-        return result;
+        return path;
     }
 
     public override void Draw() // drawn by domain with offset

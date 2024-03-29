@@ -196,8 +196,8 @@ public class CoreRenderer
         var path = new SKPath();
         var (pt0, pt1) = segment.PerpendicularLine(0, radius);
         var ptDiff = pt1 - pt0;
-        path.AddPoly(new SKPoint[]
-                {segment.StartPoint + ptDiff, segment.EndPoint + ptDiff, segment.EndPoint - ptDiff, segment.StartPoint - ptDiff}, true);
+        path.AddPoly([segment.StartPoint + ptDiff, segment.EndPoint + ptDiff, 
+                      segment.EndPoint - ptDiff, segment.StartPoint - ptDiff], true);
         return path;
     }
     public void GeneratePens(ColorTheme colorTheme = ColorTheme.Normal)

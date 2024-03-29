@@ -110,21 +110,24 @@ public class CoreRenderer
     {
         DrawPolyline(paint, segIn.Points);
     }
-    public void DrawDirectedLine(SKSegment segIn, SKPaint paint, SKPaint invertPaint = null)
+    public void DrawDirectedLine(
+        SKSegment seg, SKPaint paint, SKPaint? invertPaint = null, bool drawStart = true, bool drawEnd = true)
     {
         invertPaint = invertPaint ?? paint;
-        var seg = segIn.Clone();
         DrawPolyline(paint, seg.Points);
-        Canvas.DrawCircle(seg.StartPoint, 3, paint);
-        Canvas.DrawCircle(seg.StartPoint, 1.8f, invertPaint);
-        var triPts = seg.EndArrow(8);
-        Canvas.DrawPoints(SKPointMode.Polygon, triPts, paint);
+        if (drawStart) { DrawStartCap(seg.StartPoint, paint, invertPaint); }
+        if (drawEnd) { DrawEndCap(seg, paint); }
     }
     public void DrawHalfLine(SKSegment segIn, SKPaint paint)
     {
         var seg = segIn.Clone();
         DrawPolyline(paint, seg.Points);
         Canvas.DrawCircle(segIn.StartPoint, 1.5f, paint);
+    }
+    public void DrawStartCap(SKPoint center, SKPaint paint, SKPaint invertPaint)
+    {
+        Canvas.DrawCircle(center, 3, paint);
+        Canvas.DrawCircle(center, 1.8f, invertPaint);
     }
     public void DrawStartCap(SKSegment segIn, SKPaint paint)
     {

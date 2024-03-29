@@ -12,7 +12,6 @@ using System.Runtime.InteropServices;
 public class SKNumberGroupMapper : SKNumberMapper
 {
     public NumberGroup NumberGroup => (NumberGroup)MathElement;
-    public SKDomainMapper DomainMapper => WorkspaceMapper.GetDomainMapper(NumberGroup.Domain);
     public List<SKNumberMapper> NumberMappers { get; } = new List<SKNumberMapper>();
 
     public SKNumberGroupMapper(MouseAgent agent, NumberGroup numberSet) : base(agent, numberSet)

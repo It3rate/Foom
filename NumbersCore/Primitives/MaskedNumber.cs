@@ -16,6 +16,21 @@ public class MaskedNumber : Number
         base(ValidatePositions(firstMaskIsTrue, maskPositions), polarity)
     {
     }
+    public IEnumerable<long> Positions()
+    {
+        foreach (var pos in MaskedFocal.Positions())
+        {
+            yield return pos;
+        }
+    }
+    public override long[] GetPositions()
+    {
+        return MaskedFocal.GetPositions();
+    }
+    public void Clear()
+    {
+        MaskedFocal.Clear();
+    }
 
     public BoolState GetMaskAt(float value)
     {

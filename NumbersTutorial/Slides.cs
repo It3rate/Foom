@@ -8,6 +8,7 @@ using Numbers.Mappers;
 using Numbers.Renderer;
 using NumbersCore.CoreConcepts.Temperature;
 using NumbersCore.Primitives;
+using NumbersSkia.Mappers;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ public class Slides : DemoBase
         Brain = brain;
         SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
         SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-        _testIndex = 24;
+        _testIndex = 1;// 24;
         Pages.AddRange(new PageCreator[]
         {
             AnimationTest,
@@ -71,12 +72,18 @@ public class Slides : DemoBase
         wm.DefaultShowNumbersOffset = true;
 
         var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Animation", 4, -10f, 20f, 0));
-        var left = hd.CreateNumberFromFloats(0, 2, true);
-        var right = hd.CreateNumberFromFloats(0, 3, true);
-        Transform transform = Brain.AddTransform(left.Number, right.Number, OperationKind.Multiply);
-        transform.Repeats = hd.CreateNumberFromFloats(0, 1.5f).Number;
-        var tm = wm.GetOrCreateTransformMapper(transform);
-        hd.Domain.AddNumber(transform.Result);
+
+        var maskedNum = new MaskedNumber(Polarity.Aligned, true, 4, 8, 12, 18);
+        hd.Domain.AddNumber(maskedNum, true);
+        var mnm = new SkMaskedNumberMapper(_currentMouseAgent, maskedNum);
+        hd.AddNumberMapper(mnm);
+
+        //var left = hd.CreateNumberFromFloats(0, 2, true);
+        //var right = hd.CreateNumberFromFloats(0, 3, true);
+        //Transform transform = Brain.AddTransform(left.Number, right.Number, OperationKind.Multiply);
+        //transform.Repeats = hd.CreateNumberFromFloats(0, 1.5f).Number;
+        //var tm = wm.GetOrCreateTransformMapper(transform);
+        //hd.Domain.AddNumber(transform.Result);
 
         return wm;
     }

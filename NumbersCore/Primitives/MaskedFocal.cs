@@ -1,9 +1,35 @@
-﻿namespace NumbersCore.Primitives;
+﻿using Microsoft.VisualBasic;
+
+namespace NumbersCore.Primitives;
 public class MaskedFocal : Focal
 {
     private long[] _positions;
     public bool IsEmpty => StartState == BoolState.False && _positions.Length == 0;
 
+    public virtual long StartPosition
+    {
+        get => _positions[0];
+        set
+        {
+            if (_positions[0] != value)
+            {
+                _positions[0] = value;
+                IsDirty = true;
+            }
+        }
+    }
+    public virtual long EndPosition
+    {
+        get => _positions[_positions.Length - 1];
+        set
+        {
+            if (_positions[_positions.Length - 1] != value)
+            {
+                _positions[_positions.Length - 1] = value;
+                IsDirty = true;
+            }
+        }
+    }
     /// <summary>
     /// A MaskedFocal is a single focal with multiple masks, can be used for the result of bool operations.
     /// The whole compared result is returned, and it can be 'empty' if it has two positions and starts 'false'.
@@ -13,8 +39,14 @@ public class MaskedFocal : Focal
     public MaskedFocal(bool firstMaskIsTrue, params long[] maskPositions) : base()
     {
         ValidatePositions(maskPositions);
-        _positions = maskPositions;
         StartState = firstMaskIsTrue ? BoolState.True : BoolState.False;
+        _positions = maskPositions;
+    }
+
+    public void Set(BoolState startState, params long[] positions)
+    {
+        StartState = startState;
+        _positions = (long[])positions.Clone();
     }
 
     public override IEnumerable<long> Positions()
@@ -54,6 +86,11 @@ public class MaskedFocal : Focal
             }
         }
         return result;
+    }
+    public void Clear()
+    {
+        _positions = new long[] { 0, 0 };
+        StartState = BoolState.False;
     }
 
 

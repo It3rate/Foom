@@ -80,6 +80,8 @@ public class SKNumberMapper : SKMapper
         }
         return result;
     }
+    protected bool _drawNumStartCap = true;
+    protected bool _drawNumEndCap = true;
     protected SKSegment DrawNumberStroke(Number num, float offset, SKPaint paint, SKPaint invertPaint = null)
     {
         SKSegment result;
@@ -95,8 +97,8 @@ public class SKNumberMapper : SKMapper
             var startSeg = UnitSegment.SegmentAlongLine(0, val.StartF).ShiftOffLine((offset + 6) * segStatDir);
             Renderer.DrawHalfLine(startSeg, pen2);
 
-            Renderer.DrawEndCap(endSeg, paint);
-            Renderer.DrawStartCap(startSeg, pen2);
+            if(_drawNumEndCap){ Renderer.DrawEndCap(endSeg, paint); }
+            if (_drawNumStartCap) { Renderer.DrawStartCap(startSeg, pen2); }
 
             result = new SKSegment(startSeg.EndPoint, endSeg.EndPoint);
         }
@@ -104,7 +106,7 @@ public class SKNumberMapper : SKMapper
         {
             var dir = UnitDirectionOnDomainLine;
             result = UnitSegment.SegmentAlongLine(val.StartF, val.EndF).ShiftOffLine(offset * dir);
-            Renderer.DrawDirectedLine(result, paint, pen2);
+            Renderer.DrawDirectedLine(result, paint, pen2, _drawNumStartCap, _drawNumEndCap);
         }
         return result;
     }

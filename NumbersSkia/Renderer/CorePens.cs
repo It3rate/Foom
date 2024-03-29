@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using SkiaSharp;
+﻿using SkiaSharp;
 
 namespace Numbers.Renderer;
 
-	public enum ColorTheme
+public enum ColorTheme
 {
     Normal,
     Dark
@@ -83,7 +81,7 @@ public class CorePens
 
     private void GenNormalTheme()
     {
-	        BkgColor = SKColor.Parse("#FFFFFF");
+        BkgColor = SKColor.Parse("#FFFFFF");
         UnitColor = SKColor.Parse("#00FAFF");
         UnitLineColor = SKColor.Parse("#AFDFF8");
         UnotColor = SKColor.Parse("#FF0098");
@@ -158,7 +156,7 @@ public class CorePens
     }
     private void GenDarkTheme()
     {
-	        BkgColor = SKColor.FromHsl(200f, 14f, 8f);
+        BkgColor = SKColor.FromHsl(200f, 14f, 8f);
         UnitColor = SKColor.Parse("#008A8F");
         UnitLineColor = SKColor.Parse("#203070");
         UnotColor = SKColor.Parse("#8F0058");
@@ -232,16 +230,16 @@ public class CorePens
     }
     public void GenTheme(ColorTheme theme)
     {
-	        switch (theme)
-	        {
-		        case ColorTheme.Dark:
-			        GenDarkTheme();
-			        break;
-		        case ColorTheme.Normal:
-            default: 
-			        GenNormalTheme();
-			        break;
-	        }
+        switch (theme)
+        {
+            case ColorTheme.Dark:
+                GenDarkTheme();
+                break;
+            case ColorTheme.Normal:
+            default:
+                GenNormalTheme();
+                break;
+        }
 
         Pens.Clear();
         Pens.Add(GetPen(SKColors.Black, DefaultWidth));
@@ -278,35 +276,35 @@ public class CorePens
     public SKPaint this[int i] => GetPenForIndex(i);
     private SKPaint GetPenForIndex(int index)
     {
-	        SKPaint result;
-	        index = index < 0 ? 0 : index;
-	        if (index < Pens.Count)
-	        {
-		        result = Pens[index];
-	        }
-	        else
-	        {
-		        throw new OverflowException("Pen not found with index:" + index);
-		        //result = GetPenByOrder(index - Pens.Count);
-	        }
+        SKPaint result;
+        index = index < 0 ? 0 : index;
+        if (index < Pens.Count)
+        {
+            result = Pens[index];
+        }
+        else
+        {
+            throw new OverflowException("Pen not found with index:" + index);
+            //result = GetPenByOrder(index - Pens.Count);
+        }
 
-	        return result;
+        return result;
     }
     public SKPaint GetPenByOrder(int index, float widthScale = 1)
     {
-	        //uint col = (uint)((index + 3) | 0xFF000000);
-	        uint col = (uint)((index + 3) * 0x110D05) | 0xFF000000;
-	        if (IndexOfColor.ContainsKey(col))
-	        {
-		        IndexOfColor[col] = index;
-	        }
-	        else
-	        {
-		        IndexOfColor.Add(col, index);
-	        }
+        //uint col = (uint)((index + 3) | 0xFF000000);
+        uint col = (uint)((index + 3) * 0x110D05) | 0xFF000000;
+        if (IndexOfColor.ContainsKey(col))
+        {
+            IndexOfColor[col] = index;
+        }
+        else
+        {
+            IndexOfColor.Add(col, index);
+        }
 
-	        var color = new SKColor(col);
-	        return GetPen(color, DefaultWidth * widthScale);
+        var color = new SKColor(col);
+        return GetPen(color, DefaultWidth * widthScale);
     }
     public int IndexOfPen(SKPaint pen) => Pens.IndexOf(pen);
 
@@ -314,95 +312,95 @@ public class CorePens
 
     public static SKPaint GetBrush(SKColor color)
     {
-	        SKPaint result = new SKPaint()
-	        {
-		        Style = SKPaintStyle.Fill,
-				IsAntialias = true,
-				Color = color
-	        };
-	        return result;
+        SKPaint result = new SKPaint()
+        {
+            Style = SKPaintStyle.Fill,
+            IsAntialias = true,
+            Color = color
+        };
+        return result;
     }
     public static SKPaint GetPen(SKColor color, float width, SKStrokeCap cap = SKStrokeCap.Round)
     {
-	        SKPaint pen = new SKPaint()
-	        {
-		        Style = SKPaintStyle.Stroke,
-		        Color = color,
-		        StrokeWidth = width,
-		        IsAntialias = true,
-		        StrokeCap = cap,
-	        };
-	        return pen;
+        SKPaint pen = new SKPaint()
+        {
+            Style = SKPaintStyle.Stroke,
+            Color = color,
+            StrokeWidth = width,
+            IsAntialias = true,
+            StrokeCap = cap,
+        };
+        return pen;
     }
 
     public static SKPaint GetGradientPen(SKPoint p0, SKPoint p1, SKColor color0, SKColor color1, float width)
     {
-	        var shader = SKShader.CreateLinearGradient(
-		        p0,
-		        p1,
-		        new SKColor[] { color0, color1 },
-		        new float[] { 0, 1 },
-		        SKShaderTileMode.Clamp);
+        var shader = SKShader.CreateLinearGradient(
+            p0,
+            p1,
+            new SKColor[] { color0, color1 },
+            new float[] { 0, 1 },
+            SKShaderTileMode.Clamp);
 
         SKPaint result = new SKPaint()
-	        {
-		        Style = SKPaintStyle.Stroke,
-		        Color = color0,
-		        StrokeWidth = width,
-		        IsAntialias = true,
-		        StrokeCap = SKStrokeCap.Butt,
+        {
+            Style = SKPaintStyle.Stroke,
+            Color = color0,
+            StrokeWidth = width,
+            IsAntialias = true,
+            StrokeCap = SKStrokeCap.Butt,
             Shader = shader
-	        };
-	        return result;
+        };
+        return result;
     }
     public static SKPaint GetGradientBrush(SKPoint p0, SKPoint p1, SKColor color0, SKColor color1)
     {
-	        var shader = SKShader.CreateLinearGradient(
-		        p0,
-		        p1,
-		        new SKColor[] { color0, color1 },
-		        new float[] { 0, 1 },
-		        SKShaderTileMode.Clamp);
+        var shader = SKShader.CreateLinearGradient(
+            p0,
+            p1,
+            new SKColor[] { color0, color1 },
+            new float[] { 0, 1 },
+            SKShaderTileMode.Clamp);
 
         SKPaint result = new SKPaint()
-	        {
-		        Style = SKPaintStyle.Fill,
-		        IsAntialias = true,
+        {
+            Style = SKPaintStyle.Fill,
+            IsAntialias = true,
             Shader = shader
-	        };
-	        return result;
+        };
+        return result;
     }
     public static SKPaint GetHatch(SKColor color, bool isForward = true)
     {
-	        var hatch = new SKPath();
-	        if (isForward)
-	        {
-		        hatch.AddPoly(new SKPoint[] { new SKPoint(-2, 2), new SKPoint(2, -2) }, false);
+        var hatch = new SKPath();
+        if (isForward)
+        {
+            hatch.AddPoly(new SKPoint[] { new SKPoint(-2, 2), new SKPoint(2, -2) }, false);
         }
-	        else
-	        {
-		        hatch.AddPoly(new SKPoint[] { new SKPoint(2, 2), new SKPoint(-2, -2) }, false);
+        else
+        {
+            hatch.AddPoly(new SKPoint[] { new SKPoint(2, 2), new SKPoint(-2, -2) }, false);
         }
 
-	        var result = new SKPaint
-	        {
-		        PathEffect = SKPathEffect.Create2DPath(SKMatrix.CreateScale(8, 8), hatch),
-		        Color = color,// SKColor.FromHsl(200f, 14f, 18f),
-		        Style = SKPaintStyle.Stroke,
-		        IsAntialias = true,
-		        StrokeWidth = 1f
-	        };
-	        return result;
+        var result = new SKPaint
+        {
+            PathEffect = SKPathEffect.Create2DPath(SKMatrix.CreateScale(8, 8), hatch),
+            Color = color,// SKColor.FromHsl(200f, 14f, 18f),
+            Style = SKPaintStyle.Stroke,
+            IsAntialias = true,
+            StrokeWidth = 1f
+        };
+        return result;
     }
 
     public static SKPaint GetText(SKColor color, int fontSize, string fontName = "Arial", bool isBold = false, bool isCentered = false)
     {
-	        var result = new SKPaint { TextSize = fontSize, Color = color };
-	        result.IsAntialias = true;
-	        result.TextAlign = isCentered ? SKTextAlign.Center : SKTextAlign.Left;
-	        result.Typeface = SKTypeface.FromFamilyName(
-		        fontName,
-		        isBold ? SKFontStyle.Bold : SKFontStyle.Normal);
-	        return result;
+        var result = new SKPaint { TextSize = fontSize, Color = color };
+        result.IsAntialias = true;
+        result.TextAlign = isCentered ? SKTextAlign.Center : SKTextAlign.Left;
+        result.Typeface = SKTypeface.FromFamilyName(
+            fontName,
+            isBold ? SKFontStyle.Bold : SKFontStyle.Normal);
+        return result;
     }
 }

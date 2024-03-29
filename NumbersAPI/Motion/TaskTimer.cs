@@ -1,6 +1,4 @@
-﻿using System;
-using NumbersCore.CoreConcepts.Time;
-using NumbersCore.Primitives;
+﻿using NumbersCore.CoreConcepts.Time;
 
 namespace NumbersAPI.Motion;
 
@@ -29,7 +27,7 @@ public class TaskTimer : ITimeable
 
     public TaskTimer(MillisecondNumber delayDuration)
     {
-	        DelayDuration = delayDuration;
+        DelayDuration = delayDuration;
         _pauseTime = DateTime.Now;
     }
 

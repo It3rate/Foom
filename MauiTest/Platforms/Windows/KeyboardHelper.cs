@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-namespace MauiTest.Platforms.Windows
+﻿namespace MauiTest.Platforms.Windows
 {
     using System.Runtime.InteropServices;
-    using System.Windows;
-    using global::Windows.UI.Core;
 
     namespace CustomLibraries.Maui
     {

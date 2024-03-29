@@ -1,17 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Numbers.Mappers;
-using Numbers.Renderer;
-using Numbers;
-using NumbersAPI.Motion;
-using SkiaSharp;
-using Numbers.Commands;
-
-namespace NumbersSkia.Agent;
+﻿namespace NumbersSkia.Agent;
 
 /*
  

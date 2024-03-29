@@ -253,7 +253,7 @@ public class Number : IMathElement
     {
         Value = PRange.Pow(Value, other.Value);
     }
-    public static Number Pow(Number left,Number right)
+    public static Number Pow(Number left, Number right)
     {
         var result = left.Clone(false);
         result.Pow(right);

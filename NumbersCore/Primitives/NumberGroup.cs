@@ -1,8 +1,8 @@
 ﻿namespace NumbersCore.Primitives;
 
+using NumbersCore.Utils;
 using System.Collections.Generic;
 using System.Linq;
-using NumbersCore.Utils;
 
 /// <summary>
 /// These are an ordered Group of numbers. They share a domain, but can have any polarity and direction. Can be empty.

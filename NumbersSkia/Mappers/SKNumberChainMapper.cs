@@ -1,13 +1,9 @@
 ﻿namespace Numbers.Mappers;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Numbers.Agent;
 using Numbers.Drawing;
 using NumbersCore.Primitives;
+using System.Collections.Generic;
 
 public class SKNumberChainMapper : SKNumberMapper
 {

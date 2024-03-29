@@ -4,18 +4,14 @@ using SkiaSharp;
 
 namespace Numbers.Mappers;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Numbers.Drawing;
+using System;
 
 public class SKTraitMapper : SKMapper
 {
-	    public SKTraitMapper(MouseAgent agent, IMathElement element, SKSegment guideline = default) : base(agent, element, guideline)
-	    {
-	    }
+    public SKTraitMapper(MouseAgent agent, IMathElement element, SKSegment guideline = default) : base(agent, element, guideline)
+    {
+    }
 
     public override SKPath GetHighlightAt(Highlight highlight)
     {

@@ -27,7 +27,7 @@ public class Domain : IMathElement
     private Focal _minMaxFocal;
     public Focal MinMaxFocal
     {
-        get => _minMaxFocal; 
+        get => _minMaxFocal;
         set
         {
             _minMaxFocal = value;
@@ -83,7 +83,7 @@ public class Domain : IMathElement
         domain.IsVisible = isVisible;
         return domain;
     }
-    
+
     public int[] NumberIds() => NumberStore.Values.Select(num => num.Id).ToArray();
     public Number GetNumber(int numberId)
     {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Numbers;
+﻿using Numbers;
 using Numbers.Agent;
 using Numbers.Commands;
 using Numbers.Drawing;
@@ -13,11 +10,11 @@ namespace MathDemo;
 
 public class Demos : DemoBase
 {
-	    private Brain Brain { get; }
+    private Brain Brain { get; }
 
     public Demos(Brain brain)
     {
-	        Brain = brain;
+        Brain = brain;
         Pages.AddRange(new PageCreator[]
         {
             test2DMult,
@@ -116,10 +113,10 @@ public class Demos : DemoBase
 
     private SKWorkspaceMapper test3()
     {
-	        Trait trait = Trait.CreateIn(Brain, "test3");
-	        long unitSize = 64;
+        Trait trait = Trait.CreateIn(Brain, "test3");
+        long unitSize = 64;
         var wm = new SKWorkspaceMapper(_currentMouseAgent, 20, 20, 1000, 400);
-        var guideline = new SKSegment(100,100,700,100);
+        var guideline = new SKSegment(100, 100, 700, 100);
         var unitSeg = guideline.SegmentAlongLine(0.4f, 0.6f);
         var dc = new AddSKDomainCommand(trait, 0, unitSize, -800, 800, guideline, unitSeg, "demoTest3_1");
         _currentMouseAgent.Stack.Do(dc);
@@ -146,7 +143,7 @@ public class Demos : DemoBase
 
     private SKWorkspaceMapper test2()
     {
-	        Trait trait = Trait.CreateIn(Brain, "test2");
+        Trait trait = Trait.CreateIn(Brain, "test2");
         var unitSize = 10;
         var unit = new Focal(0, unitSize);
         var wm = new SKWorkspaceMapper(_currentMouseAgent, 10, 50, 1200, 600);
@@ -154,13 +151,13 @@ public class Demos : DemoBase
         var d2 = domains[2];
         var d1 = domains[1];
         var d1n2 = d1.GetNumber(d1.NumberIds()[2]);
-        var nn =d2.CreateNumber(d1n2.Focal);
+        var nn = d2.CreateNumber(d1n2.Focal);
         _currentMouseAgent.Workspace.AddElements(nn);
         return wm;
     }
     private SKWorkspaceMapper testOneLine()
     {
-	        Trait trait = Trait.CreateIn(Brain, "testOneLine");
+        Trait trait = Trait.CreateIn(Brain, "testOneLine");
         var unitSize = 4;
         var basis = new Focal(3, 3 + unitSize);
         var range = new Focal(-40, 40);
@@ -223,43 +220,43 @@ public class Demos : DemoBase
     /// </summary>
     private List<Domain> CreateDomainLines(MouseAgent mouseAgent, Trait trait, Focal basisFocal, params long[] focalPositions)
     {
-	        var result = new List<Domain>();
-	        var wm = mouseAgent.WorkspaceMapper;
-	        var padding = 1.4;
-	        long maxPos = (long)Math.Max((focalPositions.Max() * padding), basisFocal.AbsLengthInTicks * padding);
-	        long minPos = (long)Math.Min((focalPositions.Min() * padding), -basisFocal.AbsLengthInTicks * padding);
-	        var range = new Focal(minPos, maxPos);
-	        var rangeLen = (double)range.LengthInTicks;
-	        var yt = 0.1f;
-	        var ytStep = (float)(0.8 / Math.Floor(focalPositions.Length / 2.0));
-		    //var domain = trait.AddDomain(basisFocal, range);
-		    ////domain.BasisIsReciprocal = true;
-		    //result.Add(domain);
-	        for (int i = 1; i < focalPositions.Length; i += 2)
-	        {
-		        var focal = new Focal(focalPositions[i - 1], focalPositions[i]);
+        var result = new List<Domain>();
+        var wm = mouseAgent.WorkspaceMapper;
+        var padding = 1.4;
+        long maxPos = (long)Math.Max((focalPositions.Max() * padding), basisFocal.AbsLengthInTicks * padding);
+        long minPos = (long)Math.Min((focalPositions.Min() * padding), -basisFocal.AbsLengthInTicks * padding);
+        var range = new Focal(minPos, maxPos);
+        var rangeLen = (double)range.LengthInTicks;
+        var yt = 0.1f;
+        var ytStep = (float)(0.8 / Math.Floor(focalPositions.Length / 2.0));
+        //var domain = trait.AddDomain(basisFocal, range);
+        ////domain.BasisIsReciprocal = true;
+        //result.Add(domain);
+        for (int i = 1; i < focalPositions.Length; i += 2)
+        {
+            var focal = new Focal(focalPositions[i - 1], focalPositions[i]);
 
-		        var domain = trait.AddDomain(basisFocal.Clone(), focal, "demoDomain"); // clone to avoid duplicate focals.
-		        //domain.BasisIsReciprocal = true;
-		        result.Add(domain);
+            var domain = trait.AddDomain(basisFocal.Clone(), focal, "demoDomain"); // clone to avoid duplicate focals.
+                                                                                   //domain.BasisIsReciprocal = true;
+            result.Add(domain);
 
-		        var num = domain.CreateNumber(focal);
-		        mouseAgent.Workspace.AddDomains(true, domain);
-		        var displaySeg = wm.GetHorizontalSegment(yt, 100);
-		        var y = displaySeg.StartPoint.Y;
+            var num = domain.CreateNumber(focal);
+            mouseAgent.Workspace.AddDomains(true, domain);
+            var displaySeg = wm.GetHorizontalSegment(yt, 100);
+            var y = displaySeg.StartPoint.Y;
 
-		        var sz = domain.BasisIsReciprocal ? 0.01f : 0.05f;
-		        var unitSeg = displaySeg.SegmentAlongLine(0.5f - sz, 0.5f + sz);
-		        //var unitSeg = new SKSegment((float)unitStart, y, (float)unitStart + 20f, y);
+            var sz = domain.BasisIsReciprocal ? 0.01f : 0.05f;
+            var unitSeg = displaySeg.SegmentAlongLine(0.5f - sz, 0.5f + sz);
+            //var unitSeg = new SKSegment((float)unitStart, y, (float)unitStart + 20f, y);
             var dm = wm.GetOrCreateDomainMapper(domain, displaySeg, unitSeg);
-		        dm.ShowGradientNumberLine = true;
-		        dm.ShowNumbersOffset = true;
-		        dm.ShowBasisMarkers = true;
-		        dm.ShowBasis = true;
-		        yt += ytStep;
-	        }
+            dm.ShowGradientNumberLine = true;
+            dm.ShowNumbersOffset = true;
+            dm.ShowBasisMarkers = true;
+            dm.ShowBasis = true;
+            yt += ytStep;
+        }
 
-	        return result;
+        return result;
     }
 
 }

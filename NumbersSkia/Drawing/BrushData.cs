@@ -1,11 +1,4 @@
 ﻿namespace Numbers.Utils;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 public class BrushData
 {
     public float BrushSize = 20f; // can't be property as used as ref parameter

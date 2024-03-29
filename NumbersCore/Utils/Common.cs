@@ -1,7 +1,4 @@
 ﻿namespace NumbersCore.Utils;
-
-using System;
-using System.Collections.Generic;
 using NumbersCore.Primitives;
 
 public class Common

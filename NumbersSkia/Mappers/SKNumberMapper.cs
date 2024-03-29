@@ -1,9 +1,5 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO.Ports;
-using Numbers.Agent;
+﻿using Numbers.Agent;
 using Numbers.Drawing;
-using Numbers.Renderer;
 using NumbersCore.Primitives;
 using SkiaSharp;
 
@@ -61,7 +57,7 @@ public class SKNumberMapper : SKMapper
     public override void Draw() { }
     public void DrawNumber(float offset, SKPaint paint, SKPaint invertPaint = null)
     {
-			EnsureSegment();
+        EnsureSegment();
         var pen2 = invertPaint ?? paint;
         if (DomainMapper.ShowSeparatedSegment)
         {
@@ -82,7 +78,7 @@ public class SKNumberMapper : SKMapper
         }
         else
         {
-			    var dir = UnitDirectionOnDomainLine;
+            var dir = UnitDirectionOnDomainLine;
             RenderSegment = Guideline.ShiftOffLine(offset * dir);
             Renderer.DrawDirectedLine(RenderSegment, paint, pen2);
         }
@@ -94,11 +90,11 @@ public class SKNumberMapper : SKMapper
         // So don't call EnsureSegment here.
         var dir = Number.Focal.Direction;
         var unitPen = Pens.UnitPenLight; // the basis defines the unit direction, so it is always unit color
-	        var offset = Guideline.OffsetAlongLine(0,  unitPen.StrokeWidth / 2f * dir) - Guideline.StartPoint;
-	        RenderSegment = aboveLine ? Guideline + offset : Guideline - offset;
-	        if (Pens.UnitStrokePen != null)
-	        {
-		        Renderer.DrawSegment(RenderSegment, Pens.UnitStrokePen);
+        var offset = Guideline.OffsetAlongLine(0, unitPen.StrokeWidth / 2f * dir) - Guideline.StartPoint;
+        RenderSegment = aboveLine ? Guideline + offset : Guideline - offset;
+        if (Pens.UnitStrokePen != null)
+        {
+            Renderer.DrawSegment(RenderSegment, Pens.UnitStrokePen);
         }
         Renderer.DrawSegment(RenderSegment, unitPen);
         if (showPolarity)
@@ -111,54 +107,54 @@ public class SKNumberMapper : SKMapper
 
     public float TFromPoint(SKPoint point)
     {
-	        var basisSeg = GetBasisSegment();
-	        var pt = basisSeg.ProjectPointOnto(point, false);
+        var basisSeg = GetBasisSegment();
+        var pt = basisSeg.ProjectPointOnto(point, false);
         var (t, _) = basisSeg.TFromPoint(pt, false);
-	        t = (float)(Math.Round(t * basisSeg.Length) / basisSeg.Length);
-	        return t;
+        t = (float)(Math.Round(t * basisSeg.Length) / basisSeg.Length);
+        return t;
     }
 
     public void AdjustBySegmentChange(HighlightSet beginState) => AdjustBySegmentChange(beginState.OriginalSegment, beginState.OriginalFocal);
     public void AdjustBySegmentChange(SKSegment originalSegment, Focal originalFocal)
     {
-	        var change = originalSegment.RatiosAsBasis(Guideline);
-	        var ofp = originalFocal;
-	        Number.Focal.Reset(
-		        (long)(ofp.StartPosition + change.Start * ofp.LengthInTicks),
-		        (long)(ofp.EndPosition + (change.End - 1.0) * ofp.LengthInTicks));
+        var change = originalSegment.RatiosAsBasis(Guideline);
+        var ofp = originalFocal;
+        Number.Focal.Reset(
+            (long)(ofp.StartPosition + change.Start * ofp.LengthInTicks),
+            (long)(ofp.EndPosition + (change.End - 1.0) * ofp.LengthInTicks));
     }
 
     public void SetValueByKind(SKPoint newPoint, UIKind kind)
     {
-	        if (kind.IsBasis())
-	        {
-		        SetValueOfBasis(newPoint, kind);
-	        }
-	        else if (kind.IsMajor())
+        if (kind.IsBasis())
         {
-	            SetEndValueByPoint(newPoint);
+            SetValueOfBasis(newPoint, kind);
         }
-	        else
+        else if (kind.IsMajor())
         {
-	            SetStartValueByPoint(newPoint);
+            SetEndValueByPoint(newPoint);
+        }
+        else
+        {
+            SetStartValueByPoint(newPoint);
         }
     }
 
     public void MoveSegmentByT(SKSegment orgSeg, float diffT)
     {
         var basisSeg = GetBasisSegment();
-	        var orgStartT = -basisSeg.TFromPoint(orgSeg.StartPoint, false).Item1;
-	        var orgEndT = basisSeg.TFromPoint(orgSeg.EndPoint, false).Item1;
-	        Number.StartValue = orgStartT - diffT;
-	        Number.EndValue = orgEndT + diffT;
+        var orgStartT = -basisSeg.TFromPoint(orgSeg.StartPoint, false).Item1;
+        var orgEndT = basisSeg.TFromPoint(orgSeg.EndPoint, false).Item1;
+        Number.StartValue = orgStartT - diffT;
+        Number.EndValue = orgEndT + diffT;
     }
     public void MoveBasisSegmentByT(SKSegment orgSeg, float diffT)
     {
-	        var dl = DomainMapper.Guideline;
-	        var orgStartT = dl.TFromPoint(orgSeg.StartPoint, false).Item1;
-	        var orgEndT = dl.TFromPoint(orgSeg.EndPoint, false).Item1;
-	        Guideline.StartPoint = dl.PointAlongLine(orgStartT + diffT);
-	        Guideline.EndPoint = dl.PointAlongLine(orgEndT + diffT);
+        var dl = DomainMapper.Guideline;
+        var orgStartT = dl.TFromPoint(orgSeg.StartPoint, false).Item1;
+        var orgEndT = dl.TFromPoint(orgSeg.EndPoint, false).Item1;
+        Guideline.StartPoint = dl.PointAlongLine(orgStartT + diffT);
+        Guideline.EndPoint = dl.PointAlongLine(orgEndT + diffT);
     }
 
     public void SetStartValueByPoint(SKPoint newPoint)
@@ -171,29 +167,29 @@ public class SKNumberMapper : SKMapper
     }
     public void SetValueOfBasis(SKPoint newPoint, UIKind kind)
     {
-	        var pt = DomainMapper.Guideline.ProjectPointOnto(newPoint);
-	        if (kind.IsMajor())
-	        {
-		        Guideline.EndPoint = pt;
-	        }
-	        else
-	        {
-		        Guideline.StartPoint = pt;
-	        }
+        var pt = DomainMapper.Guideline.ProjectPointOnto(newPoint);
+        if (kind.IsMajor())
+        {
+            Guideline.EndPoint = pt;
+        }
+        else
+        {
+            Guideline.StartPoint = pt;
+        }
     }
 
     public override SKPath GetHighlightAt(Highlight highlight)
     {
-	        SKPath result;
-	        if (highlight.Kind.IsLine())
-	        {
-		        result = Renderer.GetSegmentPath(RenderSegment, 0f);
-	        }
-	        else
-	        {
-		        result = Renderer.GetCirclePath(highlight.SnapPoint);
+        SKPath result;
+        if (highlight.Kind.IsLine())
+        {
+            result = Renderer.GetSegmentPath(RenderSegment, 0f);
         }
-	        return result;
+        else
+        {
+            result = Renderer.GetCirclePath(highlight.SnapPoint);
+        }
+        return result;
     }
     public override string ToString()
     {

@@ -1,12 +1,11 @@
-﻿using System;
-using NumbersCore.Primitives;
+﻿using NumbersCore.Primitives;
 
 namespace NumbersCore.Utils;
 
 /// <summary>
 /// A segment of two values, with the non aligned one using the inverted polarity.
 /// </summary>
-	public struct PRange
+public struct PRange
 {
     public static readonly PRange Empty = new PRange(0.0, 1.0, true);
     public static readonly PRange Zero = new PRange(0.0, 0.0);
@@ -23,8 +22,11 @@ namespace NumbersCore.Utils;
     public bool IsInverted => Polarity == Polarity.Inverted;
 
     public double Start { get; set; }
-    public double End { get;
-        set; }
+    public double End
+    {
+        get;
+        set;
+    }
     private readonly bool _hasValue;
     public double UnitValue
     {
@@ -151,8 +153,8 @@ namespace NumbersCore.Utils;
     }
     public static PRange operator -(PRange left, PRange right)
     {
-        var result = left.Clone(); 
-        result.UnitValue -= right.UnitValue; 
+        var result = left.Clone();
+        result.UnitValue -= right.UnitValue;
         result.UnotValue -= right.UnotValue;
         return result;
     }
@@ -211,21 +213,21 @@ namespace NumbersCore.Utils;
 
     public static double Abs(PRange a)
     {
-	        if (double.IsInfinity(a.End) || double.IsInfinity(a.Start))
-		        return double.PositiveInfinity;
-	        double num1 = Math.Abs(a.End);
-	        double num2 = Math.Abs(a.Start);
-	        if (num1 > num2)
-	        {
-		        double num3 = num2 / num1;
-		        return num1 * Math.Sqrt(1.0 + num3 * num3);
-	        }
-	        if (num2 == 0.0)
-		        return num1;
-	        double num4 = num1 / num2;
-	        return num2 * Math.Sqrt(1.0 + num4 * num4);
+        if (double.IsInfinity(a.End) || double.IsInfinity(a.Start))
+            return double.PositiveInfinity;
+        double num1 = Math.Abs(a.End);
+        double num2 = Math.Abs(a.Start);
+        if (num1 > num2)
+        {
+            double num3 = num2 / num1;
+            return num1 * Math.Sqrt(1.0 + num3 * num3);
+        }
+        if (num2 == 0.0)
+            return num1;
+        double num4 = num1 / num2;
+        return num2 * Math.Sqrt(1.0 + num4 * num4);
     }
-    
+
     public static PRange Pow(PRange value, PRange power)
     {
         if (power == PRange.Zero)
@@ -248,14 +250,14 @@ namespace NumbersCore.Utils;
     public bool IsSameDirection(PRange range) => Math.Abs(range.Direction + Direction) > Tolerance;
     public bool FullyContains(PRange toTest, bool includeEndpoints = true)
     {
-	        bool result = false;
-	        if (IsSameDirection(toTest))
-	        {
-		        var pd = PositiveDirection();
-		        var pdTest = toTest.PositiveDirection();
-		        result = includeEndpoints ? pdTest.IsWithin(pd) : pdTest.IsBetween(pd);
+        bool result = false;
+        if (IsSameDirection(toTest))
+        {
+            var pd = PositiveDirection();
+            var pdTest = toTest.PositiveDirection();
+            result = includeEndpoints ? pdTest.IsWithin(pd) : pdTest.IsBetween(pd);
         }
-	        return result;
+        return result;
     }
 
     public float Midpoint() => (EndF - StartF) / 2f + StartF;
@@ -291,7 +293,7 @@ namespace NumbersCore.Utils;
 
     public override string ToString()
     {
-        var prefix = Polarity==Polarity.Inverted ? "~" : "";
+        var prefix = Polarity == Polarity.Inverted ? "~" : "";
         return $"{prefix}[{Start:0.00}->{End:0.00}]";
     }
 

@@ -1,7 +1,5 @@
 ﻿namespace MathDemo.Controls;
 
-using System;
-using System.Collections.Generic;
 using Numbers.Agent;
 using Numbers.Controls;
 using Numbers.Mappers;
@@ -11,6 +9,7 @@ using NumbersCore.CoreConcepts.Spatial;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
 using SkiaSharp;
+using System.Collections.Generic;
 
 public class FruitControl : UIControlBase
 {
@@ -18,7 +17,7 @@ public class FruitControl : UIControlBase
     public Number Size { get; private set; }
     public Number AspectRatio { get; private set; }
     public HSLDomain Fill { get; private set; } = new HSLDomain();
-    public NumberGroup Convexity { get;private set; }
+    public NumberGroup Convexity { get; private set; }
     private SpatialDomain _convexityDomain = SpatialDomain.Get2DCenteredDomain(32, 1, "Convexity");
 
     private float[] _samplesX => _samples[0];
@@ -77,7 +76,7 @@ public class FruitControl : UIControlBase
     protected override void GeneratePath(long idx)
     {
         var aspect = _samplesAspectRatio[idx];
-        var rect = new SKRect(_samplesX[idx], _samplesY[idx], _samplesX[idx] + _samplesSize[idx], _samplesY[idx] + (_samplesSize[idx]  + _samplesSize[idx] * aspect));
+        var rect = new SKRect(_samplesX[idx], _samplesY[idx], _samplesX[idx] + _samplesSize[idx], _samplesY[idx] + (_samplesSize[idx] + _samplesSize[idx] * aspect));
         var path = SKPathMapper.GenerateArcOval(rect, _samplesConvexity[idx]);
         _paths[idx].Reset();
         _paths[idx].AddPath(path);

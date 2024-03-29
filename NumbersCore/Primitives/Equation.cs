@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using NumbersCore.Utils;
+﻿using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives;
 
@@ -20,7 +19,7 @@ public class Equation : IMathElement
     //   public Number Evaluator { get; } // evaluation range, needs eval op
     public Stack<Transform> TransformStack { get; } = new Stack<Transform>();
 
-    public bool CanRepeat() { return true;}
+    public bool CanRepeat() { return true; }
 
     public void ApplyStart() { }
     public void ApplyEnd() { }
@@ -28,7 +27,7 @@ public class Equation : IMathElement
 
     public Equation(Brain brain)
     {
-	        Brain = brain;
-	        Id = Brain.NextEquationId();
+        Brain = brain;
+        Id = Brain.NextEquationId();
     }
 }

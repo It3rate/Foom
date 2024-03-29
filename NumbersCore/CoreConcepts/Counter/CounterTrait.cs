@@ -1,17 +1,6 @@
-﻿using NumbersCore.CoreConcepts.Time;
-using NumbersCore.Primitives;
+﻿using NumbersCore.Primitives;
 
 namespace NumbersCore.CoreConcepts.Counter;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using NumbersCore.CoreConcepts.Optical;
-using NumbersCore.CoreConcepts.Temperature;
-
 public class CounterTrait : Trait
 {
     private static readonly CounterTrait _instance = new CounterTrait();

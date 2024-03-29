@@ -1,12 +1,4 @@
 ﻿namespace NumbersCore.CoreConcepts.Optical;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NumbersCore.CoreConcepts.Counter;
-using NumbersCore.CoreConcepts.Temperature;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
 
@@ -29,8 +21,8 @@ public class OpticalDomain : Domain
         domain.IsVisible = isVisible;
         return domain;
     }
-    
-        public static OpticalDomain CreateDomain(int unitSize, float minRange, float maxRange, int zeroPoint, string name, bool isVisible = true)
+
+    public static OpticalDomain CreateDomain(int unitSize, float minRange, float maxRange, int zeroPoint, string name, bool isVisible = true)
     {
         Trait trait = OpticalTrait.Instance;
         var basis = new Focal(zeroPoint, zeroPoint + unitSize);

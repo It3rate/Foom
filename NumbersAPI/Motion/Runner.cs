@@ -1,9 +1,7 @@
-﻿using System;
-using System.Timers;
-using Xamarin.Forms;
-using NumbersCore.CoreConcepts.Time;
+﻿using NumbersCore.CoreConcepts.Time;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
+using System.Timers;
 using Timer = System.Timers.Timer;
 
 namespace NumbersAPI.Motion;
@@ -47,7 +45,7 @@ public class Runner : IRunner
         CurrentRunner = this;
         Reset();
     }
-    public string EquationText{ get; private set; }
+    public string EquationText { get; private set; }
     public void SetEquationText(string txt)
     {
         EquationText = txt;

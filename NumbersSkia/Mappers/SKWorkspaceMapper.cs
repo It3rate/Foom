@@ -1,9 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using Numbers.Agent;
+﻿using Numbers.Agent;
 using Numbers.Drawing;
 using Numbers.Renderer;
 using Numbers.Utils;
@@ -78,7 +73,7 @@ public class SKWorkspaceMapper : SKMapper
             var uSeg = unitLine ?? line.SegmentAlongLine(zeroPt, zeroPt + (tickSize * domain.BasisFocal.LengthInTicks));
             result = new SKDomainMapper(Agent, domain, line, uSeg);
             SetDomainToDefaults(result);
-            if(label != "")
+            if (label != "")
             {
                 result.Label = label;
             }
@@ -213,7 +208,7 @@ public class SKWorkspaceMapper : SKMapper
     public void SetTransformKind(Number num, OperationKind kind)
     {
         var xforms = TransformMappersWithInput(num);
-        foreach(var xform in xforms)
+        foreach (var xform in xforms)
         {
             xform.Transform.OperationKind = kind;
         }
@@ -287,7 +282,7 @@ public class SKWorkspaceMapper : SKMapper
     public SKPathMapper CreatePathMapper(SKSegment line = null)
     {
         var pathMapper = new SKPathMapper(Agent, line);
-        if(DefaultDrawPen != null)
+        if (DefaultDrawPen != null)
         {
             pathMapper.Pen = DefaultDrawPen;
         }
@@ -369,9 +364,9 @@ public class SKWorkspaceMapper : SKMapper
     #endregion
 
     public override SKPath GetHighlightAt(Highlight highlight)
-	    {
-		    return Renderer.GetRectPath(TopLeft, BottomRight);
-	    }
+    {
+        return Renderer.GetRectPath(TopLeft, BottomRight);
+    }
     public Highlight GetSnapPoint(Highlight highlight, HighlightSet ignoreSet, SKPoint input, float maxDist = SnapDistance * 2f)
     {
         highlight.Reset();
@@ -409,23 +404,23 @@ public class SKWorkspaceMapper : SKMapper
                 {
                     continue; // help with selecting unit drag multiply when M pressed
                 }
-		            else if (!isSameMapper && Agent.CurrentKey != Keys.Space && input.DistanceTo(seg.EndPoint) < maxDist) // prefer endpoint if zero length
+                else if (!isSameMapper && Agent.CurrentKey != Keys.Space && input.DistanceTo(seg.EndPoint) < maxDist) // prefer endpoint if zero length
                 {
                     highlight.Set(input, seg.EndPoint, nm, 1, kind | UIKind.Point | UIKind.Major, nm.Number.Value);
-			            goto Found;
-		            }
-		            if (!isSameMapper && Agent.CurrentKey != Keys.Space && input.DistanceTo(seg.StartPoint) < maxDist) // space always drags line
-		            {
-			            highlight.Set(input, seg.StartPoint, nm, 0, kind | UIKind.Point, nm.Number.Value);
-			            goto Found;
-		            }
-		            else if (!isSameMapper && seg.DistanceTo(input, true) < maxDist && !Agent.IsDragMultiplyKey)
-		            {
-			            var t = nm.DomainMapper.BasisSegment.TFromPoint(input, false).Item1;
-			            highlight.Set(input, input, nm, t, kind | UIKind.Line, nm.Number.Value);
                     goto Found;
                 }
-	            }
+                if (!isSameMapper && Agent.CurrentKey != Keys.Space && input.DistanceTo(seg.StartPoint) < maxDist) // space always drags line
+                {
+                    highlight.Set(input, seg.StartPoint, nm, 0, kind | UIKind.Point, nm.Number.Value);
+                    goto Found;
+                }
+                else if (!isSameMapper && seg.DistanceTo(input, true) < maxDist && !Agent.IsDragMultiplyKey)
+                {
+                    var t = nm.DomainMapper.BasisSegment.TFromPoint(input, false).Item1;
+                    highlight.Set(input, input, nm, t, kind | UIKind.Line, nm.Number.Value);
+                    goto Found;
+                }
+            }
         }
 
         foreach (var dm in _domainMappers.Values)
@@ -472,7 +467,7 @@ public class SKWorkspaceMapper : SKMapper
             }
         }
 
-        Found:
+    Found:
         return highlight;
     }
     public SKSegment GetHorizontalSegment(float t, int margins)
@@ -488,9 +483,9 @@ public class SKWorkspaceMapper : SKMapper
     }
     public SKSegment GetVerticalSegment(float t, int margins)
     {
-	        var offset = Width * t;
-	        var result = LeftSegment + new SKPoint(offset, 0);
-	        return result.InsetSegment(margins);
+        var offset = Width * t;
+        var result = LeftSegment + new SKPoint(offset, 0);
+        return result.InsetSegment(margins);
     }
     public void OffsetNextLineBy(int offsetToAdd)
     {
@@ -501,7 +496,7 @@ public class SKWorkspaceMapper : SKMapper
     {
         var result = GetHorizontalSegment(_nextOffset);
         _nextOffset += LineOffsetSize;
-	        return result;
+        return result;
     }
     public void SyncMatchingBasis(SKDomainMapper domainMapper, Focal focal)
     {
@@ -573,7 +568,7 @@ public class SKWorkspaceMapper : SKMapper
     public bool DefaultShowNumbersOffset { get; set; } = false;
     public bool DefaultShowSeparatedSegment { get; set; } = false;
     public bool DefaultShowValueMarkers { get; set; } = true;
-    
+
     public void ShowAll()
     {
         DefaultShowGradientNumberLine = true;
@@ -613,8 +608,8 @@ public class SKWorkspaceMapper : SKMapper
     public bool Default { get; set; } = true;
     public override void Draw()
     {
-	        EnsureRenderers();
-	        if (Workspace.IsActive)
+        EnsureRenderers();
+        if (Workspace.IsActive)
         {
             foreach (var imageMapper in _imageMappers.Values)
             {
@@ -634,9 +629,9 @@ public class SKWorkspaceMapper : SKMapper
                 pathMapper.Draw();
             }
 
-	            foreach (var transformMapper in _transformMappers.Values)
-		        {
-			        transformMapper.Draw();
+            foreach (var transformMapper in _transformMappers.Values)
+            {
+                transformMapper.Draw();
             }
 
             foreach (var domainMapper in _domainMappers.Values)
@@ -657,7 +652,7 @@ public class SKWorkspaceMapper : SKMapper
                     var pen = Agent.IsCreatingInvertedNumber ? Renderer.Pens.UnotInlinePen : Renderer.Pens.UnitInlinePen;
                     Renderer.DrawDirectedLine(Agent.DragHighlight, pen);
                 }
-                else if(Agent.IsManualMultiply && Agent.ActiveDomainMapper != null)
+                else if (Agent.IsManualMultiply && Agent.ActiveDomainMapper != null)
                 {
                     Renderer.DrawSegment(Agent.DragHighlight, Pens.ThickHighlightPen);
                     var pt = Agent.DragHighlight.EndPoint + new SKPoint(0, -6);
@@ -679,30 +674,30 @@ public class SKWorkspaceMapper : SKMapper
     public void EnsureRenderers()
     {
         foreach (var trait in Brain.TraitStore.Values)
-	        {
-		        foreach (var domain in trait.DomainStore.Values)
-		        {
+        {
+            foreach (var domain in trait.DomainStore.Values)
+            {
                 if (domain.IsVisible)
                 {
-			            var dm = GetOrCreateDomainMapper(domain);
-			            foreach (var number in domain.Numbers())
-			            {
-				            var nm = dm.GetOrCreateNumberMapper(number);
-			            }
+                    var dm = GetOrCreateDomainMapper(domain);
+                    foreach (var number in domain.Numbers())
+                    {
+                        var nm = dm.GetOrCreateNumberMapper(number);
+                    }
                 }
-		        }
-		        foreach (var transform in Brain.TransformStore.Values)
-		        {
-			        GetOrCreateTransformMapper(transform);
-		        }
-	        }
+            }
+            foreach (var transform in Brain.TransformStore.Values)
+            {
+                GetOrCreateTransformMapper(transform);
+            }
+        }
     }
     #endregion
 
     public void ClearAll()
     {
-	        _domainMappers.Clear();
-	        _transformMappers.Clear();
+        _domainMappers.Clear();
+        _transformMappers.Clear();
         _nextOffset = 0;
     }
 }

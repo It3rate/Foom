@@ -1,14 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using NumbersCore.Utils;
+﻿using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives;
 
-	/// <summary>
+/// <summary>
 /// Traits are measurable properties on objects. They can be composed of multiple domains (like mph or dollars/day or lwh) but do not need to be.
 /// </summary>
 public class Trait : IMathElement
-	{
+{
     public Brain MyBrain { get; internal set; }
     public MathElementKind Kind => MathElementKind.Trait;
 
@@ -29,7 +27,7 @@ public class Trait : IMathElement
     protected Trait(string name) : this()
     {
         Id = _traitCounter++;
-	        Name = name;
+        Name = name;
     }
 
     public static Trait CreateIn(Brain brain, string name) => brain.AddTrait(new Trait(name));
@@ -39,12 +37,12 @@ public class Trait : IMathElement
     }
 
     public Domain AddDomain(Focal basis, Focal minMax, string name)
-	    {
-		    return new Domain(this, basis, minMax, name);
-	    }
-	    public Domain AddDomain(long basisTicks, string name)
-	    {
-		    return AddDomain(Focal.CreateZeroFocal(basisTicks), Focal.MinMaxFocal, name);
+    {
+        return new Domain(this, basis, minMax, name);
+    }
+    public Domain AddDomain(long basisTicks, string name)
+    {
+        return AddDomain(Focal.CreateZeroFocal(basisTicks), Focal.MinMaxFocal, name);
     }
     public void RemoveDomain(Domain domain)
     {
@@ -54,25 +52,25 @@ public class Trait : IMathElement
         }
     }
     public IEnumerable<Domain> Domains()
-	    {
-		    foreach (var domain in DomainStore.Values)
-		    {
-			    yield return domain;
-		    }
-	    }
+    {
+        foreach (var domain in DomainStore.Values)
+        {
+            yield return domain;
+        }
+    }
 
     public Domain DomainAt(int index)
-	    {
-		    var id = index + (int)MathElementKind.Domain;
-		    DomainStore.TryGetValue(id, out var result);
-		    return result;
-	    }
-	    public Focal FocalAt(int index)
-	    {
-		    var id = index + (int)MathElementKind.Focal;
-		    FocalStore.TryGetValue(id, out var result);
-		    return result;
-	    }
+    {
+        var id = index + (int)MathElementKind.Domain;
+        DomainStore.TryGetValue(id, out var result);
+        return result;
+    }
+    public Focal FocalAt(int index)
+    {
+        var id = index + (int)MathElementKind.Focal;
+        FocalStore.TryGetValue(id, out var result);
+        return result;
+    }
     protected Trait CopyPropertiesTo(Trait trait)
     {
         // don't clone the contents for now, need to work on multiple brains later.
@@ -82,4 +80,4 @@ public class Trait : IMathElement
         return trait;
     }
     public virtual Trait Clone() => CopyPropertiesTo(new Trait());
-	}
+}

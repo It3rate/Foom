@@ -1,18 +1,17 @@
 ﻿namespace MathDemo;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using MathDemo.Controls;
 using Numbers;
 using Numbers.Agent;
 using Numbers.Drawing;
 using Numbers.Mappers;
 using Numbers.Renderer;
-using NumbersCore.CoreConcepts.Counter;
 using NumbersCore.CoreConcepts.Temperature;
 using NumbersCore.Primitives;
 using SkiaSharp;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 public class Slides : DemoBase
 {
@@ -71,7 +70,7 @@ public class Slides : DemoBase
         wm.ShowAll();
         wm.DefaultShowNumbersOffset = true;
 
-        var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Animation", 4,-10f,20f,0));
+        var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Animation", 4, -10f, 20f, 0));
         var left = hd.CreateNumberFromFloats(0, 2, true);
         var right = hd.CreateNumberFromFloats(0, 3, true);
         Transform transform = Brain.AddTransform(left.Number, right.Number, OperationKind.Multiply);

@@ -1,9 +1,85 @@
-﻿using SkiaSharp.Views.Maui;
+﻿
+/* Unmerged change from project 'MauiTest (net8.0-ios)'
+Before:
+using SkiaSharp.Views.Maui;
 using SkiaSharp;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
-using System.Diagnostics;
+After:
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Layouts;
+*/
+
+/* Unmerged change from project 'MauiTest (net8.0-android)'
+Before:
+using SkiaSharp.Views.Maui;
+using SkiaSharp;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Graphics;
+After:
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Graphics;
+using Microsoft.Maui.Layouts;
+*/
+
+/* Unmerged change from project 'MauiTest (net8.0-maccatalyst)'
+Before:
+using SkiaSharp.Views.Maui;
+using SkiaSharp;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Graphics;
+After:
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Graphics;
+using Microsoft.Maui.Layouts;
+*/
+using SkiaSharp;
+
+/* Unmerged change from project 'MauiTest (net8.0-ios)'
+Before:
+using SkiaSharp;
+After:
+using SkiaSharp.Views.Maui;
+*/
+
+/* Unmerged change from project 'MauiTest (net8.0-android)'
+Before:
+using SkiaSharp;
+After:
+using SkiaSharp.Views.Maui;
+*/
+
+/* Unmerged change from project 'MauiTest (net8.0-maccatalyst)'
+Before:
+using SkiaSharp;
+After:
+using SkiaSharp.Views.Maui;
+*/
+/* Unmerged change from project 'MauiTest (net8.0-ios)'
+Before:
+using Microsoft.Maui.Layouts;
+After:
+using SkiaSharp.Views.Maui;
+using System.Diagnostics;
+*/
+
+/* Unmerged change from project 'MauiTest (net8.0-android)'
+Before:
+using Microsoft.Maui.Layouts;
+After:
+using SkiaSharp.Views.Maui;
+using System.Diagnostics;
+*/
+
+/* Unmerged change from project 'MauiTest (net8.0-maccatalyst)'
+Before:
+using Microsoft.Maui.Layouts;
+After:
+using SkiaSharp.Views.Maui;
+using System.Diagnostics;
+*/
+
 
 namespace MauiTest;
 
@@ -24,7 +100,7 @@ public partial class MainPage : ContentPage
     //ContractMinMax
     public MainPage()
     {
-        InitializeComponent(); 
+        InitializeComponent();
     }
 
     protected override void OnNavigatedTo(NavigatedToEventArgs args)

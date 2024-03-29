@@ -5,7 +5,7 @@ using NumbersSkia.Agent;
 
 namespace Numbers.Agent;
 
-	public interface IMouseAgent : IAgent
+public interface IMouseAgent : IAgent
 {
     CommandStack Stack { get; }
 
@@ -17,10 +17,10 @@ namespace Numbers.Agent;
     HighlightSet SelSelection { get; }
 
     bool MouseDown(MouseArgs e);
-	    bool MouseMove(MouseArgs e);
-	    bool MouseUp(MouseArgs e);
-	    bool KeyDown(KeyArgs e);
-	    bool KeyUp(KeyArgs e);
-	    bool MouseDoubleClick(MouseArgs e);
-	    bool MouseWheel(MouseArgs e);
+    bool MouseMove(MouseArgs e);
+    bool MouseUp(MouseArgs e);
+    bool KeyDown(KeyArgs e);
+    bool KeyUp(KeyArgs e);
+    bool MouseDoubleClick(MouseArgs e);
+    bool MouseWheel(MouseArgs e);
 }

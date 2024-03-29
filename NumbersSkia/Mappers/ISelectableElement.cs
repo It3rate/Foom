@@ -1,13 +1,5 @@
 ﻿namespace Numbers.Mappers;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Numbers.Utils;
-using SkiaSharp;
-
 //public interface ISelectableElement : IBrushState
 //{
 //    static int EntityCounter = 1;

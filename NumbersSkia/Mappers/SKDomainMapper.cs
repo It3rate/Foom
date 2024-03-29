@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
-using Numbers.Agent;
+﻿using Numbers.Agent;
 using Numbers.Drawing;
-using Numbers.Renderer;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
 using SkiaSharp;
@@ -104,7 +98,7 @@ public class SKDomainMapper : SKMapper
     public SKNumberMapper NumberMapperFor(Number number) => GetOrCreateNumberMapper(number);
     public SKNumberMapper NumberMapperFor(int numId) => GetOrCreateNumberMapper(Domain.GetNumber(numId));
 
-    protected Dictionary<int, SKNumberSetMapper> NumberSetMappers = new Dictionary<int, SKNumberSetMapper>();
+    protected Dictionary<int, SKNumberGroupMapper> NumberSetMappers = new Dictionary<int, SKNumberGroupMapper>();
 
     public SKNumberMapper AddNumberMapper(SKNumberMapper numberMapper)
     {
@@ -117,10 +111,10 @@ public class SKDomainMapper : SKMapper
         return numberMapper;
     }
     public bool RemoveNumberMapper(SKNumberMapper numberMapper) => _numberMappers.Remove(numberMapper.Number.Id);
-    public bool RemoveNumberMapperByIndex(int index) 
+    public bool RemoveNumberMapperByIndex(int index)
     {
         var result = false;
-        if (index >= 0 && index < _numberMappers.Count) 
+        if (index >= 0 && index < _numberMappers.Count)
         {
             var nmId = _numberMappers.Keys.ElementAt(index);
             var nm = _numberMappers[nmId];
@@ -131,38 +125,38 @@ public class SKDomainMapper : SKMapper
     }
     public IEnumerable<SKNumberMapper> GetNumberMappers(bool reverse = false)
     {
-	        var mappers = reverse ? _numberMappers.Values.Reverse() : _numberMappers.Values;
-	        foreach (var dm in mappers)
-	        {
-		        yield return dm;
-	        }
+        var mappers = reverse ? _numberMappers.Values.Reverse() : _numberMappers.Values;
+        foreach (var dm in mappers)
+        {
+            yield return dm;
+        }
     }
     public SKNumberMapper GetNumberMapper(int id)
     {
-	        _numberMappers.TryGetValue(id, out var result);
-	        return result;
+        _numberMappers.TryGetValue(id, out var result);
+        return result;
     }
     public SKNumberMapper GetOrCreateNumberMapper(int id)
     {
-	        return GetOrCreateNumberMapper(Domain.NumberStore[id]);
+        return GetOrCreateNumberMapper(Domain.NumberStore[id]);
     }
     public SKNumberMapper GetOrCreateNumberMapper(Number number)
     {
-	        if (!_numberMappers.TryGetValue(number.Id, out var result))
-	        {
-		        result = new SKNumberMapper(Agent, number);
+        if (!_numberMappers.TryGetValue(number.Id, out var result))
+        {
+            result = new SKNumberMapper(Agent, number);
             AddNumberMapper(result);
-	        }
-	        return (SKNumberMapper)result;
+        }
+        return (SKNumberMapper)result;
     }
-    public SKNumberSetMapper GetOrCreateNumberSetMapper(NumberGroup numberSet)
+    public SKNumberGroupMapper GetOrCreateNumberSetMapper(NumberGroup numberSet)
     {
-	        if (!NumberSetMappers.TryGetValue(numberSet.Id, out SKNumberSetMapper result))
-	        {
-		        result = new SKNumberSetMapper(Agent, numberSet);
+        if (!NumberSetMappers.TryGetValue(numberSet.Id, out SKNumberGroupMapper result))
+        {
+            result = new SKNumberGroupMapper(Agent, numberSet);
             NumberSetMappers[numberSet.Id] = result;
-	        }
-	        return result;
+        }
+        return result;
     }
     public SKNumberMapper LinkNumber(Number sourceNumber, bool addToStore = true)
     {
@@ -233,30 +227,30 @@ public class SKDomainMapper : SKMapper
     }
 
     protected void AddValidNumbers()
-	    {
-		    ValidNumberIds.Clear();
-		    foreach (var num in Domain.Numbers())
-		    {
-			    if (num.Id != Domain.BasisNumber.Id && num.Id != Domain.MinMaxNumber.Id)
-			    {
-				    ValidNumberIds.Add(num.Id);
-			    }
-		    }
-	    }
+    {
+        ValidNumberIds.Clear();
+        foreach (var num in Domain.Numbers())
+        {
+            if (num.Id != Domain.BasisNumber.Id && num.Id != Domain.MinMaxNumber.Id)
+            {
+                ValidNumberIds.Add(num.Id);
+            }
+        }
+    }
     public void SetValueByKind(SKPoint newPoint, UIKind kind)
     {
-	        var unitRatio = UnitRangeOnDomainLine;
+        var unitRatio = UnitRangeOnDomainLine;
         if (kind.IsMajor())
-		    {
-			    EndPoint = newPoint;
-		    }
-		    else
-		    {
-			    StartPoint = newPoint;
-		    }
+        {
+            EndPoint = newPoint;
+        }
+        else
+        {
+            StartPoint = newPoint;
+        }
         BasisNumberMapper.Reset(SegmentAlongGuideline(unitRatio));
     }
-    public void RotateGuidelineByPoint(SKPoint newPoint,  UIKind kind)
+    public void RotateGuidelineByPoint(SKPoint newPoint, UIKind kind)
     {
         var unitRatio = UnitRangeOnDomainLine;
         var center = Guideline.Midpoint;
@@ -276,18 +270,18 @@ public class SKDomainMapper : SKMapper
 
 
     public override void Draw()
-	    {
+    {
         if (Domain != null && Domain.IsVisible)
         {
-	            AddValidNumbers();
+            AddValidNumbers();
 
             DrawNumberLine();
             DrawLabel();
-			    DrawUnit();
-			    DrawMarkers();
-			    DrawTicks();
-			    DrawNumbers();
-			    DrawNumberSets();
+            DrawUnit();
+            DrawMarkers();
+            DrawTicks();
+            DrawNumbers();
+            DrawNumberSets();
         }
     }
     protected virtual void DrawNumberLine()
@@ -308,16 +302,16 @@ public class SKDomainMapper : SKMapper
     }
     protected virtual void DrawLabel()
     {
-        if(Label != null && Label != "")
+        if (Label != null && Label != "")
         {
-            Renderer.DrawText(Guideline.EndPoint + new SKPoint(10,3), Label, Renderer.Pens.LabelBrush);
+            Renderer.DrawText(Guideline.EndPoint + new SKPoint(10, 3), Label, Renderer.Pens.LabelBrush);
         }
     }
     protected virtual void DrawUnit()
-	    {
-		    if (ShowBasis)
-		    {
-			    NumberMapperFor(Domain.BasisNumber).DrawUnit(!ShowInfoOnTop, ShowPolarity);
+    {
+        if (ShowBasis)
+        {
+            NumberMapperFor(Domain.BasisNumber).DrawUnit(!ShowInfoOnTop, ShowPolarity);
         }
     }
     protected virtual void DrawMarkers()
@@ -329,22 +323,22 @@ public class SKDomainMapper : SKMapper
             DrawMarker(num, false);
         }
 
-	        if (ShowValueMarkers)
-	        {
+        if (ShowValueMarkers)
+        {
             var selId = -1;
-            if(Agent.SelSelection.ActiveHighlight?.Mapper is SKNumberMapper snm)
+            if (Agent.SelSelection.ActiveHighlight?.Mapper is SKNumberMapper snm)
             {
                 selId = snm.Number.Id;
             }
-		        foreach (var id in ValidNumberIds)
-		        {
-			        var nm = Domain.GetNumber(id);
-                if(ValidNumberIds.Count < ShowNumberValuesMax || selId == nm.Id)
+            foreach (var id in ValidNumberIds)
+            {
+                var nm = Domain.GetNumber(id);
+                if (ValidNumberIds.Count < ShowNumberValuesMax || selId == nm.Id)
                 {
-			            DrawMarker(nm, true);
-			            DrawMarker(nm, false);
+                    DrawMarker(nm, true);
+                    DrawMarker(nm, false);
                 }
-		        }
+            }
         }
     }
     public float startOffset = 6;
@@ -353,33 +347,33 @@ public class SKDomainMapper : SKMapper
         var showOffset = ShowNumbersOffset || ShowSeparatedSegment;
 
         var topDir = ShowInfoOnTop ? 1f : -1f;
-	        var offset = showOffset ? startOffset : 0f;
-			offset *= topDir;
-			var step = showOffset ? 12f : 0f;
-			step *= topDir;
-        foreach(var nm in OrderedValidNumbers())
+        var offset = showOffset ? startOffset : 0f;
+        offset *= topDir;
+        var step = showOffset ? 12f : 0f;
+        step *= topDir;
+        foreach (var nm in OrderedValidNumbers())
         {
             var isSelected = Agent.SelSelection.ActiveHighlight?.Mapper == nm;
             // todo: give numberChains their own number mappers.
             if (nm.Number is NumberGroup numberSet)
             {
-               var pts = new SKPoint[2];
+                var pts = new SKPoint[2];
                 int index = 0;
-                foreach(var num in numberSet.InternalNumbers())
+                foreach (var num in numberSet.InternalNumbers())
                 {
                     //if (num.IsAligned)// || num.IsPositivePointing) // don't draw default false numbers (they point unit right, so negative).
                     //{
-                        var numMap = new SKNumberMapper(Agent, num);
-                        DrawNumber(numMap, offset + topDir * 2, isSelected);
-                        if (index == 0)
-                        {
-                            pts[0] = numMap.RenderSegment.StartPoint;
-                            index++;
-                        }
-                        pts[1] = numMap.RenderSegment.EndPoint;
+                    var numMap = new SKNumberMapper(Agent, num);
+                    DrawNumber(numMap, offset + topDir * 2, isSelected);
+                    if (index == 0)
+                    {
+                        pts[0] = numMap.RenderSegment.StartPoint;
+                        index++;
+                    }
+                    pts[1] = numMap.RenderSegment.EndPoint;
                     //}
                 }
-                if(index > 0 && pts.Length > 1)
+                if (index > 0 && pts.Length > 1)
                 {
                     nm.RenderSegment = new SKSegment(pts[0], pts[1]);
                 }
@@ -393,32 +387,32 @@ public class SKDomainMapper : SKMapper
     }
     protected virtual void DrawNumberSets()
     {
-	        foreach (var numSet in Domain.NumberSetStore.Values)
-	        {
-		        var nsm = GetOrCreateNumberSetMapper(numSet);
+        foreach (var numSet in Domain.NumberSetStore.Values)
+        {
+            var nsm = GetOrCreateNumberSetMapper(numSet);
             nsm.DrawNumberSet();
-	        }
+        }
     }
 
     public virtual void DrawNumber(SKNumberMapper nm, float offset, bool isSelected = false)
-		{
-			if (nm != null)
-	        {
+    {
+        if (nm != null)
+        {
             var pen = isSelected ? Pens.SegPenHighlight : Pens.SegPens[nm.Number.StoreIndex % Pens.SegPens.Count];
             //nm.DrawNumber(offset - (pen.StrokeWidth / 3f * Math.Sign(offset)), pen); // background
             nm.DrawNumber(offset, pen); // background
 
             if (nm.Number.IsAligned)
-		        {
+            {
                 var invPen = ShowPolarity ? Pens.UnotInlinePen : Pens.UnitInlinePen;
-			        nm.DrawNumber(offset, Pens.UnitInlinePen, invPen);
-		        }
-		        else
+                nm.DrawNumber(offset, Pens.UnitInlinePen, invPen);
+            }
+            else
             {
                 var invPen = ShowPolarity ? Pens.UnitInlinePen : Pens.UnotInlinePen;
-			        nm.DrawNumber(offset, Pens.UnotInlinePen, invPen);
-		        }
-	        }
+                nm.DrawNumber(offset, Pens.UnotInlinePen, invPen);
+            }
+        }
     }
 
     protected virtual void DrawMarker(Number num, bool isStart)
@@ -429,8 +423,8 @@ public class SKDomainMapper : SKMapper
         var txBaseline = DrawMarkerAndGetTextBaseline(num, t);
 
         var numPaint = isStart ? Pens.UnotMarkerText : Pens.UnitMarkerText; // i value should always be unot color, so use isStart vs useStart
-		    if (num.IsBasis)
-		    {
+        if (num.IsBasis)
+        {
             if (!ShowTickMarkerValues)
             {
                 var txt = useStart ? "0" : num.Domain.BasisIsReciprocal ? "" : "1"; // don't show 1 when ticks are larger than unit
@@ -442,8 +436,8 @@ public class SKDomainMapper : SKMapper
                 }
             }
         }
-        else 
-		    {
+        else
+        {
             if (!(num.Focal.LengthInTicks == 0 && isStart) && !ShowTickMarkerValues) // don't draw twice for points
             {
                 var (whole, frac) = GetFractionText(num, useStart);
@@ -473,28 +467,28 @@ public class SKDomainMapper : SKMapper
         return txBaseline;
     }
     protected virtual SKSegment DrawMarkerPointer(float t, bool isBasis)
-	    {
-			var wPos = 5f;
-		    var sign = UnitDirectionOnDomainLine;
+    {
+        var wPos = 5f;
+        var sign = UnitDirectionOnDomainLine;
         var wDir = wPos * sign;
-			var isTop = ShowInfoOnTop ? -1f : 1f;
-			var w = wDir * isTop;
-		    var unitSeg = BasisSegment;
-		    var markerHW = (float) (1.0 / BasisSegment.Length) * wPos;
-		    var pt = unitSeg.PointAlongLine(t);
-		    var ptMinus = unitSeg.PointAlongLine(t - markerHW);
-		    var ptPlus = unitSeg.PointAlongLine(t + markerHW);
-			var p0 = unitSeg.OrthogonalPoint(pt, w * .8f);
+        var isTop = ShowInfoOnTop ? -1f : 1f;
+        var w = wDir * isTop;
+        var unitSeg = BasisSegment;
+        var markerHW = (float)(1.0 / BasisSegment.Length) * wPos;
+        var pt = unitSeg.PointAlongLine(t);
+        var ptMinus = unitSeg.PointAlongLine(t - markerHW);
+        var ptPlus = unitSeg.PointAlongLine(t + markerHW);
+        var p0 = unitSeg.OrthogonalPoint(pt, w * .8f);
         SKPoint textPoint0;
         SKPoint textPoint1;
         if (!isBasis)
         {
-		        var p1 = unitSeg.OrthogonalPoint(ptMinus, w * 3);
-		        var p2 = unitSeg.OrthogonalPoint(ptPlus, w * 3);
+            var p1 = unitSeg.OrthogonalPoint(ptMinus, w * 3);
+            var p2 = unitSeg.OrthogonalPoint(ptPlus, w * 3);
             Renderer.FillPolyline(Pens.MarkerBrush, p0, p1, p2, p0);
-			    //Renderer.DrawLine(p1, p2, Pens.Seg1TextBrush);
-			    textPoint0 = unitSeg.OrthogonalPoint(p1, isTop * 3f); // large pixel offset for text above marker
-			    textPoint1 = unitSeg.OrthogonalPoint(p2, isTop * 3f);
+            //Renderer.DrawLine(p1, p2, Pens.Seg1TextBrush);
+            textPoint0 = unitSeg.OrthogonalPoint(p1, isTop * 3f); // large pixel offset for text above marker
+            textPoint1 = unitSeg.OrthogonalPoint(p2, isTop * 3f);
         }
         else
         {
@@ -504,27 +498,27 @@ public class SKDomainMapper : SKMapper
 
         }
 
-			return ShowInfoOnTop ? new SKSegment(textPoint0, textPoint1) : new SKSegment(textPoint1, textPoint0);
-	    }
+        return ShowInfoOnTop ? new SKSegment(textPoint0, textPoint1) : new SKSegment(textPoint1, textPoint0);
+    }
     protected virtual void DrawTicks()
-	    {
-		    if (!ShowTicks || BasisSegment.AbsLength < 4)
-		    {
-			    return;
-		    }
-			var topDir = ShowInfoOnTop ? 1f : -1f;
-			var offsetRange = -8f;
+    {
+        if (!ShowTicks || BasisSegment.AbsLength < 4)
+        {
+            return;
+        }
+        var topDir = ShowInfoOnTop ? 1f : -1f;
+        var offsetRange = -8f;
         var tickCount = Domain.BasisNumber.AbsBasisTicks;
         var tickToBasisRatio = Domain.TickToBasisRatio;
         var upDir = UnitDirectionOnDomainLine;
         // basis ticks
-        var rangeInBasis = DisplayLineRange.ClampInner(); 
+        var rangeInBasis = DisplayLineRange.ClampInner();
         TickPoints.Clear();
         for (long i = (long)rangeInBasis.Min; i <= (long)rangeInBasis.Max; i++)
         {
-	            var isOnTick = Math.Abs(tickToBasisRatio) <= 1.0 ? true : (long)(i / tickToBasisRatio) * (long)tickToBasisRatio == i;
-	            var offset = isOnTick ? offsetRange : offsetRange / 8f;
-				offset *= topDir;
+            var isOnTick = Math.Abs(tickToBasisRatio) <= 1.0 ? true : (long)(i / tickToBasisRatio) * (long)tickToBasisRatio == i;
+            var offset = isOnTick ? offsetRange : offsetRange / 8f;
+            offset *= topDir;
             var tickPen = ShowMinorTicks ? Renderer.Pens.TickBoldPen : Renderer.Pens.TickPen;
             var startPt = DrawTick((float)i, offset * upDir, tickPen);
             TickPoints.Add(startPt);
@@ -541,22 +535,22 @@ public class SKDomainMapper : SKMapper
         {
             var tickStep = BasisSegment.Length * 20 < totalTicks ? 0.1f : Math.Abs(tickToBasisRatio);
             var rangeInTicks = Domain.ClampToInnerTick(DisplayLineRange);
-			    var offset = Domain.BasisIsReciprocal ? offsetRange * 1.5f : offsetRange;
-				offset *= topDir;
-				for (var i = rangeInTicks.Min; i <= rangeInTicks.Max; i += tickStep)
-	            {
-		            if (i != 0) // don't draw tick on origin
-		            {
-			            DrawTick((float)i, offset * upDir, Renderer.Pens.TickPen);
+            var offset = Domain.BasisIsReciprocal ? offsetRange * 1.5f : offsetRange;
+            offset *= topDir;
+            for (var i = rangeInTicks.Min; i <= rangeInTicks.Max; i += tickStep)
+            {
+                if (i != 0) // don't draw tick on origin
+                {
+                    DrawTick((float)i, offset * upDir, Renderer.Pens.TickPen);
                 }
-	            }
+            }
         }
     }
     protected virtual SKPoint DrawTick(float t, float offset, SKPaint paint)
     {
-	        var pts = BasisSegment.PerpendicularLine(t, offset);
-	        Renderer.DrawLine(pts.Item1, pts.Item2, paint);
-	        return pts.Item1;
+        var pts = BasisSegment.PerpendicularLine(t, offset);
+        Renderer.DrawLine(pts.Item1, pts.Item2, paint);
+        return pts.Item1;
     }
 
     protected (string, string) GetFractionText(Number num, bool isStart)
@@ -566,7 +560,7 @@ public class SKDomainMapper : SKMapper
         var fraction = "";
         var val = isStart ? num.StartValue : num.EndValue;
         var whole = "0";
-        if(val != 0)
+        if (val != 0)
         {
             var wholeNum = isStart ? (ShowPolarity ? num.WholeStartValue : -num.WholeStartValue) : num.WholeEndValue;
             //wholeNum = domainIsUnitPersp ? wholeNum : -wholeNum;
@@ -593,9 +587,9 @@ public class SKDomainMapper : SKMapper
     }
 
     public override SKPath GetHighlightAt(Highlight highlight)
-	    {
-		    return Renderer.GetCirclePath(highlight.SnapPoint);
-	    }
+    {
+        return Renderer.GetCirclePath(highlight.SnapPoint);
+    }
 
     public override string ToString()
     {

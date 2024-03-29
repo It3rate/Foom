@@ -1,11 +1,4 @@
 ﻿namespace NumbersCore.CoreConcepts.Spatial;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using NumbersCore.Primitives;
 
 public class ExtentDomain : PolyDomain
@@ -50,9 +43,9 @@ public class ExtentDomain : PolyDomain
     {
         AddIncrementalPosition(horz, vert);
     }
-    public (Number,Number) ExtentAt(int index)
+    public (Number, Number) ExtentAt(int index)
     {
-        var result =  NumbersAt(index);
+        var result = NumbersAt(index);
         return (result[0], result[1]);
     }
     public (Focal, Focal) ExtentFocalsAt(int index)

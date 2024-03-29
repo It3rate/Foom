@@ -2,13 +2,9 @@
 
 namespace NumbersCore.CoreConcepts.Counter;
 
-using System;
+using NumbersCore.Utils;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NumbersCore.CoreConcepts.Spatial;
-using NumbersCore.Utils;
 
 /// <summary>
 /// This domain can characterize all counters (start, end?, step, events, increment/decrement methods, completion Tests).
@@ -65,7 +61,7 @@ public class CounterDomain : Domain
             SetAndClamp(num, start, end);
         }
     }
-     public void SetAndClamp(Number num, long start, long end)
+    public void SetAndClamp(Number num, long start, long end)
     {
         start = (start > End) ? End : (start < Start) ? Start : start;
         end = (end > End) ? End : (end < Start) ? Start : end;

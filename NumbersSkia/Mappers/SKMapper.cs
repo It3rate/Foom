@@ -9,14 +9,14 @@ using SkiaSharp;
 namespace Numbers.Mappers;
 
 public abstract class SKMapper : IDrawableElement
-	{
-		public int Id { get; set; }
+{
+    public int Id { get; set; }
     protected static int idCounter = 0;
 
-		public MouseAgent Agent { get; }
-		public Brain Brain => Agent.Brain;
-		public Workspace Workspace => Agent.Workspace;
-		public SKWorkspaceMapper WorkspaceMapper => Agent.WorkspaceMapper;
+    public MouseAgent Agent { get; }
+    public Brain Brain => Agent.Brain;
+    public Workspace Workspace => Agent.Workspace;
+    public SKWorkspaceMapper WorkspaceMapper => Agent.WorkspaceMapper;
     public CoreRenderer Renderer => Agent.Renderer;
     public SKCanvas Canvas => Renderer.Canvas;
     protected CorePens Pens => Renderer.Pens;
@@ -29,14 +29,14 @@ public abstract class SKMapper : IDrawableElement
 
     public SKPoint StartPoint
     {
-	        get => Guideline.StartPoint;
-	        set => Reset(value, EndPoint);
+        get => Guideline.StartPoint;
+        set => Reset(value, EndPoint);
     }
     public SKPoint MidPoint => Guideline.Midpoint;
     public SKPoint EndPoint
     {
-	        get => Guideline.EndPoint;
-	        set => Reset(StartPoint, value);
+        get => Guideline.EndPoint;
+        set => Reset(StartPoint, value);
     }
     public SKPoint[] EndPoints => new SKPoint[] { StartPoint, EndPoint };
 
@@ -46,16 +46,16 @@ public abstract class SKMapper : IDrawableElement
         idCounter++; // just to track creation count
 
         Agent = agent;
-	        MathElement = element;
-	        Guideline = guideline ?? new SKSegment(0, 0, 1, 1);
+        MathElement = element;
+        Guideline = guideline ?? new SKSegment(0, 0, 1, 1);
     }
     public virtual void Reset(SKPoint startPoint, SKPoint endPoint)
     {
-	        Guideline.Reset(startPoint, endPoint);
+        Guideline.Reset(startPoint, endPoint);
     }
     public virtual void Reset(SKSegment segment)
     {
-	        Reset(segment.StartPoint, segment.EndPoint);
+        Reset(segment.StartPoint, segment.EndPoint);
     }
 
     //public abstract SKPoint StartPoint { get; set; }

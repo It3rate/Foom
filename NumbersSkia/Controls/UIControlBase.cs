@@ -1,11 +1,5 @@
 ﻿namespace Numbers.Controls;
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Numbers.Agent;
 using Numbers.Mappers;
 using Numbers.Renderer;
@@ -13,10 +7,13 @@ using NumbersCore.CoreConcepts.Counter;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
 using SkiaSharp;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 public abstract class UIControlBase : IDrawableElement
 {
-    private static int _idCounter = 1; 
+    private static int _idCounter = 1;
     public int Id { get; set; }
     public MouseAgent Agent { get; }
     public SKWorkspaceMapper WorkspaceMapper => Agent.WorkspaceMapper;
@@ -40,7 +37,7 @@ public abstract class UIControlBase : IDrawableElement
     protected float[][] _samples;
     protected Random _rnd = new Random();
 
-    public UIControlBase(MouseAgent agent, long count) 
+    public UIControlBase(MouseAgent agent, long count)
     {
         Id = _idCounter++;
         Agent = agent;
@@ -135,13 +132,13 @@ public abstract class UIControlBase : IDrawableElement
     }
 
     public void SetValuesFromString(string values)
-    { 
+    {
         var svals = values.Split(',');
-        if(_numbers.Count * 2 == svals.Length)
-        for (int i = 0; i < _numbers.Count; i++)
-        {
-            _numbers[i].Value = new PRange(float.Parse(svals[i * 2]), float.Parse(svals[i * 2 + 1]));
-        }
+        if (_numbers.Count * 2 == svals.Length)
+            for (int i = 0; i < _numbers.Count; i++)
+            {
+                _numbers[i].Value = new PRange(float.Parse(svals[i * 2]), float.Parse(svals[i * 2 + 1]));
+            }
         IsDirty = true;
         Update();
     }

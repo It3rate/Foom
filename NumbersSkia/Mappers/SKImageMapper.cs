@@ -1,18 +1,11 @@
 ﻿namespace Numbers.Mappers;
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Numbers.Agent;
 using Numbers.Drawing;
-using Numbers.Utils;
-using NumbersCore.CoreConcepts.Spatial;
 using NumbersCore.Primitives;
 using SkiaSharp;
+using System;
+using System.IO;
 
 public class SKImageMapper : SKMapper
 {

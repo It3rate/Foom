@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using NumbersCore.CoreConcepts.Counter;
+﻿using NumbersCore.CoreConcepts.Counter;
 using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives;
@@ -33,7 +31,7 @@ public class Transform : ITransform
     public Number Left { get; set; } // the object being transformed
     public Number? Right { get; set; } // the amount to transform (can change per repeat)
     public NumberGroup Result { get; set; }  // current result of transform - this acts as a halt condition when it is empty (false)
-    
+
     /// <summary>
     /// Repeats are powers, but can extend to any operation. Repeated ADD is like multiply, repeated multiply is pow.
     /// Other ops, like GT, LT can also have repeats. Repeate of zero is just a comparison, with the result being the true part.
@@ -104,7 +102,7 @@ public class Transform : ITransform
         {
             Result.ComputeWith(Right, OperationKind);
         }
-        else if (Right != null) 
+        else if (Right != null)
         {
             Number val;
             switch (OperationKind)

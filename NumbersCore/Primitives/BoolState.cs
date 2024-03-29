@@ -1,11 +1,4 @@
 ﻿namespace NumbersCore.Primitives;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 public enum BoolState
 {
     //FalseNegative,
@@ -50,7 +43,7 @@ public static class BoolStateExtension
     public static bool AreBool(params BoolState[] states)
     {
         var result = true;
-        foreach(var state in states)
+        foreach (var state in states)
         {
             if (!state.IsBool())
             {

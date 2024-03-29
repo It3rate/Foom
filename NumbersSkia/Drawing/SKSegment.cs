@@ -1,8 +1,4 @@
-﻿using System;
-using System.Security.Claims;
-using Numbers.Mappers;
-using Numbers.Utils;
-using NumbersCore.Primitives;
+﻿using Numbers.Utils;
 using NumbersCore.Utils;
 using SkiaSharp;
 

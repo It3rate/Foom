@@ -1,21 +1,19 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace NumbersTests;
 
 [TestClass]
 public class FocalTests
 {
-	    private Brain _brain => Brain.ActiveBrain;
+    private Brain _brain => Brain.ActiveBrain;
     private Trait _trait;
 
-	    [TestInitialize]
-	    public void Init()
-	    {
-		    _trait = Trait.CreateIn(_brain, "numbers tests");
+    [TestInitialize]
+    public void Init()
+    {
+        _trait = Trait.CreateIn(_brain, "numbers tests");
     }
 
     [TestMethod]
@@ -54,7 +52,7 @@ public class FocalTests
         Focal bNeg = new Focal(20, 10);
 
         PRange r = new PRange(0, 3, true);
-        Focal test = new Focal(0,0);
+        Focal test = new Focal(0, 0);
         test.SetWithRangeAndBasis(r, bPos, false);
         Assert.AreEqual(new Focal(10, 40), test);
 
@@ -99,14 +97,14 @@ public class FocalTests
         Assert.AreEqual(new Focal(10, -20), test);
     }
 
-        [TestMethod]
-	    public void BasisSignTests()
-	    {
-		    Focal fb = new Focal(0, 10);
-		    Focal fn = new Focal(20, 30);
-		    Focal ftest = new Focal(0, 0);
+    [TestMethod]
+    public void BasisSignTests()
+    {
+        Focal fb = new Focal(0, 10);
+        Focal fn = new Focal(20, 30);
+        Focal ftest = new Focal(0, 0);
 
-		    // focal [0,10]  fn [20, 30]
+        // focal [0,10]  fn [20, 30]
         Assert.AreEqual(new PRange(-2, 3), fn.GetRangeWithBasis(fb, false, true));
         ftest.SetWithRangeAndBasis(new PRange(-2, 3), fb, false);
         Assert.AreEqual(ftest.StartPosition, fn.StartPosition);
@@ -121,14 +119,14 @@ public class FocalTests
         fb.EndPosition = -10; // focal [0,-10]  fn [40, 30]
 
         Assert.AreEqual(new PRange(2, -3), fn.GetRangeWithBasis(fb, false, true));
-		    ftest.SetWithRangeAndBasis(new PRange(2, -3), fb, false);
-		    Assert.AreEqual(ftest.StartPosition, fn.StartPosition);
-		    Assert.AreEqual(ftest.EndPosition, fn.EndPosition);
+        ftest.SetWithRangeAndBasis(new PRange(2, -3), fb, false);
+        Assert.AreEqual(ftest.StartPosition, fn.StartPosition);
+        Assert.AreEqual(ftest.EndPosition, fn.EndPosition);
 
         Assert.AreEqual(new PRange(20, -30, true), fn.GetRangeWithBasis(fb, true, true));
-		    ftest.SetWithRangeAndBasis(new PRange(20, -30, true), fb, true);
-		    Assert.AreEqual(ftest.StartPosition , fn.StartPosition);
-		    Assert.AreEqual(ftest.EndPosition, fn.EndPosition);
+        ftest.SetWithRangeAndBasis(new PRange(20, -30, true), fb, true);
+        Assert.AreEqual(ftest.StartPosition, fn.StartPosition);
+        Assert.AreEqual(ftest.EndPosition, fn.EndPosition);
 
 
         fn.StartPosition = 40; // focal [0,-10],  fn [40, 30]
@@ -156,31 +154,31 @@ public class FocalTests
         Assert.AreEqual(ftest.StartPosition, fn.StartPosition);
         Assert.AreEqual(ftest.EndPosition, fn.EndPosition);
     }
-	    [TestMethod]
-	    public void ReciprocalTests()
-	    {
-		    Focal f0 = new Focal(0, 10);
-		    Focal f1 = new Focal(132, 287);
-		    Assert.AreEqual(-13.2, f1.GetRangeWithBasis(f0, false, true).Start);
-		    Assert.AreEqual(28.7, f1.GetRangeWithBasis(f0, false, true).End);
-		    Assert.AreEqual(-130, f1.GetRangeWithBasis(f0, true, true).Start);
-		    Assert.AreEqual(290, f1.GetRangeWithBasis(f0, true, true).End);
-	    }
+    [TestMethod]
+    public void ReciprocalTests()
+    {
+        Focal f0 = new Focal(0, 10);
+        Focal f1 = new Focal(132, 287);
+        Assert.AreEqual(-13.2, f1.GetRangeWithBasis(f0, false, true).Start);
+        Assert.AreEqual(28.7, f1.GetRangeWithBasis(f0, false, true).End);
+        Assert.AreEqual(-130, f1.GetRangeWithBasis(f0, true, true).Start);
+        Assert.AreEqual(290, f1.GetRangeWithBasis(f0, true, true).End);
+    }
 
     [TestMethod]
-	    public void RangeToUnitTests()
-	    {
-		    Focal fb = new Focal(0, 10);
-		    Focal fn = new Focal(20, 30);
-		    Focal testFocal = new Focal(0, 0);
-		    var range = fn.GetRangeWithBasis(fb, false, true);
+    public void RangeToUnitTests()
+    {
+        Focal fb = new Focal(0, 10);
+        Focal fn = new Focal(20, 30);
+        Focal testFocal = new Focal(0, 0);
+        var range = fn.GetRangeWithBasis(fb, false, true);
         testFocal.SetWithRangeAndBasis(range, fb, false);
         Assert.AreEqual(testFocal.StartPosition, fn.StartPosition);
         Assert.AreEqual(testFocal.EndPosition, fn.EndPosition);
 
     }
 
-	    [TestMethod]
+    [TestMethod]
     public void CoreFocalTests()
     {
         Focal f = new Focal(150, 250);

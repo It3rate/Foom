@@ -6,17 +6,10 @@ using NumbersCore.Primitives;
 using NumbersCore.Utils;
 
 namespace NumbersAPI.CoreCommands;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 public interface ICreateNumberCommand : ICommand
 {
-	    Domain Domain { get; }
-	    Number Number { get; }
+    Domain Domain { get; }
+    Number Number { get; }
 }
 public class CreateNumberCommand : CommandBase, ICreateNumberCommand
 {
@@ -41,22 +34,22 @@ public class CreateNumberCommand : CommandBase, ICreateNumberCommand
 
     public CreateNumberCommand(Domain domain, Focal focal)
     {
-	        Domain = domain;
-	        Focal = focal;
-	        _isById = true;
+        Domain = domain;
+        Focal = focal;
+        _isById = true;
     }
     public CreateNumberCommand(Domain domain, PRange range)
     {
-	        Domain = domain;
-	        PRange = range;
-	        _isByRange = true;
+        Domain = domain;
+        PRange = range;
+        _isByRange = true;
     }
     public CreateNumberCommand(Domain domain, long startPosition, long endPosition)
     {
-	        Domain = domain;
+        Domain = domain;
         StartPosition = startPosition;
         EndPosition = endPosition;
-	        _isByPositions = true;
+        _isByPositions = true;
     }
 
     public override void Execute()
@@ -64,21 +57,21 @@ public class CreateNumberCommand : CommandBase, ICreateNumberCommand
         base.Execute();
         if (_isById)
         {
-	            NumberByFocalIdTask = new CreateNumberByFocalIdTask(Domain, Focal);
-	            AddTaskAndRun(NumberByFocalIdTask);
-	            Number = NumberByFocalIdTask.Number;
+            NumberByFocalIdTask = new CreateNumberByFocalIdTask(Domain, Focal);
+            AddTaskAndRun(NumberByFocalIdTask);
+            Number = NumberByFocalIdTask.Number;
         }
         else if (_isByRange)
         {
-	            NumberByRangeTask = new CreateNumberByRangeTask(Domain, PRange);
-	            AddTaskAndRun(NumberByRangeTask);
-	            Number = NumberByRangeTask.Number;
+            NumberByRangeTask = new CreateNumberByRangeTask(Domain, PRange);
+            AddTaskAndRun(NumberByRangeTask);
+            Number = NumberByRangeTask.Number;
         }
         else if (_isByPositions)
         {
-	            NumberByPositionsTask = new CreateNumberByPositionsTask(Domain, StartPosition, EndPosition);
-	            AddTaskAndRun(NumberByPositionsTask);
-	            Number = NumberByPositionsTask.Number;
+            NumberByPositionsTask = new CreateNumberByPositionsTask(Domain, StartPosition, EndPosition);
+            AddTaskAndRun(NumberByPositionsTask);
+            Number = NumberByPositionsTask.Number;
         }
     }
 

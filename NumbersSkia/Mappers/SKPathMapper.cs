@@ -1,20 +1,15 @@
 ﻿namespace Numbers.Mappers;
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Numbers.Agent;
 using Numbers.Drawing;
 using Numbers.Renderer;
 using Numbers.Utils;
 using NumbersCore.CoreConcepts.Spatial;
-using NumbersCore.Primitives;
-using NumbersCore.Utils;
 using SkiaSharp;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 public class SKPathMapper : SKMapper
 {
@@ -64,8 +59,8 @@ public class SKPathMapper : SKMapper
         AddPosition(new SKPoint((float)x, (float)y));
     }
     public void AddPosition(SKPoint point)
-        {
-            if (_points.Count == 0)
+    {
+        if (_points.Count == 0)
         {
             _lastPoint = point;
         }
@@ -242,7 +237,7 @@ public class SKPathMapper : SKMapper
     public override void Draw()
     {
         SKPoint[] pts = _smoothPoints != null ? _smoothPoints : _points.ToArray();
-        if(DefaultBrush != null)
+        if (DefaultBrush != null)
         {
             Renderer.FillPolyline(DefaultBrush, pts);
         }
@@ -257,11 +252,11 @@ public class SKPathMapper : SKMapper
     }
     public void SetPartialPath(double startT, double endT, bool wrap = false)
     {
-        if(_storedPoints != null)
+        if (_storedPoints != null)
         {
             Reset();
             bool isWrapped = false;
-            if(startT > endT)
+            if (startT > endT)
             {
                 var temp = endT;
                 endT = startT;
@@ -277,13 +272,13 @@ public class SKPathMapper : SKMapper
                 endT = (endT < 0) ? 1.0 + endT : endT;
             }
 
-            var startIndex = (int)(_storedPoints.Length * startT);  
+            var startIndex = (int)(_storedPoints.Length * startT);
             startIndex = startIndex < 0 ? 0 : startIndex >= _storedPoints.Length ? _storedPoints.Length : startIndex;
             var endIndex = (int)(_storedPoints.Length * endT);
             endIndex = endIndex < 0 ? 0 : endIndex >= _storedPoints.Length ? _storedPoints.Length : endIndex;
 
             int length = endIndex - startIndex;
-            if(isWrapped)
+            if (isWrapped)
             {
                 var startlen = _storedPoints.Length - startIndex;
                 _smoothPoints = new SKPoint[Math.Abs(startlen) + endIndex];
@@ -304,7 +299,7 @@ public class SKPathMapper : SKMapper
         var svals = values.Split(',');
         Reset();
         var result = new SKPoint[svals.Length / 2];
-        for (int i = 0; i < result.Length; i ++)
+        for (int i = 0; i < result.Length; i++)
         {
             result[i] = new SKPoint(float.Parse(svals[i * 2]), float.Parse(svals[i * 2 + 1]));
         }

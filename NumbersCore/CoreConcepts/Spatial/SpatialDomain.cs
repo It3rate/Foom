@@ -1,13 +1,5 @@
 ﻿namespace NumbersCore.CoreConcepts.Spatial;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NumbersCore.CoreConcepts.Counter;
-using NumbersCore.CoreConcepts.Optical;
-using NumbersCore.CoreConcepts.Temperature;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
 

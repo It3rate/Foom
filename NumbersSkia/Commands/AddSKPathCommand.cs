@@ -1,16 +1,8 @@
 ﻿namespace Numbers.Commands;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Numbers.Agent;
 using Numbers.Drawing;
 using Numbers.Mappers;
-using NumbersAPI.CoreTasks;
 using NumbersCore.CoreConcepts.Time;
-using NumbersCore.Primitives;
 using SkiaSharp;
 
 public class AddSKPathCommand : SKCommandBase
@@ -31,7 +23,7 @@ public class AddSKPathCommand : SKCommandBase
         if (PathMapper == null)
         {
             PathMapper = new SKPathMapper(_agent, Guideline);
-            if(_paint != null)
+            if (_paint != null)
             {
                 PathMapper.Pen = _paint;
             }

@@ -196,7 +196,7 @@ public class Focal : IMathElement, IEquatable<Focal>
     {
         Focal result = null;
         var ov = Overlap(p, q);
-        if(ov.LengthInTicks != 0)
+        if (ov.LengthInTicks != 0)
         {
             result = ov;
             if (!p.IsPositiveDirection) { ov.Reverse(); }
@@ -211,46 +211,46 @@ public class Focal : IMathElement, IEquatable<Focal>
     }
     public static Focal Extent(Focal p, Focal q)
     {
-	        var start = Math.Min(p.Min, q.Min);
-	        var end = Math.Max(p.Max, q.Max);
-	        return new Focal(start, end);
+        var start = Math.Min(p.Min, q.Min);
+        var end = Math.Max(p.Max, q.Max);
+        return new Focal(start, end);
     }
 
     // Q. Should direction be preserved in a bool operation?
     public static Focal[] Never(Focal p)
     {
-	        return new Focal[0];
+        return new Focal[0];
     }
     public static Focal[] UnaryNot(Focal p)
     {
-	        // If p starts at the beginning of the time frame and ends at the end, A is always true and the "not A" relationship is empty
-	        if (p.StartPosition == 0 && p.EndPosition == long.MaxValue)
-	        {
-		        return new Focal[] { };
-	        }
-	        // If p starts at the beginning of the time frame and ends before the end, the "not A" relationship consists of a single interval from p.EndTickPosition + 1 to the end of the time frame
-	        else if (p.StartPosition == 0)
-	        {
-		        return new Focal[] { new Focal(p.EndPosition + 1, long.MaxValue) };
-	        }
-	        // If p starts after the beginning of the time frame and ends at the end, the "not A" relationship consists of a single interval from the beginning of the time frame to p.StartTickPosition - 1
-	        else if (p.EndPosition == long.MaxValue)
-	        {
-		        return new Focal[] { new Focal(0, p.StartPosition - 1) };
-	        }
-	        // If p starts and ends within the time frame, the "not A" relationship consists of two intervals: from the beginning of the time frame to p.StartTickPosition - 1, and from p.EndTickPosition + 1 to the end of the time frame
-	        else
-	        {
-		        return new Focal[] { new Focal(0, p.StartPosition - 1), new Focal(p.EndPosition + 1, long.MaxValue) };
-	        }
+        // If p starts at the beginning of the time frame and ends at the end, A is always true and the "not A" relationship is empty
+        if (p.StartPosition == 0 && p.EndPosition == long.MaxValue)
+        {
+            return new Focal[] { };
+        }
+        // If p starts at the beginning of the time frame and ends before the end, the "not A" relationship consists of a single interval from p.EndTickPosition + 1 to the end of the time frame
+        else if (p.StartPosition == 0)
+        {
+            return new Focal[] { new Focal(p.EndPosition + 1, long.MaxValue) };
+        }
+        // If p starts after the beginning of the time frame and ends at the end, the "not A" relationship consists of a single interval from the beginning of the time frame to p.StartTickPosition - 1
+        else if (p.EndPosition == long.MaxValue)
+        {
+            return new Focal[] { new Focal(0, p.StartPosition - 1) };
+        }
+        // If p starts and ends within the time frame, the "not A" relationship consists of two intervals: from the beginning of the time frame to p.StartTickPosition - 1, and from p.EndTickPosition + 1 to the end of the time frame
+        else
+        {
+            return new Focal[] { new Focal(0, p.StartPosition - 1), new Focal(p.EndPosition + 1, long.MaxValue) };
+        }
     }
     public static Focal[] Transfer(Focal p)
     {
-	        return new Focal[] { p.Clone() };
+        return new Focal[] { p.Clone() };
     }
     public static Focal[] Always(Focal p)
     {
-	        return new Focal[] { Focal.MinMaxFocal.Clone()};
+        return new Focal[] { Focal.MinMaxFocal.Clone() };
     }
 
     public static Focal[] Never(Focal p, Focal q)
@@ -259,38 +259,38 @@ public class Focal : IMathElement, IEquatable<Focal>
     }
     public static Focal[] And(Focal p, Focal q)
     {
-	        var overlap = Overlap(p, q);
-	        return (overlap.LengthInTicks == 0) ? new Focal[0] : new Focal[] {overlap};
+        var overlap = Overlap(p, q);
+        return (overlap.LengthInTicks == 0) ? new Focal[0] : new Focal[] { overlap };
     }
     public static Focal[] B_Inhibits_A(Focal p, Focal q)
     {
-	        if (p.EndPosition < q.StartPosition - 1 || q.EndPosition < p.StartPosition - 1)
-	        {
-		        return new Focal[] { p };
-	        }
-	        else
-	        {
-		        return new Focal[] { new Focal(p.StartPosition, q.StartPosition - 1) };
-	        }
+        if (p.EndPosition < q.StartPosition - 1 || q.EndPosition < p.StartPosition - 1)
+        {
+            return new Focal[] { p };
+        }
+        else
+        {
+            return new Focal[] { new Focal(p.StartPosition, q.StartPosition - 1) };
+        }
     }
     public static Focal[] Transfer_A(Focal p, Focal q)
     {
-	        return new Focal[] { p };
+        return new Focal[] { p };
     }
     public static Focal[] A_Inhibits_B(Focal p, Focal q)
     {
-	        if (p.EndPosition < q.StartPosition - 1 || q.EndPosition < p.StartPosition - 1)
-	        {
-		        return new Focal[] { q };
-	        }
-	        else
-	        {
-		        return new Focal[] { new Focal(q.StartPosition, p.StartPosition - 1) };
-	        }
+        if (p.EndPosition < q.StartPosition - 1 || q.EndPosition < p.StartPosition - 1)
+        {
+            return new Focal[] { q };
+        }
+        else
+        {
+            return new Focal[] { new Focal(q.StartPosition, p.StartPosition - 1) };
+        }
     }
     public static Focal[] Transfer_B(Focal p, Focal q)
     {
-	        return new Focal[] { q };
+        return new Focal[] { q };
     }
     public static Focal[] Xor(Focal p, Focal q)
     {
@@ -315,8 +315,8 @@ public class Focal : IMathElement, IEquatable<Focal>
     }
     public static Focal[] Or(Focal p, Focal q)
     {
-	        var overlap = Overlap(p, q);
-	        return (overlap.LengthInTicks == 0) ? new Focal[] {p, q} : new Focal[] {Extent(p, q)};
+        var overlap = Overlap(p, q);
+        return (overlap.LengthInTicks == 0) ? new Focal[] { p, q } : new Focal[] { Extent(p, q) };
     }
     public static Focal[] Nor(Focal p, Focal q)
     {
@@ -361,33 +361,33 @@ public class Focal : IMathElement, IEquatable<Focal>
     }
     public static Focal[] Not_B(Focal p, Focal q)
     {
-	        return UnaryNot(q);
+        return UnaryNot(q);
     }
     public static Focal[] B_Implies_A(Focal p, Focal q)
     {
-	        if (p.EndPosition < q.StartPosition - 1 || q.EndPosition < p.StartPosition - 1)
-	        {
-		        return new Focal[] { };
-	        }
-	        else
-	        {
-		        return new Focal[] { new Focal(MaxStart(p, q), MinEnd(p, q)) };
-	        }
+        if (p.EndPosition < q.StartPosition - 1 || q.EndPosition < p.StartPosition - 1)
+        {
+            return new Focal[] { };
+        }
+        else
+        {
+            return new Focal[] { new Focal(MaxStart(p, q), MinEnd(p, q)) };
+        }
     }
     public static Focal[] Not_A(Focal p, Focal q)
     {
-	        return UnaryNot(p);
+        return UnaryNot(p);
     }
     public static Focal[] A_Implies_B(Focal p, Focal q)
     {
-	        if (p.EndPosition < q.StartPosition - 1 || q.EndPosition < p.StartPosition - 1)
-	        {
-		        return new Focal[] { };
-	        }
-	        else
-	        {
-		        return new Focal[] { new Focal(MaxStart(p, q), MinEnd(p, q)) };
-	        }
+        if (p.EndPosition < q.StartPosition - 1 || q.EndPosition < p.StartPosition - 1)
+        {
+            return new Focal[] { };
+        }
+        else
+        {
+            return new Focal[] { new Focal(MaxStart(p, q), MinEnd(p, q)) };
+        }
     }
     public static Focal[] Nandx(Focal p, Focal q)
     {
@@ -413,14 +413,14 @@ public class Focal : IMathElement, IEquatable<Focal>
     {
         Focal[] result;
         var overlap = Overlap(p, q);
-        if(overlap.LengthInTicks == 0)
+        if (overlap.LengthInTicks == 0)
         {
             result = new Focal[] { Focal.MinMaxFocal.Clone() };
         }
         else
         {
             result = new Focal[]
-            { 
+            {
                 new Focal(long.MinValue, overlap.StartPosition),
                 new Focal(overlap.EndPosition, long.MaxValue)
             };
@@ -499,8 +499,8 @@ public class Focal : IMathElement, IEquatable<Focal>
         {
             var sortedAll = new SortedSet<long>(leftPositions);
             sortedAll.UnionWith(rightPositions);
-            var leftSideState = BoolState.False;
-            var rightSideState = BoolState.False;
+            var leftSideState = left.StartState.Invert(); // start in the pre segment area, so opposite state
+            var rightSideState = right.StartState.Invert();
             int index = 0;
             foreach (var pos in sortedAll)
             {

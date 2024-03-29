@@ -1,14 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using Numbers;
 using Numbers.Agent;
 using Numbers.Renderer;
 using NumbersAPI.Motion;
 using NumbersCore.Primitives;
-using Numbers;
 using SkiaSharp.Views.Desktop;
 using WinFoom.Utils;
-using OpenTK;
 
 namespace MathDemo;
 

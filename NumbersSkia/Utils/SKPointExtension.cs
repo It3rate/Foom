@@ -1,5 +1,4 @@
-﻿using System;
-using Numbers.Drawing;
+﻿using Numbers.Drawing;
 using SkiaSharp;
 
 namespace Numbers.Utils;
@@ -82,7 +81,7 @@ public static class SkPointExtension
         var minY = float.MaxValue;
         var maxX = float.MinValue;
         var maxY = float.MinValue;
-        foreach ( SKPoint p in self)
+        foreach (SKPoint p in self)
         {
             if (p.X < minX) minX = p.X;
             if (p.Y < minY) minY = p.Y;

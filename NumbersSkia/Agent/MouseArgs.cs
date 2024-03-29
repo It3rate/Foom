@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SkiaSharp;
+﻿using SkiaSharp;
 
 namespace NumbersSkia.Agent;
 
@@ -15,8 +10,8 @@ public class MouseArgs
     public int Y { get; private set; }
     public int Delta { get; private set; }
 
-    public MouseArgs(int x, int y, int delta, int clicks, MouseButtons button) 
-    { 
+    public MouseArgs(int x, int y, int delta, int clicks, MouseButtons button)
+    {
         X = x;
         Y = y;
         Delta = delta;

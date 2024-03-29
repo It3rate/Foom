@@ -1,13 +1,5 @@
 ﻿namespace NumbersCore.CoreConcepts.Optical;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NumbersCore.CoreConcepts.Spatial;
 using NumbersCore.Primitives;
-using NumbersCore.Utils;
 
 public class HSLDomain : PolyDomain
 {

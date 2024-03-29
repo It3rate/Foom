@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NumbersCore.Primitives;
-using NumbersSkia.Agent;
+﻿using NumbersSkia.Agent;
 
 namespace WinFoom.Utils;
 

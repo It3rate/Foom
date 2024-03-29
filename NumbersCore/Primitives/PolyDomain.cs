@@ -1,9 +1,9 @@
 ﻿namespace NumbersCore.Primitives;
 
+using NumbersCore.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NumbersCore.Utils;
 using PRange = NumbersCore.Utils.PRange;
 
 public abstract class PolyDomain : IMathElement
@@ -61,7 +61,7 @@ public abstract class PolyDomain : IMathElement
     public NumberGroup GetChainOf(Domain domain) { var idx = GetDomainIndex(domain); return idx > -1 ? _numberGroup[idx] : null; }
     protected NumberGroup GetGroupByName(string name) { var idx = Domains.FindIndex(dm => dm.Name == name); return idx > -1 ? _numberGroup[idx] : null; }
     protected int GetGroupIndex(NumberGroup group) => _numberGroup.IndexOf(group); // can't use Id as there could be repeats of the same group eventually.
-    protected NumberGroup GetChainByIndex(int index) => (index >=0 && index < _numberGroup.Count) ? _numberGroup[index] : null;
+    protected NumberGroup GetChainByIndex(int index) => (index >= 0 && index < _numberGroup.Count) ? _numberGroup[index] : null;
 
 
 

@@ -1,10 +1,9 @@
 ﻿namespace MathDemo;
 
-using System;
-using System.Collections.Generic;
 using Numbers;
 using Numbers.Agent;
 using Numbers.Mappers;
+using System.Collections.Generic;
 
 public abstract class DemoBase : IDemos
 {

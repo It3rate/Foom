@@ -2,14 +2,8 @@
 
 using NumbersCore.Utils;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 /// <summary>
 /// A group of indexed Focals. Can be empty.
@@ -45,7 +39,7 @@ public class FocalGroup : Focal
     public override long EndPosition
     {
         get => Count > 0 ? _focals[Count - 1].EndPosition : 0;
-        set { if (Count > 0) { _focals[Count - 1].EndPosition = value; } } 
+        set { if (Count > 0) { _focals[Count - 1].EndPosition = value; } }
     }
     public bool HasValue => Count > 0;
 
@@ -145,13 +139,13 @@ public class FocalGroup : Focal
             switch (operationKind)
             {
                 case OperationKind.GreaterThan: // A all to right of B
-                    if (minA > maxB) { resultStart = minA; resultEnd = maxA; } else if(maxA > maxB) { resultStart = Math.Max(minA, maxB); resultEnd = maxA; }
+                    if (minA > maxB) { resultStart = minA; resultEnd = maxA; } else if (maxA > maxB) { resultStart = Math.Max(minA, maxB); resultEnd = maxA; }
                     break;
                 case OperationKind.GreaterThanOrEqual: // no part of A to left of B
                     if (minA >= minB) { resultStart = minA; resultEnd = maxA; } else if (maxA >= minB) { resultStart = Math.Max(minA, minB); resultEnd = maxA; }
                     break;
                 case OperationKind.GreaterThanAndEqual: // no part of A to left of B, and part to the right of B (A overlap BMax)
-                    if (minA < maxB && minA > minB && maxA > maxB) { resultStart = minA; resultEnd = maxA; } 
+                    if (minA < maxB && minA > minB && maxA > maxB) { resultStart = minA; resultEnd = maxA; }
                     else if (minA <= minB && maxA > maxB) { resultStart = Math.Max(minA, minB); resultEnd = maxA; }
                     break;
                 case OperationKind.ContainedBy: // A fits inside B
@@ -177,7 +171,7 @@ public class FocalGroup : Focal
                     break;
             }
 
-            if(resultStart - resultEnd != 0) // zero length result not allowed, so this works
+            if (resultStart - resultEnd != 0) // zero length result not allowed, so this works
             {
                 AddPosition(resultStart, resultEnd);
             }
@@ -204,7 +198,7 @@ public class FocalGroup : Focal
 
     public void RemoveLastPosition()
     {
-        if(Count > 0)
+        if (Count > 0)
         {
             Count--;
         }
@@ -227,7 +221,7 @@ public class FocalGroup : Focal
         {
             var p0 = positions[i];
             // odd number of positions creates a point at end. Anything depending odd stores on this should use positions directly.
-            var p1 = i + 1 < positions.Length ? positions[i + 1] : p0; 
+            var p1 = i + 1 < positions.Length ? positions[i + 1] : p0;
             var f = FillNextPosition(p0, p1);
         }
     }
@@ -263,7 +257,7 @@ public class FocalGroup : Focal
             }
         }
 
-        if(lastResult == true && result.Count > 0) // always close
+        if (lastResult == true && result.Count > 0) // always close
         {
             result.Add(data.Last().Item1);
         }
@@ -317,7 +311,7 @@ public class FocalGroup : Focal
     public bool Equals(FocalGroup value)
     {
         var result = false;
-        if( ReferenceEquals(this, value))
+        if (ReferenceEquals(this, value))
         {
             result = true;
         }

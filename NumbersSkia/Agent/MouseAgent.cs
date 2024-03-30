@@ -365,7 +365,7 @@ public class MouseAgent : CommandAgent, IMouseAgent
                         DragHighlight = new SKSegment(g.StartPoint, mousePoint);
                     }
                 }
-                else
+                else // expanding number
                 {
                     nm.SetValueByKind(_highlight.SnapPoint, activeKind);
                     if (nm.Number.Focal != _lastDragFocal)

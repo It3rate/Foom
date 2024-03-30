@@ -19,6 +19,8 @@ public class SkMaskedNumberMapper : SKNumberMapper
     public override void DrawNumber(float offset)
     {
         EnsureSegment();
+        RenderSegment = Guideline.ShiftOffLine(offset);
+
         var pts = new List<long>();
         var isSelected = IsSelected();
         var startState = MaskedNumber.StartState;
@@ -46,5 +48,9 @@ public class SkMaskedNumberMapper : SKNumberMapper
             index++;
             startState = startState.Invert();
         }
+    }
+    public override string ToString()
+    {
+        return "mnm:" + Number.ToString();
     }
 }

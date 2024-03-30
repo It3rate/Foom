@@ -97,7 +97,7 @@ public class Focal : IMathElement, IEquatable<Focal>
         yield return StartPosition;
         yield return EndPosition;
     }
-    public virtual long[] GetPositions() => new long[] { StartPosition, EndPosition };
+    public virtual long[] GetPositions() => [StartPosition, EndPosition];
 
     public long LengthInTicks => EndPosition - StartPosition;
     public long AbsLengthInTicks => Math.Abs(LengthInTicks);

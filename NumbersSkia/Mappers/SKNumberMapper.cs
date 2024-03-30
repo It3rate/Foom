@@ -2,6 +2,7 @@
 using Numbers.Drawing;
 using NumbersCore.Primitives;
 using SkiaSharp;
+using System;
 
 namespace Numbers.Mappers;
 
@@ -86,9 +87,9 @@ public class SKNumberMapper : SKMapper
     {
         SKSegment result;
         var pen2 = invertPaint ?? paint;
-        var val = num.ValueInRenderPerspective;
         if (DomainMapper.ShowSeparatedSegment)
         {
+            var val = num.ValueInRenderPerspective;
             var segEndDir = val.EndF >= 0 ? 1 : -1;
             var endSeg = UnitSegment.SegmentAlongLine(0, val.EndF).ShiftOffLine((offset + 10) * segEndDir);
             Renderer.DrawHalfLine(endSeg, paint);
@@ -104,11 +105,16 @@ public class SKNumberMapper : SKMapper
         }
         else
         {
-            var dir = UnitDirectionOnDomainLine;
-            result = UnitSegment.SegmentAlongLine(val.StartF, val.EndF).ShiftOffLine(offset * dir);
+            result = GetFullRenderSegment(num, offset);
             Renderer.DrawDirectedLine(result, paint, pen2, _drawNumStartCap, _drawNumEndCap);
         }
         return result;
+    }
+    protected SKSegment GetFullRenderSegment(Number num, float offset)
+    {
+        var val = num.ValueInRenderPerspective;
+        var dir = UnitDirectionOnDomainLine;
+        return UnitSegment.SegmentAlongLine(val.StartF, val.EndF).ShiftOffLine(offset * dir);
     }
 
     public void DrawUnit(bool aboveLine, bool showPolarity)

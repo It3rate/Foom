@@ -1,11 +1,13 @@
-﻿namespace NumbersCore.Primitives;
+﻿using NumbersCore.Utils;
+using System.Diagnostics;
+
+namespace NumbersCore.Primitives;
 public class MaskedNumber : Number
 {
     public MaskedFocal MaskedFocal => (MaskedFocal)Focal;
 
     public BoolState StartState => MaskedFocal.StartState;
     public bool IsEmpty => MaskedFocal.IsEmpty;
-
 
     /// <summary>
     /// A MaskedNumber is a single number with multiple masks, can be used for the result of bool operations.

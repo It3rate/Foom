@@ -76,18 +76,18 @@ public class Number : IMathElement
     public long MaxTickPosition => Math.Max(StartTickPosition, EndTickPosition);
     public long TickCount => EndTickPosition - StartTickPosition;
 
-    public double StartValue
+    public virtual double StartValue
     {
         get => Value.Start;
         set => Value = new PRange(value, Value.End, IsAligned);
 
     }
-    public double EndValue
+    public virtual double EndValue
     {
         get => Value.End;
         set => Value = new PRange(Value.Start, value, IsAligned);
     }
-    public PRange Value
+    public virtual PRange Value
     {
         get => Domain.GetValueOf(this);
         set => Domain.SetValueOf(this, value);

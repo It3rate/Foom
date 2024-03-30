@@ -73,7 +73,7 @@ public class Slides : DemoBase
 
         var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Animation", 4, -10f, 20f, 0));
 
-        var maskedNum = new MaskedNumber(Polarity.Aligned, true, 4, 8, 12, 18);
+        var maskedNum = new MaskedNumber(Polarity.Aligned, true, 8, 12, 16, 22);
         hd.Domain.AddNumber(maskedNum, true);
         var mnm = new SkMaskedNumberMapper(_currentMouseAgent, maskedNum);
         hd.AddNumberMapper(mnm);

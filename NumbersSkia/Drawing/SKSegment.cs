@@ -99,7 +99,12 @@ public class SKSegment
         var p0 = OrthogonalPoint(StartPoint, shift);
         var p1 = OrthogonalPoint(EndPoint, shift);
         return new SKSegment(p0, p1);
-
+    }
+    public SKSegment ShiftOffLine(SKSegment landmark, float shift)
+    {
+        var p0 = landmark.OrthogonalPoint(StartPoint, shift);
+        var p1 = landmark.OrthogonalPoint(EndPoint, shift);
+        return new SKSegment(p0, p1);
     }
 
     public SKSegment Inverted() => new SKSegment(EndPoint, StartPoint);

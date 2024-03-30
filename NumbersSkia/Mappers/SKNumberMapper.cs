@@ -114,7 +114,7 @@ public class SKNumberMapper : SKMapper
     {
         var val = num.ValueInRenderPerspective;
         var dir = UnitDirectionOnDomainLine;
-        return UnitSegment.SegmentAlongLine(val.StartF, val.EndF).ShiftOffLine(offset * dir);
+        return UnitSegment.SegmentAlongLine(val.StartF, val.EndF).ShiftOffLine(Guideline, offset * dir);
     }
 
     public void DrawUnit(bool aboveLine, bool showPolarity)

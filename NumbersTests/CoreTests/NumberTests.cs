@@ -120,7 +120,7 @@ public class NumberTests
         Assert.AreEqual(MathElementKind.Number, n0.Kind);
         var n0b = n0.Clone();
         Assert.AreEqual(n0b, n0);
-        n0b.AddValue(n3);
+        n0b.Add(n3);
         Assert.AreNotEqual(n0, n0b);
 
         Assert.AreEqual(_unitFocal.AbsLengthInTicks, n0.AbsBasisTicks);
@@ -150,13 +150,13 @@ public class NumberTests
         Assert.AreEqual(0.472636, n3.RangeInMinMax.Start, Utils.Tolerance);
         Assert.AreEqual(0.519900, n3.RangeInMinMax.End, Utils.Tolerance);
 
-        n1.SubtractValue(n2);
+        n1.Subtract(n2);
         Assert.AreEqual(new PRange(-3.2, 3), n1.Value);
-        n2.AddValue(n3);
+        n2.Add(n3);
         Assert.AreEqual(new PRange(5, 4.5), n3.Value);
-        n3.MultiplyValue(n4);
+        n3.Multiply(n4);
         Assert.AreEqual(new PRange(-45, 4.8), n3.Value);
-        n4.DivideValue(n5);
+        n4.Divide(n5);
         Assert.AreEqual(new PRange(-0.8, -0.1), n4.Value);
     }
 }

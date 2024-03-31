@@ -156,16 +156,16 @@ public class NumberGroup : Number, IMathElement
                 switch (operationKind)
                 {
                     case OperationKind.Add:
-                        AddValue(num);
+                        Add(num);
                         break;
                     case OperationKind.Subtract:
-                        SubtractValue(num);
+                        Subtract(num);
                         break;
                     case OperationKind.Multiply:
-                        MultiplyValue(num);
+                        Multiply(num);
                         break;
                     case OperationKind.Divide:
-                        DivideValue(num);
+                        Divide(num);
                         break;
                     case OperationKind.Root:
                         break;
@@ -204,13 +204,6 @@ public class NumberGroup : Number, IMathElement
                 }
             }
         }
-    }
-    public void ComputeWith(Focal focal, OperationKind operationKind) => _focalGroup.ComputeWith(focal, operationKind);
-    public void ComputeWith(long start, long end, OperationKind operationKind) => ComputeWith(new Focal(start, end), operationKind);
-    public void ComputeWith(PRange range, OperationKind operationKind)
-    {
-        var focal = Domain.CreateFocalFromRange(range);
-        _focalGroup.ComputeWith(focal, operationKind);
     }
     public void ComputeBoolOp(Number other, OperationKind operationKind)
     {
@@ -263,90 +256,20 @@ public class NumberGroup : Number, IMathElement
         var result = Domain.CreateNumber(new Focal(0, 0));
         foreach (var number in InternalNumbers())
         {
-            result.AddValue(number);
+            result.Add(number);
         }
         return result;
     }
 
     // todo: Add/Multiply all the internal segments as well. Adding may be ok as is, multiply needs to interpolate stretches
-    public override void AddValue(Number q) { base.AddValue(q); }
-    public override void SubtractValue(Number q) { base.SubtractValue(q); }
-    public override void MultiplyValue(Number q) { base.MultiplyValue(q); }
-    public override void DivideValue(Number q) { base.DivideValue(q); }
+    public override void Add(Number q) { base.Add(q); }
+    public override void Subtract(Number q) { base.Subtract(q); }
+    public override void Multiply(Number q) { base.Multiply(q); }
+    public override void Divide(Number q) { base.Divide(q); }
 
     public void Not(Number q) { Reset(Focal.UnaryNot(q.Focal)); }
 
 
-    private (Focal[], Polarity[]) ApplyOpToSegmentedTable(List<Number[]> data, OperationKind operation)
-    {
-        var focals = new List<Focal>();
-        var polarities = new List<Polarity>();
-        Focal lastFocal = null;
-        Polarity lastPolarity = Polarity.Unknown;
-
-        foreach (var seg in data)
-        {
-            if (seg.Length == 0)
-            {
-            }
-            else
-            {
-                var first = seg[0];
-                var op = operation;
-                var opResult = false;
-                var dirResult = false;
-                var polResult = false;
-                for (int i = 0; i < seg.Length; i++)
-                {
-                    var curNum = seg[i];
-                    var func = op.GetFunc();
-                    if (i == 0)
-                    {
-                        polResult = curNum.IsAligned;
-                        dirResult = curNum.IsUnitPositivePointing;
-                        opResult = curNum.HasPolairty;
-                    }
-                    else
-                    {
-                        polResult = func(polResult, curNum.IsAligned); ;
-                        dirResult = func(dirResult, curNum.IsUnitPositivePointing);
-                        opResult = func(opResult, curNum.HasPolairty);
-                    }
-                }
-
-                if (opResult)
-                {
-                    var focal = dirResult ? new Focal(first.MinTickPosition, first.MaxTickPosition) : new Focal(first.MaxTickPosition, first.MinTickPosition);
-                    var polarity = polResult ? Polarity.Aligned : Polarity.Inverted;
-                    if (lastFocal != null && lastPolarity == polarity && lastFocal.IsPositiveDirection == focal.IsPositiveDirection) // merge continuous segments
-                    {
-                        if (lastFocal.IsPositiveDirection)
-                        {
-                            lastFocal.EndPosition = focal.EndPosition;
-                        }
-                        else
-                        {
-                            lastFocal.StartPosition = focal.StartPosition;
-                        }
-                    }
-                    else
-                    {
-                        focals.Add(focal);
-                        polarities.Add(polarity);
-                        lastFocal = focal;
-                        lastPolarity = polarity;
-                    }
-                }
-                else
-                {
-                    lastFocal = null;
-                }
-            }
-        }
-
-        return (focals.ToArray(), polarities.ToArray());
-
-    }
 
 
     public static bool operator ==(NumberGroup a, NumberGroup b)

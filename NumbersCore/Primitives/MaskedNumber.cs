@@ -20,6 +20,8 @@ public class MaskedNumber : Number
         base(ValidatePositions(firstMaskIsTrue, maskPositions), polarity)
     {
     }
+    private MaskedNumber(Polarity polarity, MaskedFocal maskedFocal) : base(maskedFocal, polarity) { }
+
     public IEnumerable<long> Positions()
     {
         foreach (var pos in MaskedFocal.Positions())
@@ -77,4 +79,33 @@ public class MaskedNumber : Number
     {
         return new MaskedFocal(firstMaskIsTrue, maskPositions);
     }
+    #region Equality
+    public new MaskedNumber Clone(bool addToStore = true)
+    {
+        MaskedNumber result = new MaskedNumber(Polarity, MaskedFocal.Clone());
+        Domain.AddNumber(result, addToStore);
+        return result;
+    }
+    public override bool Equals(object? obj)
+    {
+        return obj is MaskedNumber other && Equals(other);
+    }
+    public bool Equals(MaskedNumber? value)
+    {
+        if (value is null) { return false; }
+        return ReferenceEquals(this, value) ||
+                (
+                Polarity == value.Polarity &&
+                Focal.Equals(this.MaskedFocal, value.MaskedFocal)
+                );
+    }
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            var hashCode = MaskedFocal.GetHashCode() * 17 ^ ((int)Polarity + 27) * 33;
+            return hashCode;
+        }
+    }
+    #endregion
 }

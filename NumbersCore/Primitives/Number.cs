@@ -12,7 +12,7 @@ public enum Polarity { None, Unknown, Aligned, Inverted };//, Zero, Max }
 /// </summary>
 public class Number : IMathElement
 {
-    // todo: all numbers are numberGroups, this is a special case with one element.
+    #region MathElement
     public virtual MathElementKind Kind => MathElementKind.Number;
 
     public int Id { get; internal set; }
@@ -22,6 +22,30 @@ public class Number : IMathElement
 
     public Brain Brain => Trait?.MyBrain;
     public Trait Trait => Domain.Trait;
+    #endregion
+    public bool IsDirty { get => Focal.IsDirty; set => Focal.IsDirty = value; } // todo: no dirty flags
+
+    public Number(Focal focal, Polarity polarity = Polarity.Aligned)
+    {
+        Focal = focal;
+        Polarity = polarity;
+    }
+    public Number SetWith(Number other)
+    {
+        if (Domain.Id == other.Domain.Id)
+        {
+            StartTickPosition = other.StartTickPosition;
+            EndTickPosition = other.EndTickPosition;
+        }
+        else
+        {
+            Value = other.Value;
+        }
+        Polarity = other.Polarity;
+        return other;
+    }
+
+    #region Domain
     public virtual Domain Domain { get; set; }
     public bool IsValid => Domain != null;
     public int DomainId
@@ -29,32 +53,34 @@ public class Number : IMathElement
         get => Domain.Id;
         set => Domain = Domain.Trait.DomainStore[value];
     }
-    public bool IsDirty { get => Focal.IsDirty; set => Focal.IsDirty = value; }
-
-    // number to the power of x, where x is also a focal. Eventually this is equations, lazy solve them.
+    public int StoreIndex { get; set; } // order added to domain
     public Focal BasisFocal => Domain.BasisFocal;
 
-    public Focal Focal { get; set; }
+    public bool IsBasis => IsValid && Domain.BasisFocal.Id == Focal.Id;
+    public bool IsMinMax => Domain.MinMaxNumber.Id == Id;
+    public bool IsDomainNumber => IsBasis || IsMinMax;
 
-    public int FocalId => Focal.Id;
-    /// <summary>
-    /// The number of subnumbers, will always be 1 for normal numbers, can be 0->n for masked or groups numbers.
-    /// </summary>
-    public virtual int Count => 1;
-    protected Polarity _polarity = Polarity.Aligned;
-    /// <summary>
-    /// Determines if this number has an aligned or inverted perspective relative to the domain basis. 
-    /// </summary>
-    public Polarity Polarity
+    public void ChangeDomain(Domain newDomain)
     {
-        get => IsBasis ? Polarity.Aligned : _polarity;
-        set => _polarity = value;
+        if (newDomain != Domain)
+        {
+            var value = Value;
+            Domain = newDomain;
+            Value = value;
+        }
     }
-    public int PolarityDirection => IsAligned ? 1 : IsInverted ? -1 : 0;
-    public bool IsAligned => Polarity == Polarity.Aligned;
-    public bool HasPolairty => Polarity == Polarity.Aligned || Polarity == Polarity.Inverted;
-    public bool IsInverted => !IsAligned;
-    public int Direction => BasisFocal.Direction * PolarityDirection;
+    public Number AlignedDomainCopy(Number toCopy) => AlignToDomain(toCopy, Domain);
+    public static Number AlignToDomain(Number target, Domain domain)
+    {
+        var result = target.Clone();
+        result.ChangeDomain(domain);
+        return result;
+    }
+    #endregion
+    #region Focal
+    public Focal Focal { get; set; }
+    public int FocalId => Focal.Id;
+
     protected long StartTickPosition
     {
         get => Focal.StartPosition;
@@ -78,26 +104,35 @@ public class Number : IMathElement
     public long MinTickPosition => Math.Min(StartTickPosition, EndTickPosition);
     public long MaxTickPosition => Math.Max(StartTickPosition, EndTickPosition);
     public long TickCount => EndTickPosition - StartTickPosition;
-
-    public virtual double StartValue
-    {
-        get => Value.Start;
-        set => Value = new PRange(value, Value.End, IsAligned);
-
-    }
-    public virtual double EndValue
-    {
-        get => Value.End;
-        set => Value = new PRange(Value.Start, value, IsAligned);
-    }
-    public virtual PRange Value
-    {
-        get => Domain.GetValueOf(this);
-        set => Domain.SetValueOf(this, value);
-    }
     public long ZeroTick => BasisFocal.StartPosition;
     public long BasisTicks => BasisFocal.LengthInTicks;
     public long AbsBasisTicks => BasisFocal.AbsLengthInTicks;
+
+    public void PlusTick() => EndTickPosition += 1;
+    public void MinusTick() => EndTickPosition -= 1;
+    public void AddStartTicks(long ticks) => StartTickPosition += ticks;
+    public void AddEndTicks(long ticks) => EndTickPosition += ticks;
+    public void AddTicks(long startTicks, long endTicks) { StartTickPosition += startTicks; EndTickPosition += endTicks; }
+    public void ShiftTicks(long ticks) { StartTickPosition = StartTickPosition + ticks; EndTickPosition = EndTickPosition + ticks; }
+    #endregion
+    #region Direction Polarity
+    public int Direction => BasisFocal.Direction * PolarityDirection;
+    protected Polarity _polarity = Polarity.Aligned;
+    /// <summary>
+    /// Determines if this number has an aligned or inverted perspective relative to the domain basis. 
+    /// </summary>
+    public Polarity Polarity
+    {
+        get => IsBasis ? Polarity.Aligned : _polarity;
+        set => _polarity = value;
+    }
+
+    public int PolarityDirection => IsAligned ? 1 : IsInverted ? -1 : 0;
+    public bool IsAligned => Polarity == Polarity.Aligned;
+    public bool HasPolairty => Polarity == Polarity.Aligned || Polarity == Polarity.Inverted;
+    public bool IsInverted => !IsAligned;
+    public bool IsPositivePointing => HasPolairty && (IsAligned && EndTickPosition > StartTickPosition) || (!IsAligned && EndTickPosition < StartTickPosition);
+    public bool IsUnitPositivePointing => HasPolairty && (EndTickPosition > StartTickPosition);
 
     public Number PolarityBasis(bool isAligned)
     {
@@ -109,86 +144,7 @@ public class Number : IMathElement
         }
         return result;
     }
-    public bool IsBasis => IsValid && Domain.BasisFocal.Id == Focal.Id;
-    public bool IsMinMax => Domain.MinMaxNumber.Id == Id;
-    public bool IsDomainNumber => IsBasis || IsMinMax;
-    public bool IsPositivePointing => HasPolairty && (IsAligned && EndTickPosition > StartTickPosition) || (!IsAligned && EndTickPosition < StartTickPosition);
-    public bool IsUnitPositivePointing => HasPolairty && (EndTickPosition > StartTickPosition);
-
-    public int StoreIndex { get; set; } // order added to domain
-
-    public Number(Focal focal, Polarity polarity = Polarity.Aligned)
-    {
-        Focal = focal;
-        Polarity = polarity;
-    }
-
-    public virtual long[] GetPositions()
-    {
-        return new long[] { StartTickPosition, EndTickPosition };
-    }
-    public virtual IEnumerable<PRange> InternalRanges()
-    {
-        if (IsValid)
-        {
-            yield return Value;
-        }
-    }
-    public virtual IEnumerable<Number> InternalNumbers()
-    {
-        if (IsValid)
-        {
-            yield return this;
-        }
-    }
-    public double StartTValue()
-    {
-        var val = Domain.MinMaxRange;
-        var len = val.Length;
-        return (StartValue - val.Start) / len;
-    }
-    public double EndTValue()
-    {
-        var val = Domain.MinMaxRange;
-        var len = val.Length;
-        return (EndValue - val.Start) / len;
-    }
-    public double TValueOf(double position)
-    {
-        var val = Value;
-        var len = val.Length;
-        return (position - val.Start) / len;
-    }
-    public PRange ExpansiveForce
-    {
-        get
-        {
-            var v = Value;
-            var len = (float)Math.Sqrt(v.Start * v.Start + v.End * v.End);
-            var ratio = (v.EndF) / v.AbsLength();
-            var lr = ratio <= 0 ? Math.Abs(ratio) : (1f - ratio);
-            var rr = ratio <= 0 ? Math.Abs(ratio + 1f) : (ratio);
-            return new PRange(lr * len, rr * len);
-        }
-    }
-
-    public PRange ValueInRenderPerspective => IsAligned ? new PRange(-StartValue, EndValue) : new PRange(StartValue, -EndValue); //: new PRange(-EndValue, StartValue);
-
-    public Number SetWith(Number other)
-    {
-        if (Domain.Id == other.Domain.Id)
-        {
-            StartTickPosition = other.StartTickPosition;
-            EndTickPosition = other.EndTickPosition;
-        }
-        else
-        {
-            Value = other.Value;
-        }
-        Polarity = other.Polarity;
-        return other;
-    }
-
+    public static Polarity SolvePolarity(Polarity left, Polarity right) => left == right ? Polarity.Aligned : Polarity.Inverted;
     public Polarity InvertPolarity()
     {
         Polarity = (Polarity == Polarity.Aligned) ? Polarity.Inverted : Polarity.Aligned;
@@ -213,6 +169,46 @@ public class Number : IMathElement
         Reverse();
     }
 
+    #endregion
+    #region PRange
+    public virtual double StartValue
+    {
+        get => Value.Start;
+        set => Value = new PRange(value, Value.End, IsAligned);
+
+    }
+    public virtual double EndValue
+    {
+        get => Value.End;
+        set => Value = new PRange(Value.Start, value, IsAligned);
+    }
+    public virtual PRange Value
+    {
+        get => Domain.GetValueOf(this);
+        set => Domain.SetValueOf(this, value);
+    }
+
+    public virtual IEnumerable<PRange> InternalRanges()
+    {
+        if (IsValid)
+        {
+            yield return Value;
+        }
+    }
+    public PRange ExpansiveForce
+    {
+        get
+        {
+            var v = Value;
+            var len = (float)Math.Sqrt(v.Start * v.Start + v.End * v.End);
+            var ratio = (v.EndF) / v.AbsLength();
+            var lr = ratio <= 0 ? Math.Abs(ratio) : (1f - ratio);
+            var rr = ratio <= 0 ? Math.Abs(ratio + 1f) : (ratio);
+            return new PRange(lr * len, rr * len);
+        }
+    }
+    public PRange ValueInRenderPerspective => IsAligned ? new PRange(-StartValue, EndValue) : new PRange(StartValue, -EndValue); //: new PRange(-EndValue, StartValue);
+
     public long WholeStartValue => (long)StartValue;
     public long WholeEndValue => (long)EndValue;
     public long RemainderStartValue => Domain.BasisIsReciprocal ? 0 : (long)(Math.Abs(StartValue % 1) * AbsBasisTicks);
@@ -223,46 +219,6 @@ public class Number : IMathElement
     public PRange CeilingRange => new PRange(Math.Floor(StartValue), Math.Ceiling(EndValue));
     public PRange RoundedRange => new PRange(Math.Round(StartValue), Math.Round(EndValue));
     public PRange RemainderRange => Value - FloorRange;
-
-    public void PlusTick() => EndTickPosition += 1;
-    public void MinusTick() => EndTickPosition -= 1;
-    public void AddStartTicks(long ticks) => StartTickPosition += ticks;
-    public void AddEndTicks(long ticks) => EndTickPosition += ticks;
-    public void AddTicks(long startTicks, long endTicks) { StartTickPosition += startTicks; EndTickPosition += endTicks; }
-    public void ShiftTicks(long ticks) { StartTickPosition = StartTickPosition + ticks; EndTickPosition = EndTickPosition + ticks; }
-
-    // Operations with segments and units allow moving the unit around freely, so for example,
-    // you can shift a segment by aligning the unit with start or end,
-    // and scale in place by moving the unit to left, right or center (equivalent to affine scale, where you move to zero, scale, then move back)
-    // need to have overloads that allow shifting the unit temporarily
-    public virtual void AddValue(Number other)
-    {
-        // todo: eventually all math on Numbers will be in ticks, allowing preservation of precision etc. Requires syncing of basis, domains.
-        Value += other.Value;
-    }
-    public virtual void SubtractValue(Number other)
-    {
-        Value -= other.Value;
-    }
-    public virtual void MultiplyValue(Number other)
-    {
-        Value *= other.Value;
-    }
-    public virtual void DivideValue(Number other)
-    {
-        Value /= other.Value;
-    }
-    public virtual void Pow(Number other)
-    {
-        Value = PRange.Pow(Value, other.Value);
-    }
-    public static Number Pow(Number left, Number right)
-    {
-        var result = left.Clone(false);
-        result.Pow(right);
-        return result;
-    }
-
     public static Number GetMaxRange(Number a, Number b)
     {
         var min = Math.Min(a.MinTickPosition, b.MinTickPosition);
@@ -272,70 +228,62 @@ public class Number : IMathElement
         result.Domain = b.Domain;
         return result;
     }
-    public static Polarity SolvePolarity(Polarity left, Polarity right) => left == right ? Polarity.Aligned : Polarity.Inverted;
-
-
-    public void ChangeDomain(Domain newDomain)
+    #endregion
+    #region T Calculations
+    public double StartTValue()
     {
-        if (newDomain != Domain)
-        {
-            var value = Value;
-            Domain = newDomain;
-            Value = value;
-        }
+        var val = Domain.MinMaxRange;
+        var len = val.Length;
+        return (StartValue - val.Start) / len;
     }
-
-    public bool FullyContains(Number toTest, bool includeEndpoints = true) => toTest != null ? Value.FullyContains(toTest.Value, includeEndpoints) : false;
-    public Number AlignedDomainCopy(Number toCopy) => AlignToDomain(toCopy, Domain);
-    public static Number AlignToDomain(Number target, Domain domain)
+    public double EndTValue()
     {
-        var result = target.Clone();
-        result.ChangeDomain(domain);
+        var val = Domain.MinMaxRange;
+        var len = val.Length;
+        return (EndValue - val.Start) / len;
+    }
+    public double TValueOf(double position)
+    {
+        var val = Value;
+        var len = val.Length;
+        return (position - val.Start) / len;
+    }
+    #endregion
+    #region Arithmatic
+    // Operations with segments and units allow moving the unit around freely, so for example,
+    // you can shift a segment by aligning the unit with start or end,
+    // and scale in place by moving the unit to left, right or center (equivalent to affine scale, where you move to zero, scale, then move back)
+    // need to have overloads that allow shifting the unit temporarily
+    public virtual void Add(Number right)
+    {
+        // todo: eventually all math on Numbers will be in ticks, allowing preservation of precision etc. Requires syncing of basis, domains.
+        Value += right.Value;
+    }
+    public virtual void Subtract(Number right)
+    {
+        Value -= right.Value;
+    }
+    public virtual void Multiply(Number right)
+    {
+        Value *= right.Value;
+    }
+    public virtual void Divide(Number right)
+    {
+        Value /= right.Value;
+    }
+    public virtual void Pow(Number right)
+    {
+        Value = PRange.Pow(Value, right.Value);
+    }
+    public static Number Pow(Number left, Number right)
+    {
+        var result = left.Clone(false);
+        result.Pow(right);
         return result;
     }
-
-    public void InterpolateFromZero(Number t, Number result) => InterpolateFromZero(this, t, result);
-    public void InterpolateFrom(Number source, Number t, Number result) => Interpolate(source, this, t, result);
-    public void InterpolateTo(Number target, Number t, Number result) => Interpolate(this, target, t, result);
-    public static void InterpolateFromZero(Number target, Number t, Number result)
-    {
-        var targetValue = target.Value;
-        var tValue = t.Value;
-        result.StartValue = targetValue.Start * tValue.Start;
-        result.EndValue = targetValue.End * tValue.End;
-    }
-    public static void InterpolateFromOne(Number target, Number t, Number result)
-    {
-        var targetValue = target.Value;
-        var tValue = t.Value;
-        result.StartValue = targetValue.Start * tValue.Start;
-        result.EndValue = (targetValue.End - 1.0) * tValue.End + 1.0;
-    }
-    public void InterpolateFromOne(Number target, double t)
-    {
-        if (target != null)
-        {
-            var targetValue = target.Value;
-            StartValue = targetValue.Start * t;
-            EndValue = (targetValue.End - 1.0) * t + 1.0;
-        }
-    }
-    public void InterpolateFromOne(PRange range, double t)
-    {
-        if (range != null)
-        {
-            StartValue = range.Start * t;
-            EndValue = (range.End - 1.0) * t + 1.0;
-        }
-    }
-    public static void Interpolate(Number source, Number target, Number t, Number result)
-    {
-        var sourceValue = source.Value;
-        var targetValue = target.Value;
-        var tValue = t.Value;
-        result.StartValue = (targetValue.Start - sourceValue.Start) * tValue.Start + sourceValue.Start;
-        result.EndValue = (targetValue.End - sourceValue.End) * tValue.End + sourceValue.End;
-    }
+    #endregion
+    #region Bool Ops
+    public bool FullyContains(Number toTest, bool includeEndpoints = true) => toTest != null ? Value.FullyContains(toTest.Value, includeEndpoints) : false;
 
     // segment comparison considers unot numbers to also have positive segments in the negative space, and
     // unit numbers to be unot in its negative space. So two unit numbers that have a point on both ends of a range,
@@ -431,8 +379,67 @@ public class Number : IMathElement
 
     public virtual NumberGroup Always(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Always(Focal, q.Focal));
     public virtual void Always(Number q, NumberGroup result) => result.Reset(Focal.Always(Focal, q.Focal));
-
-
+    #endregion
+    #region Interpolation
+    public void InterpolateFromZero(Number t, Number result) => InterpolateFromZero(this, t, result);
+    public void InterpolateFrom(Number source, Number t, Number result) => Interpolate(source, this, t, result);
+    public void InterpolateTo(Number target, Number t, Number result) => Interpolate(this, target, t, result);
+    public static void InterpolateFromZero(Number target, Number t, Number result)
+    {
+        var targetValue = target.Value;
+        var tValue = t.Value;
+        result.StartValue = targetValue.Start * tValue.Start;
+        result.EndValue = targetValue.End * tValue.End;
+    }
+    public static void InterpolateFromOne(Number target, Number t, Number result)
+    {
+        var targetValue = target.Value;
+        var tValue = t.Value;
+        result.StartValue = targetValue.Start * tValue.Start;
+        result.EndValue = (targetValue.End - 1.0) * tValue.End + 1.0;
+    }
+    public void InterpolateFromOne(Number target, double t)
+    {
+        if (target != null)
+        {
+            var targetValue = target.Value;
+            StartValue = targetValue.Start * t;
+            EndValue = (targetValue.End - 1.0) * t + 1.0;
+        }
+    }
+    public void InterpolateFromOne(PRange range, double t)
+    {
+        if (range != null)
+        {
+            StartValue = range.Start * t;
+            EndValue = (range.End - 1.0) * t + 1.0;
+        }
+    }
+    public static void Interpolate(Number source, Number target, Number t, Number result)
+    {
+        var sourceValue = source.Value;
+        var targetValue = target.Value;
+        var tValue = t.Value;
+        result.StartValue = (targetValue.Start - sourceValue.Start) * tValue.Start + sourceValue.Start;
+        result.EndValue = (targetValue.End - sourceValue.End) * tValue.End + sourceValue.End;
+    }
+    #endregion
+    #region Internal Segments
+    /// <summary>
+    /// The number of subnumbers, will always be 1 for normal numbers, can be 0->n for masked or groups numbers.
+    /// </summary>
+    public virtual int Count => 1;
+    public virtual long[] GetPositions()
+    {
+        return new long[] { StartTickPosition, EndTickPosition };
+    }
+    public virtual IEnumerable<Number> InternalNumbers()
+    {
+        if (IsValid)
+        {
+            yield return this;
+        }
+    }
     /// <summary>
     /// NumberGroups can have overlapping numbers, so this segmented version returns all partial ranges for each possible segment.
     /// Assumes aligned domains.
@@ -492,13 +499,83 @@ public class Number : IMathElement
         result.Domain = domain;
         return result;
     }
+    protected static (Focal[], Polarity[]) ApplyOpToSegmentedTable(List<Number[]> data, OperationKind operation)
+    {
+        var focals = new List<Focal>();
+        var polarities = new List<Polarity>();
+        Focal? lastFocal = null;
+        Polarity lastPolarity = Polarity.Unknown;
 
+        foreach (var seg in data)
+        {
+            if (seg.Length == 0)
+            {
+            }
+            else
+            {
+                var first = seg[0];
+                var op = operation;
+                var opResult = false;
+                var dirResult = false;
+                var polResult = false;
+                for (int i = 0; i < seg.Length; i++)
+                {
+                    var curNum = seg[i];
+                    var func = op.GetFunc();
+                    if (i == 0)
+                    {
+                        polResult = curNum.IsAligned;
+                        dirResult = curNum.IsUnitPositivePointing;
+                        opResult = curNum.HasPolairty;
+                    }
+                    else
+                    {
+                        polResult = func(polResult, curNum.IsAligned); ;
+                        dirResult = func(dirResult, curNum.IsUnitPositivePointing);
+                        opResult = func(opResult, curNum.HasPolairty);
+                    }
+                }
+
+                if (opResult)
+                {
+                    var focal = dirResult ? new Focal(first.MinTickPosition, first.MaxTickPosition) : new Focal(first.MaxTickPosition, first.MinTickPosition);
+                    var polarity = polResult ? Polarity.Aligned : Polarity.Inverted;
+                    if (lastFocal != null && lastPolarity == polarity && lastFocal.IsPositiveDirection == focal.IsPositiveDirection) // merge continuous segments
+                    {
+                        if (lastFocal.IsPositiveDirection)
+                        {
+                            lastFocal.EndPosition = focal.EndPosition;
+                        }
+                        else
+                        {
+                            lastFocal.StartPosition = focal.StartPosition;
+                        }
+                    }
+                    else
+                    {
+                        focals.Add(focal);
+                        polarities.Add(polarity);
+                        lastFocal = focal;
+                        lastPolarity = polarity;
+                    }
+                }
+                else
+                {
+                    lastFocal = null;
+                }
+            }
+        }
+
+        return (focals.ToArray(), polarities.ToArray());
+
+    }
+    #endregion
+    #region Equality
     public Number Clone(bool addToStore = true)
     {
         var result = new Number(Focal.Clone(), Polarity);
         return Domain.AddNumber(result, addToStore);
     }
-
     public static bool operator ==(Number? a, Number? b)
     {
         if (a is null && b is null)
@@ -511,7 +588,6 @@ public class Number : IMathElement
         }
         return a.Equals(b);
     }
-
     public static bool operator !=(Number? a, Number? b)
     {
         return !(a == b);
@@ -530,7 +606,6 @@ public class Number : IMathElement
                 Focal.Equals(this.Focal, value.Focal)
                 );
     }
-
     public override int GetHashCode()
     {
         unchecked
@@ -539,6 +614,8 @@ public class Number : IMathElement
             return hashCode;
         }
     }
+    #endregion
+
     public override string ToString()
     {
         var result = "x";

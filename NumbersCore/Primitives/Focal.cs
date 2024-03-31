@@ -546,16 +546,16 @@ public class Focal : IMathElement, IEquatable<Focal>
         return result.ToArray();
     }
 
-
-    public Focal Clone()
+    #region Equality
+    public virtual Focal Clone()
     {
         return new Focal(StartPosition, EndPosition);
     }
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return obj is Focal other && Equals(other);
     }
-    public bool Equals(Focal value)
+    public bool Equals(Focal? value)
     {
         return ReferenceEquals(this, value) || StartPosition.Equals(value.StartPosition) && EndPosition.Equals(value.EndPosition);
     }
@@ -586,6 +586,6 @@ public class Focal : IMathElement, IEquatable<Focal>
             return hashCode;
         }
     }
-
+    #endregion
     public override string ToString() => $"[{StartPosition} : {EndPosition}]";
 }

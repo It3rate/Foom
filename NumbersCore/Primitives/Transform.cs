@@ -110,7 +110,7 @@ public class Transform : ITransform
                 case OperationKind.Add:
                 case OperationKind.Subtract:
                     val = Right.Clone();
-                    val.MultiplyValue(Repeats);
+                    val.Multiply(Repeats);
                     Result.ComputeWith(val, OperationKind);
                     break;
                 case OperationKind.Multiply:
@@ -120,7 +120,7 @@ public class Transform : ITransform
                 case OperationKind.Divide:
                     var one = Right.Domain.CreateNumberFromFloats(0, 1);
                     var recip = Repeats.Clone();
-                    recip.DivideValue(one);
+                    recip.Divide(one);
                     val = Number.Pow(Right, recip);
                     Result.ComputeWith(val, OperationKind);
                     break;
@@ -144,7 +144,7 @@ public class Transform : ITransform
                 case OperationKind.Divide:
                     var one = Left.Domain.CreateNumberFromFloats(0, 1);
                     var recip = Repeats.Clone();
-                    recip.DivideValue(one);
+                    recip.Divide(one);
                     Result.Pow(recip);
                     break;
                 default:

@@ -360,7 +360,7 @@ public class MouseAgent : CommandAgent, IMouseAgent
 
                         DragMultiplyBasis.EndValue = DragMultiplyBasis.IsAligned ? t : -t; // dragging is always in render perspective, so account for direction change
                         snm.Number.SetWith(_initialSelectionNum);
-                        snm.Number.MultiplyValue(DragMultiplyBasis);
+                        snm.Number.Multiply(DragMultiplyBasis);
                         DragPoint = pt;
                         DragHighlight = new SKSegment(g.StartPoint, mousePoint);
                     }

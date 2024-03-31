@@ -35,6 +35,7 @@ public class MaskedFocal : Focal
             }
         }
     }
+
     /// <summary>
     /// A MaskedFocal is a single focal with multiple masks, can be used for the result of bool operations.
     /// The whole compared result is returned, and it can be 'empty' if it has two positions and starts 'false'.
@@ -51,6 +52,7 @@ public class MaskedFocal : Focal
 
     public void Set(BoolState startState, params long[] positions)
     {
+        ValidatePositions(positions);
         StartState = startState;
         _positions = (long[])positions.Clone();
         _tPositions = GetTPositions();
@@ -165,4 +167,29 @@ public class MaskedFocal : Focal
         }
         return new Focal(maskPositions[0], maskPositions[maskPositions.Length - 1]);
     }
+
+    #region Equality
+    public override MaskedFocal Clone()
+    {
+        return new MaskedFocal(StartState.IsTrue(), (long[])_positions.Clone());
+    }
+    public override bool Equals(object? obj)
+    {
+        return obj is MaskedFocal other && Equals(other);
+    }
+    public bool Equals(MaskedFocal? value)
+    {
+        return ReferenceEquals(this, value) ||
+            (value != null && StartState == value.StartState && _positions.SequenceEqual(value._positions));
+    }
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            var hashCode = StartState.GetHashCode();
+            hashCode = (hashCode * 397) ^ _positions.GetHashCode();
+            return hashCode;
+        }
+    }
+    #endregion
 }

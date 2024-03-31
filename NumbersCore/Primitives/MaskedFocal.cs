@@ -139,9 +139,9 @@ public class MaskedFocal : Focal
             throw new ArgumentException("MaskedNumber needs at least two positons.");
         }
 
-        if (maskPositions[1] == maskPositions[0])
+        if (maskPositions[1] == maskPositions[0]) // could happen if under resolution after divide, shouldn't throw away data
         {
-            throw new ArgumentException("MaskedNumbers need a direction (no equal values)");
+            //throw new ArgumentException("MaskedNumbers need a direction (no equal values)");
         }
         else if (maskPositions[1] > maskPositions[0])
         {

@@ -43,9 +43,13 @@ public class MaskedNumber : Number
             yield return CreateSubsegment(Domain, new Focal(positions[i], positions[i + 1]), Polarity);
         }
     }
-    public void Clear()
+    public override void ClearInternalPositions()
     {
         MaskedFocal.Clear();
+    }
+    public override void AddPosition(long start, long end)
+    {
+        MaskedFocal.Set(BoolState.True, start, end);
     }
 
     public BoolState GetMaskAt(float value)

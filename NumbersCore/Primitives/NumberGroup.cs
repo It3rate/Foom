@@ -95,14 +95,14 @@ public class NumberGroup : Number, IMathElement
 
     public void Reset(Number value, OperationKind operationKind)
     {
-        Clear();
+        ClearInternalPositions();
         if (value.IsValid)
         {
             _focalGroup.Reset(value.Focal);
             _polarityGroup.Add(value.Polarity);
         }
     }
-    public void Clear()
+    public override void ClearInternalPositions()
     {
         _focalGroup.Clear();
         _polarityGroup.Clear();
@@ -125,146 +125,28 @@ public class NumberGroup : Number, IMathElement
     // todo: account for polarity
     public Focal CreateFocalFromRange(PRange value) => Domain.CreateFocalFromRange(value);
 
-    public void ComputeWith(Number? num, OperationKind operationKind)
+    public override void ComputeBoolOp(Number other, OperationKind operationKind)
     {
-        if (operationKind.IsUnary())
-        {
-            switch (operationKind)
-            {
-                case OperationKind.None:
-                    break;
-                case OperationKind.Negate:
-                    Negate();
-                    break;
-                case OperationKind.Reciprocal:
-                    break;
-                case OperationKind.FlipPolarityInPlace: // switch polarity only, arrow same
-                    break;
-                case OperationKind.FlipPolarity:
-                    break;
-                case OperationKind.MirrorOnUnit:
-                    break;
-                case OperationKind.MirrorOnUnot:
-                    break;
-                case OperationKind.MirrorOnStart:
-                    break;
-                case OperationKind.MirrorOnEnd:
-                    break;
-                case OperationKind.FilterUnit:
-                    break;
-                case OperationKind.FilterUnot:
-                    break;
-                case OperationKind.FilterStart:
-                    break;
-                case OperationKind.FilterEnd:
-                    break;
-                case OperationKind.NegateInPlace:
-                    _focalGroup.ComputeWith(Focal, operationKind); // change arrow dir
-                    break;
-            }
-        }
-        else if (num != null)
-        {
-
-            if (operationKind.IsBoolOp())
-            {
-                ComputeBoolOp(num, operationKind);
-            }
-            else if (operationKind.IsBoolCompare())
-            {
-                ComputeBoolCompare(num.Focal, operationKind);
-            }
-            else if (operationKind.IsBinary())
-            {
-                switch (operationKind)
-                {
-                    case OperationKind.Add:
-                        Add(num);
-                        break;
-                    case OperationKind.Subtract:
-                        Subtract(num);
-                        break;
-                    case OperationKind.Multiply:
-                        Multiply(num);
-                        break;
-                    case OperationKind.Divide:
-                        Divide(num);
-                        break;
-                    case OperationKind.Root:
-                        break;
-                    case OperationKind.Wedge:
-                        break;
-                    case OperationKind.DotProduct:
-                        break;
-                    case OperationKind.GeometricProduct:
-                        break;
-                    case OperationKind.Blend:
-                        break;
-                }
-            }
-            else if (operationKind.IsTernary())
-            {
-                switch (operationKind)
-                {
-                    case OperationKind.PowerAdd:
-                        break;
-                    case OperationKind.PowerMultiply:
-                        break;
-                }
-            }
-            else
-            {
-                switch (operationKind)
-                {
-                    case OperationKind.None:
-                        break;
-                    case OperationKind.AppendAll:
-                        break;
-                    case OperationKind.MultiplyAll:
-                        break;
-                    case OperationKind.Average:
-                        break;
-                }
-            }
-        }
-    }
-    public void ComputeBoolOp(Number other, OperationKind operationKind)
-    {
-        // bool ops are just comparing state, so they don't care about direction or polarity, thus happen on focals
-        // however, this requires they have the same resolutions, so really should be on number chains.
-        //_focalChain.ComputeWith(focal, operationKind);
         var (_, table) = SegmentedTable(Domain, true, this, other);
         var (focals, polarities) = ApplyOpToSegmentedTable(table, operationKind);
-        Clear();
+        ClearInternalPositions();
         _focalGroup.AddPositions(focals);
         _polarityGroup.AddRange(polarities);
     }
-    public void ComputeBoolCompare(Focal focal, OperationKind operationKind)
+    public override void ComputeBoolCompare(Number num, OperationKind operationKind)
     {
-        _focalGroup.ComputeWith(focal, operationKind);
+        _focalGroup.ComputeWith(num.Focal, operationKind);
     }
-    public void AddPosition(long start, long end)
+    public override void AddPosition(long start, long end)
     {
         _focalGroup.AddPosition(start, end);
     }
-    public void AddPosition(Focal focal)
-    {
-        AddPosition(focal.StartPosition, focal.EndPosition);
-    }
-    public void AddPosition(Number num)
-    {
-        AddPosition(num.Focal.StartPosition, num.Focal.EndPosition);
-    }
-    public void AddPosition(PRange range)
-    {
-        var focal = Domain.CreateFocalFromRange(range);
-        AddPosition(focal.StartPosition, focal.EndPosition);
-    }
+
     public void RemoveLastPosition() => _focalGroup.RemoveLastPosition();
 
     public void Reset(params Focal[] focals)
     {
-        Clear();
+        ClearInternalPositions();
         _focalGroup.MergeRange(focals);
         foreach (var focal in focals)
         {

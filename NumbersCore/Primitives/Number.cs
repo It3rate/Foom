@@ -1,4 +1,5 @@
 ﻿
+using System.Data;
 using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives;
@@ -43,6 +44,12 @@ public class Number : IMathElement
         }
         Polarity = other.Polarity;
         return other;
+    }
+    public void SetWith(Focal other, Polarity polarity)
+    {
+        StartTickPosition = other.StartPosition;
+        EndTickPosition = other.EndPosition;
+        Polarity = polarity;
     }
 
     #region Domain
@@ -237,15 +244,6 @@ public class Number : IMathElement
     public PRange CeilingRange => new PRange(Math.Floor(StartValue), Math.Ceiling(EndValue));
     public PRange RoundedRange => new PRange(Math.Round(StartValue), Math.Round(EndValue));
     public PRange RemainderRange => Value - FloorRange;
-    public static Number GetMaxRange(Number a, Number b)
-    {
-        var min = Math.Min(a.MinTickPosition, b.MinTickPosition);
-        var max = Math.Min(a.MaxTickPosition, b.MaxTickPosition);
-        var polarity = SolvePolarity(a.Polarity, b.Polarity);
-        var result = new Number(new Focal(min, max), polarity);
-        result.Domain = b.Domain;
-        return result;
-    }
     #endregion
     #region T Calculations
     public double StartTValue()
@@ -267,7 +265,7 @@ public class Number : IMathElement
         return (position - val.Start) / len;
     }
     #endregion
-    #region Arithmatic
+    #region Operations
     // Operations with segments and units allow moving the unit around freely, so for example,
     // you can shift a segment by aligning the unit with start or end,
     // and scale in place by moving the unit to left, right or center (equivalent to affine scale, where you move to zero, scale, then move back)
@@ -298,6 +296,190 @@ public class Number : IMathElement
         var result = left.Clone(false);
         result.Pow(right);
         return result;
+    }
+
+    public void ComputeWith(Number? num, OperationKind operationKind)
+    {
+        if (operationKind.IsUnary())
+        {
+            switch (operationKind)
+            {
+                case OperationKind.None:
+                    break;
+                case OperationKind.Negate:
+                    Negate();
+                    break;
+                case OperationKind.Reciprocal:
+                    break;
+                case OperationKind.FlipPolarityInPlace: // switch polarity only, arrow same
+                    break;
+                case OperationKind.FlipPolarity:
+                    break;
+                case OperationKind.MirrorOnUnit:
+                    break;
+                case OperationKind.MirrorOnUnot:
+                    break;
+                case OperationKind.MirrorOnStart:
+                    break;
+                case OperationKind.MirrorOnEnd:
+                    break;
+                case OperationKind.FilterUnit:
+                    break;
+                case OperationKind.FilterUnot:
+                    break;
+                case OperationKind.FilterStart:
+                    break;
+                case OperationKind.FilterEnd:
+                    break;
+                case OperationKind.NegateInPlace:
+                    //_focalGroup.ComputeWith(Focal, operationKind); // change arrow dir
+                    break;
+            }
+        }
+        else if (num != null)
+        {
+
+            if (operationKind.IsBoolOp())
+            {
+                ComputeBoolOp(num, operationKind);
+            }
+            else if (operationKind.IsBoolCompare())
+            {
+                ComputeBoolCompare(num, operationKind);
+            }
+            else if (operationKind.IsBinary())
+            {
+                switch (operationKind)
+                {
+                    case OperationKind.Add:
+                        Add(num);
+                        break;
+                    case OperationKind.Subtract:
+                        Subtract(num);
+                        break;
+                    case OperationKind.Multiply:
+                        Multiply(num);
+                        break;
+                    case OperationKind.Divide:
+                        Divide(num);
+                        break;
+                    case OperationKind.Root:
+                        break;
+                    case OperationKind.Wedge:
+                        break;
+                    case OperationKind.DotProduct:
+                        break;
+                    case OperationKind.GeometricProduct:
+                        break;
+                    case OperationKind.Blend:
+                        break;
+                }
+            }
+            else if (operationKind.IsTernary())
+            {
+                switch (operationKind)
+                {
+                    case OperationKind.PowerAdd:
+                        break;
+                    case OperationKind.PowerMultiply:
+                        break;
+                }
+            }
+            else
+            {
+                switch (operationKind)
+                {
+                    case OperationKind.None:
+                        break;
+                    case OperationKind.AppendAll:
+                        break;
+                    case OperationKind.MultiplyAll:
+                        break;
+                    case OperationKind.Average:
+                        break;
+                }
+            }
+        }
+    }
+    public virtual void ComputeBoolOp(Number other, OperationKind operationKind)
+    {
+        // todo: all bool/compare ops need to use normalized basis', or for now ranges. 
+        // really numbers should never be used in bool ops, eventually combine maskedNumber with Number and this goes away
+        var (_, table) = SegmentedTable(Domain, true, this, other);
+        var (focals, polarities) = ApplyOpToSegmentedTable(table, operationKind);
+        Focal resultFocal = new Focal(focals[0].StartPosition, focals[focals.Length - 1].EndPosition);
+        var resultPolarity = Polarity.None;
+        for (int i = 0; i < polarities.Length; i++)
+        {
+            if (polarities[i] != Polarity.None){
+                resultFocal = focals[i];
+                resultPolarity = polarities[i];
+                break;
+            }
+        }
+        SetWith(resultFocal, resultPolarity);
+    }
+    public static Number GetMaxExtent(Number a, Number b)
+    {
+        var min = Math.Min(a.MinTickPosition, b.MinTickPosition);
+        var max = Math.Max(a.MaxTickPosition, b.MaxTickPosition);
+        var polarity = SolvePolarity(a.Polarity, b.Polarity);
+        var result = new Number(new Focal(min, max), polarity);
+        result.Domain = a.Domain;
+        return result;
+    }
+    public virtual void ComputeBoolCompare(Number num, OperationKind operationKind)
+    {
+        //var positions = new List<long>();
+        // todo: calc with ranges or normalize domain as domains may differ
+        var maxA = Focal.MaxExtent;
+        var minA = Focal.MinExtent;
+        var maxB = num.Focal.Max;// startB > endB ? startB : endB;
+        var minB = num.Focal.Min;// startB < endB ? startB : endB;
+        long resultStart = 0;
+        long resultEnd = 0;
+        ClearInternalPositions();
+        switch (operationKind)
+        {
+            case OperationKind.GreaterThan: // A all to right of B
+                if (minA > maxB) { resultStart = minA; resultEnd = maxA; } else if (maxA > maxB) { resultStart = Math.Max(minA, maxB); resultEnd = maxA; }
+                break;
+            case OperationKind.GreaterThanOrEqual: // no part of A to left of B
+                if (minA >= minB) { resultStart = minA; resultEnd = maxA; } else if (maxA >= minB) { resultStart = Math.Max(minA, minB); resultEnd = maxA; }
+                break;
+            case OperationKind.GreaterThanAndEqual: // no part of A to left of B, and part to the right of B (A overlap BMax)
+                if (minA < maxB && minA > minB && maxA > maxB) { resultStart = minA; resultEnd = maxA; }
+                else if (minA <= minB && maxA > maxB) { resultStart = Math.Max(minA, minB); resultEnd = maxA; }
+                break;
+            case OperationKind.ContainedBy: // A fits inside B
+                if (minA >= minB && maxA <= maxB) { resultStart = minA; resultEnd = maxA; }
+                else if ((minA < minB && maxA > minB) || (maxA > maxB && minA < maxB)) { resultStart = Math.Max(minA, minB); resultEnd = Math.Min(maxA, maxB); }
+                break;
+            case OperationKind.Equals: // B matches A
+                if (minA == minB && maxA == maxB) { resultStart = minA; resultEnd = maxA; }
+                break;
+            case OperationKind.Contains: // B fits inside A
+                if (minB >= minA && maxB <= maxA) { resultStart = minB; resultEnd = maxB; }
+                else if ((minB < minA && maxB > minA) || (maxB > maxA && minB < maxA)) { resultStart = Math.Max(minB, minA); resultEnd = Math.Min(maxB, maxA); }
+                break;
+            case OperationKind.LessThanAndEqual: // no part of A to right of B, and part to the left of B  (overlap left)
+                if (minA < minB && maxA > minB && maxA < maxB) { resultStart = minA; resultEnd = maxA; }
+                else if (minA <= minB && maxA > minB) { resultStart = minA; resultEnd = Math.Min(maxA, maxB); }
+                break;
+            case OperationKind.LessThanOrEqual: // no part of A to right of B
+                if (maxA <= maxB) { resultStart = minA; resultEnd = maxA; } else if (minA <= maxB) { resultStart = minA; resultEnd = Math.Min(maxA, maxB); }
+                break;
+            case OperationKind.LessThan: // A all to left of B
+                if (maxA < minB) { resultStart = minA; resultEnd = maxA; } else if (minA < minB) { resultStart = minA; resultEnd = Math.Min(maxA, minB); }
+                break;
+        }
+
+        if (resultStart - resultEnd != 0) // zero length result not allowed, so this works
+        {
+            //positions.Add(resultStart);
+            //positions.Add(resultStart);
+            AddPosition(resultStart, resultEnd);
+        }
     }
     #endregion
     #region Bool Ops
@@ -350,53 +532,53 @@ public class Number : IMathElement
     // use segments rather than ints
     // convert values to first param's domain's context
     // result in first params's domain
-    public virtual NumberGroup Never(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Never(Focal, q.Focal));
-    public virtual void Never(Number q, NumberGroup result) => result.Reset(Focal.Never(Focal, q.Focal));
+    //public virtual NumberGroup Never(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Never(Focal, q.Focal));
+    //public virtual void Never(Number q, NumberGroup result) => result.Reset(Focal.Never(Focal, q.Focal));
 
-    public virtual NumberGroup And(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.And(Focal, q.Focal));
-    public virtual void And(Number q, NumberGroup result) => result.Reset(Focal.And(Focal, q.Focal));
+    //public virtual NumberGroup And(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.And(Focal, q.Focal));
+    //public virtual void And(Number q, NumberGroup result) => result.Reset(Focal.And(Focal, q.Focal));
 
-    public virtual NumberGroup B_Inhibits_A(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.B_Inhibits_A(Focal, q.Focal));
-    public virtual void B_Inhibits_A(Number q, NumberGroup result) => result.Reset(Focal.B_Inhibits_A(Focal, q.Focal));
+    //public virtual NumberGroup B_Inhibits_A(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.B_Inhibits_A(Focal, q.Focal));
+    //public virtual void B_Inhibits_A(Number q, NumberGroup result) => result.Reset(Focal.B_Inhibits_A(Focal, q.Focal));
 
-    public virtual NumberGroup Transfer_A(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Transfer_A(Focal, q.Focal));
-    public virtual void Transfer_A(Number q, NumberGroup result) => result.Reset(Focal.Transfer_A(Focal, q.Focal));
+    //public virtual NumberGroup Transfer_A(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Transfer_A(Focal, q.Focal));
+    //public virtual void Transfer_A(Number q, NumberGroup result) => result.Reset(Focal.Transfer_A(Focal, q.Focal));
 
-    public virtual NumberGroup A_Inhibits_B(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.A_Inhibits_B(Focal, q.Focal));
-    public virtual void A_Inhibits_B(Number q, NumberGroup result) => result.Reset(Focal.A_Inhibits_B(Focal, q.Focal));
+    //public virtual NumberGroup A_Inhibits_B(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.A_Inhibits_B(Focal, q.Focal));
+    //public virtual void A_Inhibits_B(Number q, NumberGroup result) => result.Reset(Focal.A_Inhibits_B(Focal, q.Focal));
 
-    public virtual NumberGroup Transfer_B(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Transfer_B(Focal, q.Focal));
-    public virtual void Transfer_B(Number q, NumberGroup result) => result.Reset(Focal.Transfer_B(Focal, q.Focal));
+    //public virtual NumberGroup Transfer_B(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Transfer_B(Focal, q.Focal));
+    //public virtual void Transfer_B(Number q, NumberGroup result) => result.Reset(Focal.Transfer_B(Focal, q.Focal));
 
-    public virtual NumberGroup Xor(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Xor(Focal, q.Focal));
-    public virtual void Xor(Number q, NumberGroup result) => result.Reset(Focal.Xor(Focal, q.Focal));
+    //public virtual NumberGroup Xor(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Xor(Focal, q.Focal));
+    //public virtual void Xor(Number q, NumberGroup result) => result.Reset(Focal.Xor(Focal, q.Focal));
 
-    public virtual NumberGroup Or(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Or(Focal, q.Focal));
-    public virtual void Or(Number q, NumberGroup result) => result.Reset(Focal.Or(Focal, q.Focal));
+    //public virtual NumberGroup Or(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Or(Focal, q.Focal));
+    //public virtual void Or(Number q, NumberGroup result) => result.Reset(Focal.Or(Focal, q.Focal));
 
-    public virtual NumberGroup Nor(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Nor(Focal, q.Focal));
-    public virtual void Nor(Number q, NumberGroup result) => result.Reset(Focal.Nor(Focal, q.Focal));
+    //public virtual NumberGroup Nor(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Nor(Focal, q.Focal));
+    //public virtual void Nor(Number q, NumberGroup result) => result.Reset(Focal.Nor(Focal, q.Focal));
 
-    public virtual NumberGroup Xnor(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Xnor(Focal, q.Focal));
-    public virtual void Xnor(Number q, NumberGroup result) => result.Reset(Focal.Xnor(Focal, q.Focal));
+    //public virtual NumberGroup Xnor(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Xnor(Focal, q.Focal));
+    //public virtual void Xnor(Number q, NumberGroup result) => result.Reset(Focal.Xnor(Focal, q.Focal));
 
-    public virtual NumberGroup Not_B(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Not_B(Focal, q.Focal));
-    public virtual void Not_B(Number q, NumberGroup result) => result.Reset(Focal.Not_B(Focal, q.Focal));
+    //public virtual NumberGroup Not_B(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Not_B(Focal, q.Focal));
+    //public virtual void Not_B(Number q, NumberGroup result) => result.Reset(Focal.Not_B(Focal, q.Focal));
 
-    public virtual NumberGroup B_Implies_A(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.B_Implies_A(Focal, q.Focal));
-    public virtual void B_Implies_A(Number q, NumberGroup result) => result.Reset(Focal.B_Implies_A(Focal, q.Focal));
+    //public virtual NumberGroup B_Implies_A(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.B_Implies_A(Focal, q.Focal));
+    //public virtual void B_Implies_A(Number q, NumberGroup result) => result.Reset(Focal.B_Implies_A(Focal, q.Focal));
 
-    public virtual NumberGroup Not_A(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Not_A(Focal, q.Focal));
-    public virtual void Not_A(Number q, NumberGroup result) => result.Reset(Focal.Not_A(Focal, q.Focal));
+    //public virtual NumberGroup Not_A(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Not_A(Focal, q.Focal));
+    //public virtual void Not_A(Number q, NumberGroup result) => result.Reset(Focal.Not_A(Focal, q.Focal));
 
-    public virtual NumberGroup A_Implies_B(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.A_Implies_B(Focal, q.Focal));
-    public virtual void A_Implies_B(Number q, NumberGroup result) => result.Reset(Focal.A_Implies_B(Focal, q.Focal));
+    //public virtual NumberGroup A_Implies_B(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.A_Implies_B(Focal, q.Focal));
+    //public virtual void A_Implies_B(Number q, NumberGroup result) => result.Reset(Focal.A_Implies_B(Focal, q.Focal));
 
-    public virtual NumberGroup Nand(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Nand(Focal, q.Focal));
-    public virtual void Nand(Number q, NumberGroup result) => result.Reset(Focal.Nand(Focal, q.Focal));
+    //public virtual NumberGroup Nand(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Nand(Focal, q.Focal));
+    //public virtual void Nand(Number q, NumberGroup result) => result.Reset(Focal.Nand(Focal, q.Focal));
 
-    public virtual NumberGroup Always(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Always(Focal, q.Focal));
-    public virtual void Always(Number q, NumberGroup result) => result.Reset(Focal.Always(Focal, q.Focal));
+    //public virtual NumberGroup Always(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Always(Focal, q.Focal));
+    //public virtual void Always(Number q, NumberGroup result) => result.Reset(Focal.Always(Focal, q.Focal));
     #endregion
     #region Interpolation
     public void InterpolateFromZero(Number t, Number result) => InterpolateFromZero(this, t, result);
@@ -443,6 +625,7 @@ public class Number : IMathElement
     }
     #endregion
     #region Internal Segments
+    // todo: internal segments should be a class added with composition
     /// <summary>
     /// The number of subnumbers, will always be 1 for normal numbers, can be 0->n for masked or groups numbers.
     /// </summary>
@@ -450,6 +633,25 @@ public class Number : IMathElement
     public virtual long[] GetPositions()
     {
         return new long[] { StartTickPosition, EndTickPosition };
+    }
+    public virtual void ClearInternalPositions() { }
+    public virtual void AddPosition(long start, long end) 
+    {
+        StartTickPosition = start;
+        EndTickPosition = end;
+    }
+    public virtual void AddPosition(Focal focal)
+    {
+        AddPosition(focal.StartPosition, focal.EndPosition);
+    }
+    public virtual void AddPosition(Number num)
+    {
+        AddPosition(num.Focal.StartPosition, num.Focal.EndPosition);
+    }
+    public virtual void AddPosition(PRange range)
+    {
+        var focal = Domain.CreateFocalFromRange(range);
+        AddPosition(focal.StartPosition, focal.EndPosition);
     }
     public virtual IEnumerable<Number> InternalNumbers()
     {
@@ -588,6 +790,7 @@ public class Number : IMathElement
 
     }
     #endregion
+
     #region Equality
     public Number Clone(bool addToStore = true)
     {

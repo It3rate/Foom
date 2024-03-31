@@ -86,8 +86,8 @@ public class FocalGroup : Focal
     }
     public override long[] GetPositions() => Positions().ToArray();
 
-    public long MaxPosition => Positions().Max();
-    public long MinPosition => Positions().Min();
+    public override long MaxExtent => Positions().Max();
+    public override long MinExtent => Positions().Min();
 
     public override void Reset(long start, long end)
     {
@@ -129,8 +129,8 @@ public class FocalGroup : Focal
         }
         else if (operationKind.IsBoolCompare())
         {
-            var maxA = MaxPosition;
-            var minA = MinPosition;
+            var maxA = MaxExtent;
+            var minA = MinExtent;
             var maxB = focal.Max;// startB > endB ? startB : endB;
             var minB = focal.Min;// startB < endB ? startB : endB;
             long resultStart = 0;
@@ -155,7 +155,8 @@ public class FocalGroup : Focal
                 case OperationKind.Equals: // B matches A
                     if (minA == minB && maxA == maxB) { resultStart = minA; resultEnd = maxA; }
                     break;
-                case OperationKind.Contains: // B fits inside A
+                    // todo: truth of bool comparison compares with B here!
+                case OperationKind.Contains: // B fits inside A 
                     if (minB >= minA && maxB <= maxA) { resultStart = minB; resultEnd = maxB; }
                     else if ((minB < minA && maxB > minA) || (maxB > maxA && minB < maxA)) { resultStart = Math.Max(minB, minA); resultEnd = Math.Min(maxB, maxA); }
                     break;

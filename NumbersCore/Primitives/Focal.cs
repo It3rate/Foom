@@ -99,6 +99,7 @@ public class Focal : IMathElement, IEquatable<Focal>
     }
     public virtual long[] GetPositions() => [StartPosition, EndPosition];
 
+
     public long LengthInTicks => EndPosition - StartPosition;
     public long AbsLengthInTicks => Math.Abs(LengthInTicks);
     public long NonZeroLength => LengthInTicks == 0 ? 1 : LengthInTicks;
@@ -162,8 +163,10 @@ public class Focal : IMathElement, IEquatable<Focal>
         var end = (EndPosition - basis.StartPosition) / len;
         return new PRange(start, end);
     }
-    public long Min => StartPosition <= EndPosition ? StartPosition : EndPosition;
+    public long Min => StartPosition <= EndPosition ? StartPosition : EndPosition; // always the end points
     public long Max => StartPosition >= EndPosition ? StartPosition : EndPosition;
+    public virtual long MaxExtent => Max; // can be a midpoint in case of a focal group (max extent)
+    public virtual long MinExtent => Min;
     public Focal Negated => new Focal(-StartPosition, -EndPosition);
     public void Reverse()
     {

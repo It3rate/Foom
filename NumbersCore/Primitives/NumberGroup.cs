@@ -48,6 +48,29 @@ public class NumberGroup : Number, IMathElement
     {
         return _focalGroup.GetPositions();
     }
+
+    public override Polarity[] Polarities => _polarityGroup.ToArray();
+    public override int[] Directions => InternalNumbers().Select(obj => obj.Direction).ToArray();
+    public override bool IsPolarityEqual(Number num)
+    {
+        var result = false;
+        if (Count == num.Count)
+        {
+            result = _polarityGroup.SequenceEqual(num.Polarities);
+        }
+        return result;
+    }
+    public override bool IsDirectionEqual(Number num)
+    {
+        var result = false;
+        if (Count == num.Count)
+        {
+            result = Directions.SequenceEqual(num.Directions);
+        }
+        return result;
+    }
+
+
     public override IEnumerable<PRange> InternalRanges()
     {
         var i = 0;
@@ -269,31 +292,12 @@ public class NumberGroup : Number, IMathElement
 
     public void Not(Number q) { Reset(Focal.UnaryNot(q.Focal)); }
 
-
-
-
-    public static bool operator ==(NumberGroup a, NumberGroup b)
-    {
-        if (a is null && b is null)
-        {
-            return true;
-        }
-        if (a is null || b is null)
-        {
-            return false;
-        }
-        return a.Equals(b);
-    }
-
-    public static bool operator !=(NumberGroup a, NumberGroup b)
-    {
-        return !(a == b);
-    }
-    public override bool Equals(object obj)
+    #region Equality
+    public override bool Equals(object? obj)
     {
         return obj is NumberGroup other && Equals(other);
     }
-    public bool Equals(NumberGroup value)
+    public bool Equals(NumberGroup? value)
     {
         return ReferenceEquals(this, value) ||
             (
@@ -310,7 +314,7 @@ public class NumberGroup : Number, IMathElement
             return hashCode;
         }
     }
-
+    #endregion
     public override string ToString()
     {
         var result = "ng(0)";

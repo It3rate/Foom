@@ -127,6 +127,25 @@ public class Number : IMathElement
         set => _polarity = value;
     }
 
+    public virtual Polarity[] Polarities => [Polarity];
+    public virtual int[] Directions => [Direction];
+    /// <summary>
+    /// Compares the positions of each number, regardless of direction.
+    /// </summary>
+    public virtual bool IsSizeEqual(Number num)
+    {
+        var result = false;
+        if (Count == num.Count)
+        {
+            var p0 = Direction == 1 ? GetPositions() : GetPositions().Reverse();
+            var p1 = num.Direction == 1 ? num.GetPositions() : num.GetPositions().Reverse();
+            result = p0.SequenceEqual(num.GetPositions());
+        }
+        return result;
+    }
+    public virtual bool IsPolarityEqual(Number num) => Polarity == num.Polarity;
+    public virtual bool IsDirectionEqual(Number num) => Direction == num.Direction;
+
     public int PolarityDirection => IsAligned ? 1 : IsInverted ? -1 : 0;
     public bool IsAligned => Polarity == Polarity.Aligned;
     public bool HasPolairty => Polarity == Polarity.Aligned || Polarity == Polarity.Inverted;
@@ -168,7 +187,6 @@ public class Number : IMathElement
         InvertPolarity();
         Reverse();
     }
-
     #endregion
     #region PRange
     public virtual double StartValue

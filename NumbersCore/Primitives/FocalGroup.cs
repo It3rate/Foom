@@ -285,30 +285,12 @@ public class FocalGroup : Focal
         Count = 0;
     }
 
-
-
-    public static bool operator ==(FocalGroup a, FocalGroup b)
-    {
-        if (a is null && b is null)
-        {
-            return true;
-        }
-        if (a is null || b is null)
-        {
-            return false;
-        }
-        return a.Equals(b);
-    }
-
-    public static bool operator !=(FocalGroup a, FocalGroup b)
-    {
-        return !(a == b);
-    }
-    public override bool Equals(object obj)
+    #region Equality
+    public override bool Equals(object? obj)
     {
         return obj is FocalGroup other && Equals(other);
     }
-    public bool Equals(FocalGroup value)
+    public bool Equals(FocalGroup? value)
     {
         var result = false;
         if (ReferenceEquals(this, value))
@@ -341,6 +323,8 @@ public class FocalGroup : Focal
             return hashCode;
         }
     }
+    #endregion
+
     public override string ToString()
     {
         var result = $"fc:(";

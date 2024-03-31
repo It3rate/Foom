@@ -33,6 +33,7 @@ public class MaskedNumber : Number
     {
         return MaskedFocal.GetPositions();
     }
+
     public override IEnumerable<Number> InternalNumbers()
     {
         var positions = MaskedFocal.GetPositions();
@@ -57,23 +58,6 @@ public class MaskedNumber : Number
     public void ComputeWith(Number? num, OperationKind operationKind)
     {
     }
-
-    /// <summary>
-    /// Compares the positions of each number, regardless of direction.
-    /// </summary>
-    public bool IsSizeEqual(Number num) 
-    {
-        var result = false;
-        if(Count == num.Count)
-        {
-            var p0 = Direction == 1 ? GetPositions() : GetPositions().Reverse();
-            var p1 = num.Direction == 1 ? num.GetPositions() : num.GetPositions().Reverse();
-            result = p0.SequenceEqual(num.GetPositions());
-        }
-        return result;
-    }
-    public bool IsPolarityEqual(Number num) => Polarity == num.Polarity;
-    public bool IsDirectionEqual(Number num) => Direction == num.Direction;
 
     private static MaskedFocal ValidatePositions(bool firstMaskIsTrue, long[] maskPositions)
     {

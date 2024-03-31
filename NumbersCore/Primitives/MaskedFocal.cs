@@ -132,8 +132,6 @@ public class MaskedFocal : Focal
         StartState = BoolState.False;
     }
 
-
-
     private static Focal ValidatePositions(long[] maskPositions)
     {
         if (maskPositions.Length < 2)

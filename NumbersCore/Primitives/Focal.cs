@@ -192,7 +192,7 @@ public class Focal : IMathElement, IEquatable<Focal>
     /// Shares an endpoint, but no overlap (meaning can only share one endpoint).
     /// </summary>
     public static bool Touches(Focal p, Focal q) => p.EndPosition == q.StartPosition || p.StartPosition == q.EndPosition;
-    public static Focal Intersection(Focal p, Focal q)
+    public static Focal? Intersection(Focal p, Focal q)
     {
         Focal result = null;
         var ov = Overlap(p, q);
@@ -560,7 +560,7 @@ public class Focal : IMathElement, IEquatable<Focal>
         return ReferenceEquals(this, value) || StartPosition.Equals(value.StartPosition) && EndPosition.Equals(value.EndPosition);
     }
 
-    public static bool operator ==(Focal a, Focal b)
+    public static bool operator ==(Focal? a, Focal? b)
     {
         if (a is null && b is null)
         {
@@ -573,7 +573,7 @@ public class Focal : IMathElement, IEquatable<Focal>
         return a.Equals(b);
     }
 
-    public static bool operator !=(Focal a, Focal b)
+    public static bool operator !=(Focal? a, Focal? b)
     {
         return !(a == b);
     }

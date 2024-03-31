@@ -37,7 +37,10 @@ public class Number : IMathElement
     public Focal Focal { get; set; }
 
     public int FocalId => Focal.Id;
-
+    /// <summary>
+    /// The number of subnumbers, will always be 1 for normal numbers, can be 0->n for masked or groups numbers.
+    /// </summary>
+    public virtual int Count => 1;
     protected Polarity _polarity = Polarity.Aligned;
     /// <summary>
     /// Determines if this number has an aligned or inverted perspective relative to the domain basis. 
@@ -430,6 +433,66 @@ public class Number : IMathElement
     public virtual void Always(Number q, NumberGroup result) => result.Reset(Focal.Always(Focal, q.Focal));
 
 
+    /// <summary>
+    /// NumberGroups can have overlapping numbers, so this segmented version returns all partial ranges for each possible segment.
+    /// Assumes aligned domains.
+    /// </summary>
+    public static (long[], List<Number[]>) SegmentedTable(Domain domain, bool allowOverlap, params Number[] numbers)
+    {
+        var result = new List<Number[]>();
+        var internalNumberSets = new List<Number[]>();
+        var sPositions = new SortedSet<long>();
+        foreach (var number in numbers)
+        {
+            if (number.IsValid)
+            {
+                internalNumberSets.Add(number.InternalNumbers().ToArray());
+                sPositions.UnionWith(number.GetPositions());
+            }
+            else
+            {
+                internalNumberSets.Add([]);
+            }
+        }
+        var positions = sPositions.ToArray();
+
+        for (int i = 1; i < positions.Length; i++)
+        {
+            var focal = new Focal(positions[i - 1], positions[i]);
+            var matches = new List<Number>();
+            foreach (var numSet in internalNumberSets)
+            {
+                if (numSet.Length == 0)
+                {
+                    matches.Add(CreateSubsegment(domain, focal, Polarity.None));
+                }
+                else
+                {
+                    foreach (var number in numSet)
+                    {
+                        var intersection = Focal.Intersection(number.Focal, focal);
+                        if (intersection != null)
+                        {
+                            matches.Add(CreateSubsegment(domain, intersection, number.Polarity));
+                        }
+                        else if(allowOverlap)
+                        {
+                            matches.Add(CreateSubsegment(domain, focal, Polarity.None)); // False is polarity none
+                        }
+                    }
+                }
+            }
+            result.Add(matches.ToArray());
+        }
+        return (positions, result);
+    }
+    protected static Number CreateSubsegment(Domain domain, Focal focal, Polarity polairty = Polarity.None)
+    {
+        var result = new Number(focal.Clone(), polairty); // false
+        result.Domain = domain;
+        return result;
+    }
+
     public Number Clone(bool addToStore = true)
     {
         var result = new Number(Focal.Clone(), Polarity);
@@ -482,10 +545,17 @@ public class Number : IMathElement
         if (IsValid)
         {
             var v = Value;
-            var midSign = v.End > 0 ? " + " : " ";
-            result = IsAligned ?
-                $"({v.UnotValue:0.##}i{midSign}{v.UnitValue}r)" :
-                $"~({v.UnitValue:0.##}r{midSign}{v.UnotValue:0.##}i)";
+            if (Polarity == Polarity.None)
+            {
+                result = $"x({v.Start:0.##}_{-v.End:0.##})"; // no polarity, so just list values
+            }
+            else
+            {
+                var midSign = v.End > 0 ? " + " : " ";
+                result = IsAligned ?
+                    $"({v.UnotValue:0.##}i{midSign}{v.UnitValue}r)" :
+                    $"~({v.UnitValue:0.##}r{midSign}{v.UnotValue:0.##}i)";
+            }
         }
         return result;
     }

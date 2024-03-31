@@ -73,10 +73,12 @@ public class Slides : DemoBase
 
         var hd = wm.GetOrCreateDomainMapper(Domain.CreateDomain("Animation", 4, -10f, 20f, 0));
 
-        var maskedNum = new MaskedNumber(Polarity.Aligned, true, 8, 12, 16, 22);
+        var maskedNum = new MaskedNumber(Polarity.Aligned, true, 8, 12, 16, 24);
         hd.Domain.AddNumber(maskedNum, true);
         var mnm = new SkMaskedNumberMapper(_currentMouseAgent, maskedNum);
         hd.AddNumberMapper(mnm);
+
+        var sn = Number.SegmentedTable(hd.Domain, false, maskedNum);
 
         //var left = hd.CreateNumberFromFloats(0, 2, true);
         //var right = hd.CreateNumberFromFloats(0, 3, true);

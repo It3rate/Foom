@@ -15,7 +15,7 @@ public class NumberGroup : Number, IMathElement
 
     private FocalGroup _focalGroup => (FocalGroup)Focal;
     private List<Polarity> _polarityGroup { get; } = new List<Polarity>();
-    public int Count => _focalGroup.Count;
+    public override int Count => _focalGroup.Count;
 
     public override Domain Domain // todo: lookup domain on PolyDomain
     {
@@ -217,7 +217,7 @@ public class NumberGroup : Number, IMathElement
         // bool ops are just comparing state, so they don't care about direction or polarity, thus happen on focals
         // however, this requires they have the same resolutions, so really should be on number chains.
         //_focalChain.ComputeWith(focal, operationKind);
-        var (_, table) = SegmentedTable(Domain, this, other);
+        var (_, table) = SegmentedTable(Domain, true, this, other);
         var (focals, polarities) = ApplyOpToSegmentedTable(table, operationKind);
         Clear();
         _focalGroup.AddPositions(focals);
@@ -277,66 +277,6 @@ public class NumberGroup : Number, IMathElement
     public void Not(Number q) { Reset(Focal.UnaryNot(q.Focal)); }
 
 
-    /// <summary>
-    /// NumberChains can have overlapping numbers, so this segmented version returns all partial ranges for each possible segment.
-    /// Assumes aligned domains.
-    /// </summary>
-    public static (long[], List<Number[]>) SegmentedTable(Domain domain, params Number[] numbers)
-    {
-        var result = new List<Number[]>();
-        var internalNumberSets = new List<Number[]>();
-        var sPositions = new SortedSet<long>();
-        foreach (var number in numbers)
-        {
-            if (number.IsValid)
-            {
-                internalNumberSets.Add(number.InternalNumbers().ToArray());
-                sPositions.UnionWith(number.GetPositions());
-            }
-            else
-            {
-                internalNumberSets.Add(new Number[] { });
-            }
-        }
-        var positions = sPositions.ToArray();
-        Number partial;
-        for (int i = 1; i < positions.Length; i++)
-        {
-            var focal = new Focal(positions[i - 1], positions[i]);
-            var matches = new List<Number>();
-            foreach (var numSet in internalNumberSets)
-            {
-                if (numSet.Length == 0)
-                {
-                    matches.Add(CreateSubsegment(domain, focal, Polarity.None));
-                }
-                else
-                {
-                    foreach (var number in numSet)
-                    {
-                        var intersection = Focal.Intersection(number.Focal, focal);
-                        if (intersection != null)
-                        {
-                            matches.Add(CreateSubsegment(domain, intersection, number.Polarity));
-                        }
-                        else
-                        {
-                            matches.Add(CreateSubsegment(domain, focal, Polarity.None));
-                        }
-                    }
-                }
-            }
-            result.Add(matches.ToArray());
-        }
-
-        return (positions, result);
-    }
-    private static Number CreateSubsegment(Domain domain, Focal focal, Polarity polairty = Polarity.None)
-    {
-        var result = new Number(focal.Clone(), polairty); // false
-        result.Domain = domain;
-        return result;
-    }
     private (Focal[], Polarity[]) ApplyOpToSegmentedTable(List<Number[]> data, OperationKind operation)
     {
         var focals = new List<Focal>();
@@ -408,32 +348,6 @@ public class NumberGroup : Number, IMathElement
 
     }
 
-    //// truth table only acts on valid parts of segments. Remember a -10i+5 has two parts, 0 to -10i and 0 to 5. This is the area bools apply to.
-    //private List<(long, BoolState, BoolState)> BuildTruthTable(Number right)
-    //{
-    //    var leftRanges = InternalRanges();
-    //    var rightRanges = right.InternalRanges();
-    //    //var pos = _focalChain.BuildTruthTable(leftPositions, rightPositions);
-    //    var result = new List<(long, BoolState, BoolState)>();
-    //    if (left.Length > 0)
-    //    {
-    //        var sortedAll = new SortedSet<long>(left);
-    //        sortedAll.UnionWith(right);
-    //        var leftSideState = BoolState.False;
-    //        var rightSideState = BoolState.False;
-    //        int index = 0;
-    //        foreach (var pos in sortedAll)
-    //        {
-    //            if (left.Contains(pos)) { leftSideState = leftSideState.Invert(); }
-    //            if (right.Contains(pos)) { rightSideState = rightSideState.Invert(); }
-    //            //var left = index == 0 ? BoolState.Underflow : leftSideState;
-    //            //var right = index == sortedAll.Count - 1 ? BoolState.Overflow : rightSideState;
-    //            result.Add((pos, leftSideState, rightSideState));
-    //            index++;
-    //        }
-    //    }
-    //    return result;
-    //}
 
     public static bool operator ==(NumberGroup a, NumberGroup b)
     {

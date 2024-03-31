@@ -7,6 +7,7 @@ public class MaskedFocal : Focal
     private long[] _positions;
     private double[] _tPositions;
     public bool IsEmpty => StartState == BoolState.False && _positions.Length == 0;
+    public int Count => _positions.Length;
 
     public override long StartPosition
     {
@@ -39,7 +40,6 @@ public class MaskedFocal : Focal
     /// The whole compared result is returned, and it can be 'empty' if it has two positions and starts 'false'.
     /// Positions always alternate between true and false, and must be in consecutive increasing order.
     /// An on/off/on sequence in the same position would be reduced to 'on'.
-    /// T positions are immutable, but grow and shrink relative to the focal.
     /// </summary>
     public MaskedFocal(bool firstMaskIsTrue, params long[] maskPositions) : base()
     {
@@ -53,6 +53,7 @@ public class MaskedFocal : Focal
     {
         StartState = startState;
         _positions = (long[])positions.Clone();
+        _tPositions = GetTPositions();
     }
 
     public void SetPosition(int index, long value)
@@ -70,7 +71,6 @@ public class MaskedFocal : Focal
         }
     }
     public override long[] GetPositions() => (long[])_positions.Clone();
-
     private double[] GetTPositions()
     {
         var positions = GetPositions();

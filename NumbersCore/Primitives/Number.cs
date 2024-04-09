@@ -41,12 +41,16 @@ public class Number : IMathElement
         EndTickPosition = other.EndPosition;
         Polarity = polarity;
     }
-    public virtual void SetWith(Focal[] focals, Polarity[] polarities)
+    public virtual void SetWith(Focal[] focals, Polarity[] polarities, bool flipDirection = false)
     {
         if (focals.Length > 0 && polarities.Length > 0)
         {
             // there are no segments in numbers, will convert all to maskedNumbers later
             Focal resultFocal = new Focal(focals[0].StartPosition, focals[focals.Length - 1].EndPosition);
+            if (flipDirection)
+            {
+                resultFocal.Reverse();
+            }
             SetWith(resultFocal, polarities[0]);
         }
         else
@@ -409,8 +413,8 @@ public class Number : IMathElement
         // todo: all bool/compare ops need to use normalized basis', or for now ranges. 
         // really numbers should never be used in bool ops, eventually combine maskedNumber with Number and this goes away
         var (_, table) = SegmentedTable(Domain, true, this, other);
-        var (focals, polarities) = ApplyOpToSegmentedTable(table, operationKind);
-        SetWith(focals, polarities);
+        var (focals, polarities, dir) = ApplyOpToSegmentedTable(table, operationKind);
+        SetWith(focals, polarities, !dir);
     }
     public static Number GetMaxExtent(Number a, Number b)
     {
@@ -663,10 +667,11 @@ public class Number : IMathElement
         result.Domain = domain;
         return result;
     }
-    protected static (Focal[], Polarity[]) ApplyOpToSegmentedTable(List<Number[]> data, OperationKind operation)
+    protected static (Focal[], Polarity[], bool) ApplyOpToSegmentedTable(List<Number[]> data, OperationKind operation)
     {
         var focals = new List<Focal>();
         var polarities = new List<Polarity>();
+        var dirResult = false;
         Focal? lastFocal = null;
         Polarity lastPolarity = Polarity.Unknown;
 
@@ -680,8 +685,8 @@ public class Number : IMathElement
                 var first = seg[0];
                 var op = operation;
                 var opResult = false;
-                var dirResult = false;
                 var polResult = false;
+                dirResult = false;
                 for (int i = 0; i < seg.Length; i++)
                 {
                     var curNum = seg[i];
@@ -702,18 +707,19 @@ public class Number : IMathElement
 
                 if (opResult)
                 {
-                    var focal = dirResult ? new Focal(first.MinTickPosition, first.MaxTickPosition) : new Focal(first.MaxTickPosition, first.MinTickPosition);
+                    var focal = new Focal(first.MinTickPosition, first.MaxTickPosition);// dirResult ? new Focal(first.MinTickPosition, first.MaxTickPosition) : new Focal(first.MaxTickPosition, first.MinTickPosition);
                     var polarity = polResult ? Polarity.Aligned : Polarity.Inverted;
-                    if (lastFocal != null && lastPolarity == polarity && lastFocal.IsPositiveDirection == focal.IsPositiveDirection) // merge continuous segments
+                    if (lastFocal != null)// && lastPolarity == polarity && lastFocal.IsPositiveDirection == focal.IsPositiveDirection) // merge continuous segments
                     {
-                        if (lastFocal.IsPositiveDirection)
-                        {
-                            lastFocal.EndPosition = focal.EndPosition;
-                        }
-                        else
-                        {
-                            lastFocal.StartPosition = focal.StartPosition;
-                        }
+                        lastFocal.EndPosition = focal.EndPosition;
+                        //if (lastFocal.IsPositiveDirection)
+                        //{
+                        //    lastFocal.EndPosition = focal.EndPosition;
+                        //}
+                        //else
+                        //{
+                        //    lastFocal.StartPosition = focal.StartPosition;
+                        //}
                     }
                     else
                     {
@@ -730,7 +736,7 @@ public class Number : IMathElement
             }
         }
 
-        return (focals.ToArray(), polarities.ToArray());
+        return (focals.ToArray(), polarities.ToArray(), dirResult);
 
     }
     #endregion

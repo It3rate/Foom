@@ -128,7 +128,7 @@ public class NumberGroup : Number, IMathElement
     public override void ComputeBoolOp(Number other, OperationKind operationKind)
     {
         var (_, table) = SegmentedTable(Domain, true, this, other);
-        var (focals, polarities) = ApplyOpToSegmentedTable(table, operationKind);
+        var (focals, polarities, dir) = ApplyOpToSegmentedTable(table, operationKind);
         ClearInternalPositions();
         _focalGroup.AddPositions(focals);
         _polarityGroup.AddRange(polarities);

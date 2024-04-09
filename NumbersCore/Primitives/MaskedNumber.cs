@@ -28,7 +28,7 @@ public class MaskedNumber : Number
         Polarity = num.Polarity;
         Focal = ValidatePositions(num.StartState.IsTrue(), num.GetPositions());
     }
-    public override void SetWith(Focal[] focals, Polarity[] polarities)
+    public override void SetWith(Focal[] focals, Polarity[] polarities, bool flipDirection = false)
     {
         ClearInternalPositions();
         Polarity = polarities.FirstOrDefault((value)=>value.HasPolarity(), Polarity.None);
@@ -37,8 +37,12 @@ public class MaskedNumber : Number
             List<long> positions = new List<long>();
             foreach(var focal in focals)
             {
-                positions.Add(focal.StartPosition);
-                positions.Add(focal.EndPosition);
+                positions.Add(focal.Min);
+                positions.Add(focal.Max);
+            }
+            if (flipDirection)
+            {
+                positions.Reverse();
             }
             MaskedFocal.Set(BoolState.True, positions.ToArray());
         }

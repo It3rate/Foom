@@ -28,13 +28,15 @@ public class SkMaskedNumberMapper : SKNumberMapper
         _drawNumStartCap = true;
         var postions = MaskedNumber.Positions().ToArray();
         var index = 0;
+        var isStarted = false;
         foreach (var pos in postions)
         {
             if (startState.IsTrue())
             {
                 pts.Add(pos);
+                isStarted = true;
             }
-            else
+            else if(isStarted)
             {
                 var focal = new Focal(pts[0], pos);
                 //var val = DomainMapper.Domain.GetValueOf(focal, Polarity);

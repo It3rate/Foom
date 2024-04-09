@@ -25,7 +25,7 @@ public class Slides : DemoBase
         Brain = brain;
         SKWorkspaceMapper.DefaultWorkspaceGhostText = CorePens.GetText(SKColor.Parse("#B0C0D0"), 18);
         SKWorkspaceMapper.DefaultWorkspaceText = CorePens.GetText(SKColor.Parse("#3030A0"), 18);
-        _testIndex = 0;// 24;
+        _testIndex = 24; //0;// 
         Pages.AddRange(new PageCreator[]
         {
             AnimationTest,
@@ -129,7 +129,7 @@ public class Slides : DemoBase
         };
         num1.OnChanged += (sender, e) =>
         {
-            DrawCircles(wm, (int)-num0.Number.StartValue, (int)num0.Number.EndValue, (int)-num1.Number.StartValue, (int)num1.Number.EndValue);
+            DrawCircles(wm, (int)-num0.Number.StartValue, (int)num0.Number.EndValue, (int)num1.Number.StartValue, (int)-num1.Number.EndValue);
         };
 
         var paint = CorePens.GetPen(SKColors.Red, 12);
@@ -933,13 +933,13 @@ public class Slides : DemoBase
         Transform transform = Brain.AddTransform(hNum, vNum, OperationKind.Multiply);
         var tm = wm.GetOrCreateTransformMapper(transform);
         tm.Do2DRender = true;
-        tm.EquationPoint = new SKPoint(hMapper.StartPoint.X - 220, vMapper.MidPoint.Y - 20);
+        tm.EquationPoint = new SKPoint(hMapper.StartPoint.X -250, vMapper.MidPoint.Y - 120);
 
 
         CreateSimilarDomain(hMapper.Domain, 1f, 20, hNum.Focal);
         CreateSimilarDomain(hMapper.Domain, 1.08f, 20, vNum.Focal);
-        CreateSimilarDomain(hMapper.Domain, 1.2f, 100, transform.Result.Focal);
-
+        var rd = CreateSimilarDomain(hMapper.Domain, 1.2f, 100);
+        rd.Domain.AddNumber(transform.Result);
 
 
         return wm;

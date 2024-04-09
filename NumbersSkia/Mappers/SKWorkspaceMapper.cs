@@ -178,7 +178,7 @@ public class SKWorkspaceMapper : SKMapper
             _transformMappers[transform.Id] = result;
             result.Do2DRender = doRender;
         }
-        return (SKTransformMapper)result;
+        return result;
     }
     public SKTransformMapper TransformMapperInvolving(Number num)
     {

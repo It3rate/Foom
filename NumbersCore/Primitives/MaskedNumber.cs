@@ -7,7 +7,7 @@ public class MaskedNumber : Number
 {
     public MaskedFocal MaskedFocal => (MaskedFocal)Focal;
 
-    public BoolState StartState => MaskedFocal.StartState;
+    public override BoolState StartState => MaskedFocal.StartState;
     public bool IsEmpty => MaskedFocal.IsEmpty;
     public override int Count => StartState.IsTrue() ? MaskedFocal.Count / 2 : (MaskedFocal.Count - 1) / 2;
 
@@ -17,10 +17,32 @@ public class MaskedNumber : Number
     /// It is backed by a MaskedFocal, which holds the masks.
     /// </summary>
     public MaskedNumber(Polarity polarity, bool firstMaskIsTrue, params long[] maskPositions) :
-        base(ValidatePositions(firstMaskIsTrue, maskPositions), polarity)
-    {
-    }
+        base(ValidatePositions(firstMaskIsTrue, maskPositions), polarity)  { }
+    public MaskedNumber(Number num) : // todo: guard for unmerged number group
+        base(ValidatePositions(num.StartState.IsTrue(), num.GetPositions()), num.Polarity) { }
     private MaskedNumber(Polarity polarity, MaskedFocal maskedFocal) : base(maskedFocal, polarity) { }
+
+    public override void SetWith(Number num)
+    {
+        //Domain = num.Domain;
+        Polarity = num.Polarity;
+        Focal = ValidatePositions(num.StartState.IsTrue(), num.GetPositions());
+    }
+    public override void SetWith(Focal[] focals, Polarity[] polarities)
+    {
+        ClearInternalPositions();
+        Polarity = polarities.FirstOrDefault((value)=>value.HasPolarity(), Polarity.None);
+        if (focals.Length > 0 && polarities.Length > 0)
+        {
+            List<long> positions = new List<long>();
+            foreach(var focal in focals)
+            {
+                positions.Add(focal.StartPosition);
+                positions.Add(focal.EndPosition);
+            }
+            MaskedFocal.Set(BoolState.True, positions.ToArray());
+        }
+    }
 
     public IEnumerable<long> Positions()
     {
@@ -61,12 +83,14 @@ public class MaskedNumber : Number
 
     public void ComputeWith(Number? num, OperationKind operationKind)
     {
+        base.ComputeWith(num, operationKind);
     }
 
     private static MaskedFocal ValidatePositions(bool firstMaskIsTrue, long[] maskPositions)
     {
         return new MaskedFocal(firstMaskIsTrue, maskPositions);
     }
+
     #region Equality
     public new MaskedNumber Clone(bool addToStore = true)
     {

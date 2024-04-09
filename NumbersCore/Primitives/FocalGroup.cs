@@ -155,7 +155,7 @@ public class FocalGroup : Focal
                 case OperationKind.Equals: // B matches A
                     if (minA == minB && maxA == maxB) { resultStart = minA; resultEnd = maxA; }
                     break;
-                    // todo: truth of bool comparison compares with B here!
+                    // todo: truth of bool comparison compares with B here! Equations need causal direction.
                 case OperationKind.Contains: // B fits inside A 
                     if (minB >= minA && maxB <= maxA) { resultStart = minB; resultEnd = maxB; }
                     else if ((minB < minA && maxB > minA) || (maxB > maxA && minB < maxA)) { resultStart = Math.Max(minB, minA); resultEnd = Math.Min(maxB, maxA); }

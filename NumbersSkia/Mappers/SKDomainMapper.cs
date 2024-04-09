@@ -1,7 +1,9 @@
-﻿using Numbers.Agent;
+﻿using System.Runtime.ConstrainedExecution;
+using Numbers.Agent;
 using Numbers.Drawing;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
+using NumbersSkia.Mappers;
 using SkiaSharp;
 
 namespace Numbers.Mappers;
@@ -142,9 +144,14 @@ public class SKDomainMapper : SKMapper
     }
     public SKNumberMapper GetOrCreateNumberMapper(Number number)
     {
-        if(number is NumberGroup ng)
+        if (number is NumberGroup ng)
         {
             return GetOrCreateNumberGroupMapper(ng);
+        }
+
+        if (number is MaskedNumber mn)
+        {
+            return GetOrCreateMaskedNumberMapper(mn);
         }
 
         if (!_numberMappers.TryGetValue(number.Id, out var result))
@@ -159,11 +166,25 @@ public class SKDomainMapper : SKMapper
         SKNumberGroupMapper result;
         if (_numberMappers.TryGetValue(numberGroup.Id, out SKNumberMapper? nm) && nm is SKNumberGroupMapper ngm)
         {
-             result = ngm;
+            result = ngm;
         }
         else
-        { 
+        {
             result = new SKNumberGroupMapper(Agent, numberGroup);
+            AddNumberMapper(result);
+        }
+        return result;
+    }
+    public SkMaskedNumberMapper GetOrCreateMaskedNumberMapper(MaskedNumber maskedNumber)
+    {
+        SkMaskedNumberMapper result;
+        if (_numberMappers.TryGetValue(maskedNumber.Id, out SKNumberMapper? nm) && nm is SkMaskedNumberMapper mnm)
+        {
+            result = mnm;
+        }
+        else
+        {
+            result = new SkMaskedNumberMapper(Agent, maskedNumber);
             AddNumberMapper(result);
         }
         return result;

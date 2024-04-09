@@ -143,7 +143,12 @@ public class NumberGroup : Number, IMathElement
     }
 
     public void RemoveLastPosition() => _focalGroup.RemoveLastPosition();
-
+    public override void SetWith(Number other)
+    {
+        ClearInternalPositions();
+        Polarity = other.Polarity;
+        AddPosition(other.Value);
+    }
     public void Reset(params Focal[] focals)
     {
         ClearInternalPositions();

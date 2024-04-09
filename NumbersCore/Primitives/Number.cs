@@ -4,8 +4,6 @@ using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives;
 
-public enum Polarity { None, Unknown, Aligned, Inverted };//, Zero, Max }
-
 /// <summary>
 /// Numbers are intervals, calculated by uniting a Focal with a Domain. They supplement a Focal with Polarity.
 /// If Focals had Polarity, Numbers wouldn't technically be needed, but Focals are simple start/end points.
@@ -25,31 +23,36 @@ public class Number : IMathElement
     public Trait Trait => Domain.Trait;
     #endregion
     public bool IsDirty { get => Focal.IsDirty; set => Focal.IsDirty = value; } // todo: no dirty flags
+    public virtual BoolState StartState => BoolState.True;
 
     public Number(Focal focal, Polarity polarity = Polarity.Aligned)
     {
         Focal = focal;
         Polarity = polarity;
     }
-    public Number SetWith(Number other)
+    public virtual void SetWith(Number other)
     {
-        if (Domain.Id == other.Domain.Id)
-        {
-            StartTickPosition = other.StartTickPosition;
-            EndTickPosition = other.EndTickPosition;
-        }
-        else
-        {
-            Value = other.Value;
-        }
         Polarity = other.Polarity;
-        return other;
+        Value = other.Value;
     }
     public void SetWith(Focal other, Polarity polarity)
     {
         StartTickPosition = other.StartPosition;
         EndTickPosition = other.EndPosition;
         Polarity = polarity;
+    }
+    public virtual void SetWith(Focal[] focals, Polarity[] polarities)
+    {
+        if (focals.Length > 0 && polarities.Length > 0)
+        {
+            // there are no segments in numbers, will convert all to maskedNumbers later
+            Focal resultFocal = new Focal(focals[0].StartPosition, focals[focals.Length - 1].EndPosition);
+            SetWith(resultFocal, polarities[0]);
+        }
+        else
+        {
+            SetWith(new Focal(0, 0), Polarity.None);
+        }
     }
 
     #region Domain
@@ -407,17 +410,7 @@ public class Number : IMathElement
         // really numbers should never be used in bool ops, eventually combine maskedNumber with Number and this goes away
         var (_, table) = SegmentedTable(Domain, true, this, other);
         var (focals, polarities) = ApplyOpToSegmentedTable(table, operationKind);
-        Focal resultFocal = new Focal(focals[0].StartPosition, focals[focals.Length - 1].EndPosition);
-        var resultPolarity = Polarity.None;
-        for (int i = 0; i < polarities.Length; i++)
-        {
-            if (polarities[i] != Polarity.None){
-                resultFocal = focals[i];
-                resultPolarity = polarities[i];
-                break;
-            }
-        }
-        SetWith(resultFocal, resultPolarity);
+        SetWith(focals, polarities);
     }
     public static Number GetMaxExtent(Number a, Number b)
     {
@@ -430,7 +423,7 @@ public class Number : IMathElement
     }
     public virtual void ComputeBoolCompare(Number num, OperationKind operationKind)
     {
-        //var positions = new List<long>();
+        // todo: all operations need a 'direction', A:B, B:A, A:1/4:B
         // todo: calc with ranges or normalize domain as domains may differ
         var maxA = Focal.MaxExtent;
         var minA = Focal.MinExtent;
@@ -529,56 +522,6 @@ public class Number : IMathElement
 		}
 
 		*/
-    // use segments rather than ints
-    // convert values to first param's domain's context
-    // result in first params's domain
-    //public virtual NumberGroup Never(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Never(Focal, q.Focal));
-    //public virtual void Never(Number q, NumberGroup result) => result.Reset(Focal.Never(Focal, q.Focal));
-
-    //public virtual NumberGroup And(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.And(Focal, q.Focal));
-    //public virtual void And(Number q, NumberGroup result) => result.Reset(Focal.And(Focal, q.Focal));
-
-    //public virtual NumberGroup B_Inhibits_A(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.B_Inhibits_A(Focal, q.Focal));
-    //public virtual void B_Inhibits_A(Number q, NumberGroup result) => result.Reset(Focal.B_Inhibits_A(Focal, q.Focal));
-
-    //public virtual NumberGroup Transfer_A(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Transfer_A(Focal, q.Focal));
-    //public virtual void Transfer_A(Number q, NumberGroup result) => result.Reset(Focal.Transfer_A(Focal, q.Focal));
-
-    //public virtual NumberGroup A_Inhibits_B(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.A_Inhibits_B(Focal, q.Focal));
-    //public virtual void A_Inhibits_B(Number q, NumberGroup result) => result.Reset(Focal.A_Inhibits_B(Focal, q.Focal));
-
-    //public virtual NumberGroup Transfer_B(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Transfer_B(Focal, q.Focal));
-    //public virtual void Transfer_B(Number q, NumberGroup result) => result.Reset(Focal.Transfer_B(Focal, q.Focal));
-
-    //public virtual NumberGroup Xor(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Xor(Focal, q.Focal));
-    //public virtual void Xor(Number q, NumberGroup result) => result.Reset(Focal.Xor(Focal, q.Focal));
-
-    //public virtual NumberGroup Or(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Or(Focal, q.Focal));
-    //public virtual void Or(Number q, NumberGroup result) => result.Reset(Focal.Or(Focal, q.Focal));
-
-    //public virtual NumberGroup Nor(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Nor(Focal, q.Focal));
-    //public virtual void Nor(Number q, NumberGroup result) => result.Reset(Focal.Nor(Focal, q.Focal));
-
-    //public virtual NumberGroup Xnor(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Xnor(Focal, q.Focal));
-    //public virtual void Xnor(Number q, NumberGroup result) => result.Reset(Focal.Xnor(Focal, q.Focal));
-
-    //public virtual NumberGroup Not_B(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Not_B(Focal, q.Focal));
-    //public virtual void Not_B(Number q, NumberGroup result) => result.Reset(Focal.Not_B(Focal, q.Focal));
-
-    //public virtual NumberGroup B_Implies_A(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.B_Implies_A(Focal, q.Focal));
-    //public virtual void B_Implies_A(Number q, NumberGroup result) => result.Reset(Focal.B_Implies_A(Focal, q.Focal));
-
-    //public virtual NumberGroup Not_A(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Not_A(Focal, q.Focal));
-    //public virtual void Not_A(Number q, NumberGroup result) => result.Reset(Focal.Not_A(Focal, q.Focal));
-
-    //public virtual NumberGroup A_Implies_B(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.A_Implies_B(Focal, q.Focal));
-    //public virtual void A_Implies_B(Number q, NumberGroup result) => result.Reset(Focal.A_Implies_B(Focal, q.Focal));
-
-    //public virtual NumberGroup Nand(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Nand(Focal, q.Focal));
-    //public virtual void Nand(Number q, NumberGroup result) => result.Reset(Focal.Nand(Focal, q.Focal));
-
-    //public virtual NumberGroup Always(Number q) => new NumberGroup(GetMaxRange(this, q), Focal.Always(Focal, q.Focal));
-    //public virtual void Always(Number q, NumberGroup result) => result.Reset(Focal.Always(Focal, q.Focal));
     #endregion
     #region Interpolation
     public void InterpolateFromZero(Number t, Number result) => InterpolateFromZero(this, t, result);
@@ -660,6 +603,7 @@ public class Number : IMathElement
             yield return this;
         }
     }
+    // probably need a ratio type, where first digit is ticks, and second ticks per unit.
     /// <summary>
     /// NumberGroups can have overlapping numbers, so this segmented version returns all partial ranges for each possible segment.
     /// Assumes aligned domains.

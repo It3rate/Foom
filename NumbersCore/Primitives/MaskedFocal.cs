@@ -83,7 +83,6 @@ public class MaskedFocal : Focal
         {
             result[i - 1] = (positions[i] - start) / len;
         }
-        Trace.WriteLine(result[0] + " : " + result[1]);
         return result;
     }
     private void SetTPositions(double[] tPositions)

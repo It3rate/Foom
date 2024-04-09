@@ -30,7 +30,7 @@ public class Transform : ITransform
     public bool IsUnary => Right == null;// OperationKind.IsUnary();
     public Number Left { get; set; } // the object being transformed
     public Number? Right { get; set; } // the amount to transform (can change per repeat)
-    public NumberGroup Result { get; set; }  // current result of transform - this acts as a halt condition when it is empty (false)
+    public MaskedNumber Result { get; set; }  // current result of transform - this acts as a halt condition when it is empty (false)
 
     /// <summary>
     /// Repeats are powers, but can extend to any operation. Repeated ADD is like multiply, repeated multiply is pow.
@@ -49,9 +49,9 @@ public class Transform : ITransform
     public bool IsFalse => Result.Count == 0;
 
     public bool IsEqual => IsSizeEqual && IsPolarityEqual && IsDirectionEqual;
-    public bool IsSizeEqual => IsSingle && (Left.Focal.Min == Result.First().Min && Left.Focal.Max == Result.First().Max);
-    public bool IsPolarityEqual => IsSingle && (Left.Polarity == Result.FirstPolarity());
-    public bool IsDirectionEqual => IsSingle && (Left.Direction == Result.FirstDirection());
+    public bool IsSizeEqual => Left.IsSizeEqual(Result);// IsSingle && (Left.Focal.Min == Result.First().Min && Left.Focal.Max == Result.First().Max);
+    public bool IsPolarityEqual => Left.IsPolarityEqual(Result);// IsSingle && (Left.Polarity == Result.FirstPolarity());
+    public bool IsDirectionEqual => Left.IsDirectionEqual(Result);// IsSingle && (Left.Direction == Result.FirstDirection());
 
     public IEnumerable<Number> UsedNumbers()
     {
@@ -71,7 +71,7 @@ public class Transform : ITransform
         Right = right;
         Repeats = new Whole(1);
 
-        Result = new NumberGroup(Left.Domain.MinMaxNumber);// left.Clone(false);
+        Result = new MaskedNumber(Left);// left.Clone(false);
         OperationKind = kind;
         Brain = Left.Brain;
         Id = Brain.NextTransformId();
@@ -89,7 +89,11 @@ public class Transform : ITransform
     }
     public void ApplyStart()
     {
-        Result.Reset(Left, OperationKind.None);
+        Result.SetWith(Left);
+        if (Result.Domain == null)
+        {
+            Left.Domain.AddNumber(Result);
+        }
         //Result.SetWith(Left);
         OnStartTransformEvent(this);
         IsActive = true;
@@ -184,7 +188,7 @@ public interface ITransform : IMathElement
 {
     Number Left { get; set; } // the object being transformed
     Number Right { get; set; } // the amount to transform (can change per repeat)
-    NumberGroup Result { get; set; } // current result of transform - this acts as a halt condition when it is empty (false)
+    MaskedNumber Result { get; set; } // current result of transform - this acts as a halt condition when it is empty (false)
     //Number Repeats { get; set; } 
 
     event TransformEventHandler StartTransformEvent;

@@ -66,7 +66,7 @@ public class SKTransformMapper : SKMapper
         Canvas.DrawText(selTxt, location.X + numOffset, location.Y, Pens.Seg0TextBrush);
         Canvas.DrawText(symbol, location.X, location.Y + 30, Pens.Seg1TextBrush);
         Canvas.DrawText(repTxt, location.X + numOffset, location.Y + 30, Pens.Seg1TextBrush);
-        Canvas.DrawLine(location.X, location.Y + 38, location.X + 160, location.Y + 40, Pens.TextFractionPen);
+        Canvas.DrawLine(location.X, location.Y + 38, location.X + 160, location.Y + 38, Pens.TextFractionPen);
         Canvas.DrawText(resultTxt, location.X + numOffset, location.Y + 65, Pens.TextBrush);
         //Canvas.DrawText(areaTxt, location.X, location.Y + 95, unitText);
     }

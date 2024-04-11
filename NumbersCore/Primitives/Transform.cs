@@ -31,7 +31,11 @@ public class Transform : ITransform
     public Number Left { get; set; } // the object being transformed
     public Number? Right { get; set; } // the amount to transform (can change per repeat)
     public MaskedNumber Result { get; set; }  // current result of transform - this acts as a halt condition when it is empty (false)
-
+   
+    // the portion and direction of the transform. 0:1 is A*B (B used up), 1:0 is B*A (A used up).
+    // 1:1 is proportional with values, or 0.5:0.5 is equal area 50%? Maybe coorlation is an op for domains, transforms always a force?
+    // ratio is catually the same as repeat, just used for the two numbers.
+    public Ratio Ratio { get; set; }
     /// <summary>
     /// Repeats are powers, but can extend to any operation. Repeated ADD is like multiply, repeated multiply is pow.
     /// Other ops, like GT, LT can also have repeats. Repeate of zero is just a comparison, with the result being the true part.

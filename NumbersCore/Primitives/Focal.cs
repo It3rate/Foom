@@ -38,36 +38,42 @@ public class Focal : IMathElement, IEquatable<Focal>
     private static int _focalCounter = 1 + (int)MathElementKind.Focal;
     public int CreationIndex => Id - (int)Kind - 1;
 
-    public virtual bool IsDirty { get; set; } = true; // remove IsDirty once transforms propogate correctly
+	protected long[] _positions;
+	protected double[] _tPositions;
+	public virtual bool IsEmpty => false;
+	public virtual int Count => 1;
 
-    private long _startPosition;
-    public virtual long StartPosition
-    {
-        get => _startPosition;
-        set
-        {
-            if (_startPosition != value)
-            {
-                _startPosition = value;
-                IsDirty = true;
-            }
-        }
-    }
-    private long _endPosition;
-    public virtual long EndPosition
-    {
-        get => _endPosition;
-        set
-        {
-            if (_endPosition != value)
-            {
-                _endPosition = value;
-                IsDirty = true;
-            }
-        }
-    }
+	public virtual bool IsDirty { get; set; } = true; // remove IsDirty once transforms propogate correctly
 
-    public int Direction => StartPosition < EndPosition ? 1 : StartPosition > EndPosition ? -1 : 0;
+
+	public virtual long StartPosition
+	{
+		get => _positions[0];
+		set
+		{
+			if (_positions[0] != value)
+			{
+				_positions[0] = value;
+				SetTPositions(_tPositions);
+				IsDirty = true;
+			}
+		}
+	}
+	public virtual long EndPosition
+	{
+		get => _positions[_positions.Length - 1];
+		set
+		{
+			if (_positions[_positions.Length - 1] != value)
+			{
+				_positions[_positions.Length - 1] = value;
+				SetTPositions(_tPositions);
+				IsDirty = true;
+			}
+		}
+	}
+
+	public int Direction => StartPosition < EndPosition ? 1 : StartPosition > EndPosition ? -1 : 0;
 
     public bool IsPositiveDirection => Direction > 0;
     public virtual long InvertedEndPosition => StartPosition - LengthInTicks;
@@ -79,25 +85,40 @@ public class Focal : IMathElement, IEquatable<Focal>
 
     /// <summary>
     /// Focals are pre-number segments, not value interpretations.
-    /// Whatever orientation they have is considered the aligned direction, and the inverted value is the 'other' direction.
-    /// Even a negative basis focal is still 'unit', and its invert (positive in this case) is unot. The basis focal decides the aligned direction.
+    /// The basis focal decides the aligned direction in the number, whatever direction that is will be the aligned unit direction.
     /// </summary>
     protected Focal()
     {
         Id = _focalCounter++;
     }
     public Focal(long startTickPosition, long endTickPosition) : this()
-    {
-        StartPosition = startTickPosition;
+	{
+		Id = _focalCounter++;
+		_positions = new long[2];
+		_tPositions = [];
+		StartPosition = startTickPosition;
         EndPosition = endTickPosition;
-    }
+	}
+	public virtual IEnumerable<long> Positions()
+	{
+		for (int i = 0; i < _positions.Length; i++)
+		{
+			yield return _positions[i];
+		}
+	}
+	public virtual long[] GetPositions() => (long[])_positions.Clone();
+	public void SetPosition(int index, long value)
+	{
+		if (index >= 0 && index < _positions.Length)
+		{
+			_positions[index] = value;
+		}
+	}
+    public virtual void ClearInternalPositions() { }
 
-    public virtual IEnumerable<long> Positions()
-    {
-        yield return StartPosition;
-        yield return EndPosition;
-    }
-    public virtual long[] GetPositions() => [StartPosition, EndPosition];
+	protected virtual double[] GetTPositions() => []; // no internal mask positions in Focal
+    protected virtual void SetTPositions(double[] tPositions) { }
+    public virtual BoolState GetMaskAtPosition(long position) => BoolState.True;
 
 
     public long LengthInTicks => EndPosition - StartPosition;

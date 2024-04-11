@@ -4,37 +4,8 @@ using System.Diagnostics;
 namespace NumbersCore.Primitives;
 public class MaskedFocal : Focal
 {
-    private long[] _positions;
-    private double[] _tPositions;
-    public bool IsEmpty => StartState == BoolState.False && _positions.Length == 0;
-    public int Count => _positions.Length;
+    public override int Count => StartState.IsTrue() ? _positions.Length / 2 : (_positions.Length - 1) / 2;
 
-    public override long StartPosition
-    {
-        get => _positions[0];
-        set
-        {
-            if (_positions[0] != value)
-            {
-                _positions[0] = value;
-                SetTPositions(_tPositions);
-                IsDirty = true;
-            }
-        }
-    }
-    public override long EndPosition
-    {
-        get => _positions[_positions.Length - 1];
-        set
-        {
-            if (_positions[_positions.Length - 1] != value)
-            {
-                _positions[_positions.Length - 1] = value;
-                SetTPositions(_tPositions);
-                IsDirty = true;
-            }
-        }
-    }
 
     /// <summary>
     /// A MaskedFocal is a single focal with multiple masks, can be used for the result of bool operations.
@@ -44,36 +15,19 @@ public class MaskedFocal : Focal
     /// </summary>
     public MaskedFocal(bool firstMaskIsTrue, params long[] maskPositions) : base()
     {
-        ValidatePositions(maskPositions);
         StartState = firstMaskIsTrue ? BoolState.True : BoolState.False;
-        _positions = maskPositions;
-        _tPositions = GetTPositions();
+        Set(StartState, maskPositions);
     }
 
     public void Set(BoolState startState, params long[] positions)
     {
-        ValidatePositions(positions);
         StartState = startState;
+        ValidatePositions(positions);
         _positions = (long[])positions.Clone();
         _tPositions = GetTPositions();
     }
 
-    public void SetPosition(int index, long value)
-    {
-        if (index >= 0 && index < _positions.Length)
-        {
-            _positions[index] = value;
-        }
-    }
-    public override IEnumerable<long> Positions()
-    {
-        for (int i = 0; i < _positions.Length; i++)
-        {
-            yield return _positions[i];
-        }
-    }
-    public override long[] GetPositions() => (long[])_positions.Clone();
-    private double[] GetTPositions()
+    protected override double[] GetTPositions()
     {
         var positions = GetPositions();
         var result = new double[positions.Length - 2];
@@ -85,7 +39,7 @@ public class MaskedFocal : Focal
         }
         return result;
     }
-    private void SetTPositions(double[] tPositions)
+    protected override void SetTPositions(double[] tPositions)
     {
         var len = (double)LengthInTicks;
         var start = StartPosition;
@@ -95,8 +49,7 @@ public class MaskedFocal : Focal
             SetPosition(i + 1, value);
         }
     }
-
-    public BoolState GetMaskAtPosition(long position)
+    public override BoolState GetMaskAtPosition(long position)
     {
         var result = BoolState.Unknown;
         if (Direction == 1 && (position < StartPosition || position > EndPosition))
@@ -125,9 +78,9 @@ public class MaskedFocal : Focal
         }
         return result;
     }
-    public void Clear()
+    public override void ClearInternalPositions()
     {
-        _positions = new long[] { 0, 0 };
+        _positions = [ 0, 0 ];
         StartState = BoolState.False;
     }
 

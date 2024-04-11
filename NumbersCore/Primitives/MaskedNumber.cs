@@ -9,7 +9,7 @@ public class MaskedNumber : Number
 
     public override BoolState StartState => MaskedFocal.StartState;
     public bool IsEmpty => MaskedFocal.IsEmpty;
-    public override int Count => StartState.IsTrue() ? MaskedFocal.Count / 2 : (MaskedFocal.Count - 1) / 2;
+    public override int Count => MaskedFocal.Count;// StartState.IsTrue() ? MaskedFocal.Count / 2 : (MaskedFocal.Count - 1) / 2;
 
     /// <summary>
     /// A MaskedNumber is a single number with multiple masks, can be used for the result of bool operations.
@@ -71,7 +71,7 @@ public class MaskedNumber : Number
     }
     public override void ClearInternalPositions()
     {
-        MaskedFocal.Clear();
+        MaskedFocal.ClearInternalPositions();
     }
     public override void AddPosition(long start, long end)
     {

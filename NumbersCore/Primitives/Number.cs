@@ -271,13 +271,16 @@ public class Number : IMathElement
         var len = val.Length;
         return (position - val.Start) / len;
     }
-    #endregion
-    #region Operations
-    // Operations with segments and units allow moving the unit around freely, so for example,
-    // you can shift a segment by aligning the unit with start or end,
-    // and scale in place by moving the unit to left, right or center (equivalent to affine scale, where you move to zero, scale, then move back)
-    // need to have overloads that allow shifting the unit temporarily
-    public virtual void Add(Number right)
+	#endregion
+	#region Operations
+    // get each component of the number, in aligned terms.
+	public Number StartNumber => new Number(new Focal(0, -StartTickPosition), Polarity.Aligned);
+	public Number EndNumber => new Number(new Focal(0, EndTickPosition), Polarity.Aligned);
+	// Operations with segments and units allow moving the unit around freely, so for example,
+	// you can shift a segment by aligning the unit with start or end,
+	// and scale in place by moving the unit to left, right or center (equivalent to affine scale, where you move to zero, scale, then move back)
+	// need to have overloads that allow shifting the unit temporarily
+	public virtual void Add(Number right)
     {
         // todo: eventually all math on Numbers will be in ticks, allowing preservation of precision etc. Requires syncing of basis, domains.
         Value += right.Value;

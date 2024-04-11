@@ -163,8 +163,8 @@ public class Domain : IMathElement
         return NumberSetStore.Remove(numberSet.Id);
     }
 
-    public Number Zero() => CreateNumber(BasisFocal.StartPosition, BasisFocal.StartPosition);
-    public Number One() => CreateNumber(BasisFocal.StartPosition, BasisFocal.EndPosition);
+    public Number Zero(bool addToStore = true) => CreateNumber(BasisFocal.StartPosition, BasisFocal.StartPosition, addToStore);
+    public Number One(bool addToStore = true) => CreateNumber(BasisFocal.StartPosition, BasisFocal.EndPosition, addToStore);
 
     public PRange GetValueOf(Focal focal, Polarity polarity) => focal.GetRangeWithBasis(BasisFocal, BasisIsReciprocal, polarity == Polarity.Aligned);
     public PRange GetValueOf(Number num) => num.Focal.GetRangeWithBasis(BasisFocal, BasisIsReciprocal, num.IsAligned);

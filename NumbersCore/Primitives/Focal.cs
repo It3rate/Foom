@@ -107,7 +107,7 @@ public class Focal : IMathElement, IEquatable<Focal>
 		}
 	}
 	public virtual long[] GetPositions() => (long[])_positions.Clone();
-	public void SetPosition(int index, long value)
+	public virtual void SetPosition(int index, long value)
 	{
 		if (index >= 0 && index < _positions.Length)
 		{

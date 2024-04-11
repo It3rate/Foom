@@ -86,7 +86,22 @@ public class FocalGroup : Focal
     }
     public override long[] GetPositions() => Positions().ToArray();
 
-    public override long MaxExtent => Positions().Max();
+	public override void SetPosition(int index, long value)
+	{
+        var focalIndex = index / 2;
+        if (index >= 0 && focalIndex < _focals.Count)
+        {
+            if (index % 2 == 0)
+            {
+                _focals[focalIndex].StartPosition = value;
+            }
+            else
+            {
+                _focals[focalIndex].EndPosition = value;
+            }
+        }
+	}
+	public override long MaxExtent => Positions().Max();
     public override long MinExtent => Positions().Min();
 
     public override void Reset(long start, long end)

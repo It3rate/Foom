@@ -28,14 +28,27 @@ public class Transform : ITransform
     public bool IsDirty { get; set; } = true;
     public OperationKind OperationKind { get; set; }
     public bool IsUnary => Right == null;// OperationKind.IsUnary();
-    public Number Left { get; set; } // the object being transformed
-    public Number? Right { get; set; } // the amount to transform (can change per repeat)
+	public Number InputLeft { get; set; }
+	public Number InputRight { get; set; }
+	public Number Left { get; set; } // the object being transformed
+	public Number Right { get; set; } // the amount to transform (can change per repeat)
     public MaskedNumber Result { get; set; }  // current result of transform - this acts as a halt condition when it is empty (false)
-   
+	// result goes away. Result is Left and Right at the power ratio endpoints.										  
+	public Number LeftUnitTransform { get; set; }
+	public Number RightUnitTransform { get; set; }
+    public Number BasisSource { get; set; } // choose Basis, 0 is self (add) 1 is domain unit (multiply). Bools are probably 0?
+	// Q. allowing both directions (a*b, b*a) means there can be two results?
+	// Or there is no result, the transform is applied to the input. You can save a copy of the original input if you like.
+	public Number PowerRatio { get; set; } 
+    // sample with a T. This is for interpolation interest only, not part of the calculation.
+    public Number ValueAtT(float t){ throw new NotImplementedException(); }
+
     // the portion and direction of the transform. 0:1 is A*B (B used up), 1:0 is B*A (A used up).
     // 1:1 is proportional with values, or 0.5:0.5 is equal area 50%? Maybe coorlation is an op for domains, transforms always a force?
-    // ratio is catually the same as repeat, just used for the two numbers.
-    public Ratio Ratio { get; set; }
+    // ratio is actually the same as repeat, just used for the two numbers.
+    // todo: it is a number, the unot portion is the left force, the unit the right force. It also represents the power of each side if not 1
+    // todo: need a continuous flag, where things are multiplied together each step, like compound interest, e, etc
+    //public Ratio Ratio { get; set; }
     /// <summary>
     /// Repeats are powers, but can extend to any operation. Repeated ADD is like multiply, repeated multiply is pow.
     /// Other ops, like GT, LT can also have repeats. Repeate of zero is just a comparison, with the result being the true part.
@@ -44,7 +57,7 @@ public class Transform : ITransform
     /// A complex number of repeats is the start to end result segment.
     /// GT, LT, GTE will preserve length, EQ, CONTAINS will not.
     /// </summary>
-    public Number Repeats { get; set; } // power - start with whole numbers, but will eventually allow any number (pow of complex number)
+    //public Number Repeats { get; set; } // power - start with whole numbers, but will eventually allow any number (pow of complex number)
 
     public bool IsActive { get; private set; }
 
@@ -70,10 +83,13 @@ public class Transform : ITransform
     }
 
     public Transform(Number left, Number? right, OperationKind kind) // todo: add default numbers (0, 1, unot, -1 etc) in global domain.
-    {
-        Left = left;
+	{
+		InputLeft = left.Clone(false);
+        Right = right ?? left.Domain.One(false);
+		InputRight = right.Clone(false);
+		Left = left;
         Right = right;
-        Repeats = new Whole(1);
+        PowerRatio = new Whole(1);
 
         Result = new MaskedNumber(Left);// left.Clone(false);
         OperationKind = kind;
@@ -106,7 +122,7 @@ public class Transform : ITransform
     public void ApplyPartial(long tickOffset) { OnTickTransformEvent(this); }
     public void ApplyEnd()
     {
-        if (Repeats.EndValue == 1)
+        if (PowerRatio.EndValue == 1)
         {
             Result.ComputeWith(Right, OperationKind);
         }
@@ -118,17 +134,17 @@ public class Transform : ITransform
                 case OperationKind.Add:
                 case OperationKind.Subtract:
                     val = Right.Clone();
-                    val.Multiply(Repeats);
+                    val.Multiply(PowerRatio);
                     Result.ComputeWith(val, OperationKind);
                     break;
                 case OperationKind.Multiply:
-                    val = Number.Pow(Right, Repeats);
+                    val = Number.Pow(Right, PowerRatio.EndNumber); // todo: do both left and right
                     Result.ComputeWith(val, OperationKind);
                     break;
                 case OperationKind.Divide:
                     var one = Right.Domain.CreateNumberFromFloats(0, 1);
-                    var recip = Repeats.Clone();
-                    recip.Divide(one);
+                    var recip = PowerRatio.EndNumber;
+					recip.Divide(one);
                     val = Number.Pow(Right, recip);
                     Result.ComputeWith(val, OperationKind);
                     break;
@@ -144,14 +160,14 @@ public class Transform : ITransform
             {
                 case OperationKind.Add:
                 case OperationKind.Subtract:
-                    Result.ComputeWith(Repeats, OperationKind.Multiply);
+                    Result.ComputeWith(PowerRatio.EndNumber, OperationKind.Multiply);
                     break;
                 case OperationKind.Multiply:
-                    Result.Pow(Repeats);
+                    Result.Pow(PowerRatio.EndNumber);
                     break;
                 case OperationKind.Divide:
                     var one = Left.Domain.CreateNumberFromFloats(0, 1);
-                    var recip = Repeats.Clone();
+                    var recip = PowerRatio.EndNumber.Clone();
                     recip.Divide(one);
                     Result.Pow(recip);
                     break;
@@ -191,8 +207,8 @@ public delegate void TransformEventHandler(object sender, ITransform e);
 public interface ITransform : IMathElement
 {
     Number Left { get; set; } // the object being transformed
-    Number Right { get; set; } // the amount to transform (can change per repeat)
-    MaskedNumber Result { get; set; } // current result of transform - this acts as a halt condition when it is empty (false)
+    Number? Right { get; set; } // the amount to transform (can change per repeat)
+    //MaskedNumber Result { get; set; } // current result of transform - this acts as a halt condition when it is empty (false)
     //Number Repeats { get; set; } 
 
     event TransformEventHandler StartTransformEvent;
@@ -202,4 +218,5 @@ public interface ITransform : IMathElement
     void ApplyStart();
     void ApplyEnd();
     void ApplyPartial(long tickOffset);
+    Number ValueAtT(float t);
 }

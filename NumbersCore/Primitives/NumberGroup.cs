@@ -1,5 +1,6 @@
 ﻿namespace NumbersCore.Primitives;
 
+using NumbersCore.Operations;
 using NumbersCore.Utils;
 using System.Collections.Generic;
 using System.Linq;

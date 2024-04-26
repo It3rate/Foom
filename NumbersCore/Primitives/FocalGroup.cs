@@ -1,5 +1,6 @@
 ﻿namespace NumbersCore.Primitives;
 
+using NumbersCore.Operations;
 using NumbersCore.Utils;
 using System;
 using System.Collections.Generic;
@@ -139,7 +140,7 @@ public class FocalGroup : Focal
         if (operationKind.IsBoolOp())
         {
             var tt = BuildTruthTable(this, focal);
-            var positions = ApplyOpToTruthTable(tt, operationKind.GetFunc());
+            var positions = ApplyOpToTruthTable(tt, BoolOperations.GetFunc(operationKind));
             RegenerateFocals(positions);
         }
         else if (operationKind.IsBoolCompare())

@@ -1,4 +1,5 @@
 ﻿using NumbersCore.CoreConcepts.Counter;
+using NumbersCore.Operations;
 using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives;
@@ -39,7 +40,9 @@ public class Transform : ITransform
     public Number BasisSource { get; set; } // choose Basis, 0 is self (add) 1 is domain unit (multiply). Bools are probably 0?
 	// Q. allowing both directions (a*b, b*a) means there can be two results?
 	// Or there is no result, the transform is applied to the input. You can save a copy of the original input if you like.
-	public Number PowerRatio { get; set; } 
+	public Number PowerRatio { get; set; }
+    // decides if the calculation integrates partial results or is calculated as a step
+    public bool IsCompounding { get; set;  } = false;
     // sample with a T. This is for interpolation interest only, not part of the calculation.
     public Number ValueAtT(float t){ throw new NotImplementedException(); }
 
@@ -47,7 +50,8 @@ public class Transform : ITransform
     // 1:1 is proportional with values, or 0.5:0.5 is equal area 50%? Maybe coorlation is an op for domains, transforms always a force?
     // ratio is actually the same as repeat, just used for the two numbers.
     // todo: it is a number, the unot portion is the left force, the unit the right force. It also represents the power of each side if not 1
-    // todo: need a continuous flag, where things are multiplied together each step, like compound interest, e, etc
+    // the compunding flag has elements recombined together each step using running totals, like compound interest, e, etc
+    // Compounding has implications for powers, as it isn't a trend extrapolated, it is recalculated per resolution tick.
     //public Ratio Ratio { get; set; }
     /// <summary>
     /// Repeats are powers, but can extend to any operation. Repeated ADD is like multiply, repeated multiply is pow.

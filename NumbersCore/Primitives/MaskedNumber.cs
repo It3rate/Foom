@@ -1,4 +1,5 @@
-﻿using NumbersCore.Utils;
+﻿using NumbersCore.Operations;
+using NumbersCore.Utils;
 using System;
 using System.Diagnostics;
 

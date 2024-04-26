@@ -1,4 +1,5 @@
 ﻿using NumbersCore.CoreConcepts;
+using NumbersCore.Operations;
 using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives;

@@ -39,13 +39,14 @@ public class SkMaskedNumberMapper : SKNumberMapper
             else if(isStarted)
             {
                 var focal = new Focal(pts[0], pos);
-                //var val = DomainMapper.Domain.GetValueOf(focal, Polarity);
+                //var pol = startState == BoolState.True ? Polarity.Aligned : Polarity.Inverted;
                 var num = new Number(focal, Polarity);
                 num.Domain = DomainMapper.Domain;
                 _drawNumEndCap = index >= postions.Length - 1;
                 DrawNumber(num, offset, isSelected);
                 _drawNumStartCap = false;
                 pts.Clear();
+                //pts.Add(pos);
             }
             index++;
             startState = startState.Invert();

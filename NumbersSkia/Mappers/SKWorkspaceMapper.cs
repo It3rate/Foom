@@ -2,6 +2,7 @@
 using Numbers.Drawing;
 using Numbers.Renderer;
 using Numbers.Utils;
+using NumbersCore.Operations;
 using NumbersCore.Primitives;
 using NumbersSkia.Agent;
 

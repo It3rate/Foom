@@ -7,6 +7,7 @@ using Numbers.Drawing;
 using Numbers.Mappers;
 using Numbers.Renderer;
 using NumbersCore.CoreConcepts.Temperature;
+using NumbersCore.Operations;
 using NumbersCore.Primitives;
 using NumbersSkia.Mappers;
 using SkiaSharp;

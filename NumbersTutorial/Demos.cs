@@ -3,6 +3,7 @@ using Numbers.Agent;
 using Numbers.Commands;
 using Numbers.Drawing;
 using Numbers.Mappers;
+using NumbersCore.Operations;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
 

@@ -1,5 +1,6 @@
 ﻿
 using System.Data;
+using NumbersCore.Operations;
 using NumbersCore.Utils;
 
 namespace NumbersCore.Primitives;
@@ -686,27 +687,35 @@ public class Number : IMathElement
             else
             {
                 var first = seg[0];
-                var op = operation;
                 var opResult = false;
                 var polResult = false;
-                dirResult = false;
+                var hasUndefSeg = false;
+                var segDir = false;
                 for (int i = 0; i < seg.Length; i++)
                 {
                     var curNum = seg[i];
-                    var func = op.GetFunc();
+                    if(!curNum.Polarity.HasPolarity())
+                    {
+                        hasUndefSeg = true; // undefined polarity is not considered for direction
+                    }
+                    var func = BoolOperations.GetFunc(operation);
                     if (i == 0)
                     {
                         polResult = curNum.IsAligned;
-                        dirResult = curNum.IsUnitPositivePointing;
+						segDir = curNum.IsUnitPositivePointing;
                         opResult = curNum.HasPolairty;
                     }
                     else
                     {
                         polResult = func(polResult, curNum.IsAligned); ;
-                        dirResult = func(dirResult, curNum.IsUnitPositivePointing);
+						segDir = func(segDir, curNum.IsUnitPositivePointing);
                         opResult = func(opResult, curNum.HasPolairty);
                     }
                 }
+                if(!hasUndefSeg)
+                {
+                    dirResult = segDir;
+				}
 
                 if (opResult)
                 {

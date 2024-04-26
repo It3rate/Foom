@@ -5,6 +5,7 @@ using Numbers.Renderer;
 using Numbers.Utils;
 using NumbersAPI.CommandEngine;
 using NumbersAPI.Motion;
+using NumbersCore.Operations;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
 using NumbersSkia.Agent;

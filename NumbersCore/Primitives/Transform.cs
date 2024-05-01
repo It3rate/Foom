@@ -49,6 +49,12 @@ public class Transform : ITransform
     // the portion and direction of the transform. 0:1 is A*B (B used up), 1:0 is B*A (A used up).
     // 1:1 is proportional with values, or 0.5:0.5 is equal area 50%? Maybe coorlation is an op for domains, transforms always a force?
     // ratio is actually the same as repeat, just used for the two numbers.
+
+    // *Counter: When a big rock hits a small rock, each transfers a different amount of force. Ratio would be the total force partioned to
+    // ratios, but that is just totally and portioning for nothing? They are separate forces and should have separate equations.
+    // When multiple forces act on a body, they are separate forces, and the portion of each is only interesting statistically, sometimes.
+    // This would mean an equation is always a cause, and if it isn't (coorelation), there needs to be a parent equation causing both.
+
     // todo: it is a number, the unot portion is the left force, the unit the right force. It also represents the power of each side if not 1
     // the compunding flag has elements recombined together each step using running totals, like compound interest, e, etc
     // Compounding has implications for powers, as it isn't a trend extrapolated, it is recalculated per resolution tick.

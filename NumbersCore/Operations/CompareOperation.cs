@@ -8,31 +8,27 @@ using NumbersCore.Primitives;
 namespace NumbersCore.Operations;
 public class CompareOperation : OperationBase
 {
-  private OperationKind _operationKind;
-  public override OperationKind OperationKind => _operationKind;
 
-  public CompareOperation(Number left, Number right, OperationKind operationKind) : base(left, right)
+  public CompareOperation(Number left, Number right, OperationKind operationKind) : base(left, right, operationKind)
   {
-    _operationKind = operationKind;
   }
 
   public override void Calculate()
   {
-    Left.SetWith(LeftInput);
-    Left.ComputeBoolOp(Right, OperationKind);
+    ComputeBoolCompare();
   }
-  public static void ComputeBoolCompare(Number left, Number right, OperationKind operationKind)
+  public void ComputeBoolCompare()
   {
     // todo: all operations need a 'direction', A:B, B:A, A:1/4:B
     // todo: calc with ranges or normalize domain as domains may differ
-    var maxA = left.Focal.MaxExtent;
-    var minA = left.Focal.MinExtent;
-    var maxB = right.Focal.Max;// startB > endB ? startB : endB;
-    var minB = right.Focal.Min;// startB < endB ? startB : endB;
+    var maxA = Left.Focal.MaxExtent;
+    var minA = Left.Focal.MinExtent;
+    var maxB = Right.Focal.Max;// startB > endB ? startB : endB;
+    var minB = Right.Focal.Min;// startB < endB ? startB : endB;
     long resultStart = 0;
     long resultEnd = 0;
-    left.ClearInternalPositions();
-    switch (operationKind)
+    Result.ClearInternalPositions();
+    switch (OperationKind)
     {
       case OperationKind.GreaterThan: // A all to right of B
         if (minA > maxB) { resultStart = minA; resultEnd = maxA; } else if (maxA > maxB) { resultStart = Math.Max(minA, maxB); resultEnd = maxA; }
@@ -71,7 +67,7 @@ public class CompareOperation : OperationBase
     {
       //positions.Add(resultStart);
       //positions.Add(resultStart);
-      left.AddPosition(resultStart, resultEnd);
+      Result.AddPosition(resultStart, resultEnd);
     }
   }
 }

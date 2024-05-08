@@ -8,26 +8,21 @@ using NumbersCore.Primitives;
 namespace NumbersCore.Operations;
 public class BoolOperation : OperationBase
 {
-  private OperationKind _operationKind;
-  public override OperationKind OperationKind => _operationKind;
-
-  public BoolOperation(Number left, Number right, OperationKind operationKind) : base(left, right)
+  public BoolOperation(Number left, Number right, OperationKind operationKind) : base(left, right, operationKind)
   {
-    _operationKind = operationKind;
   }
 
   public override void Calculate()
   {
-    Left.SetWith(LeftInput);
-    Left.ComputeBoolOp(Right, OperationKind);
+    ComputeBoolOp();
   }
-  public static void ComputeBoolOp(Number left, Number other, OperationKind operationKind)
+  public void ComputeBoolOp()
   {
     // todo: all bool/compare ops need to use normalized basis', or for now ranges. 
     // really numbers should never be used in bool ops, eventually combine maskedNumber with Number and this goes away
-    var (_, table) = SegmentedTable(left.Domain, true, left, other);
-    var (focals, polarities, dir) = ApplyOpToSegmentedTable(table, operationKind);
-    left.SetWith(focals, polarities, !dir);
+    var (_, table) = SegmentedTable(Left.Domain, true, Left, Right);
+    var (focals, polarities, dir) = ApplyOpToSegmentedTable(table, OperationKind);
+    Result.SetWith(focals, polarities, !dir);
   }
 
   /// <summary>

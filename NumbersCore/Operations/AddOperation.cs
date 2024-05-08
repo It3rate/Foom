@@ -8,15 +8,21 @@ using NumbersCore.Primitives;
 namespace NumbersCore.Operations;
 public class AddOperation : OperationBase
 {
-  public override OperationKind OperationKind => OperationKind.Multiply;
 
-  public AddOperation(Number left, Number right) : base(left, right)
+  public AddOperation(Number left, Number right, OperationKind operationKind) : base(left, right, operationKind)
   {
   }
 
   public override void Calculate()
   {
-    Left.SetWith(LeftInput);
-    Left.Add(Right);
+    switch (OperationKind)
+    {
+      case OperationKind.Add:
+        Result.Add(Right);
+        break;
+      case OperationKind.Subtract:
+        Result.Subtract(Right);
+        break;
+    }
   }
 }

@@ -27,20 +27,15 @@ public class Transform : ITransform
   public Brain Brain { get; }
 
   public bool IsDirty { get; set; } = true;
-  public OperationKind OperationKind { get; set; }
   public bool IsUnary => Right == null;// OperationKind.IsUnary();
   public Number InputLeft { get; set; }
-  public Number InputRight { get; set; }
-  public Number Left { get; set; } // the object being transformed
-  public Number Right { get; set; } // the amount to transform (can change per repeat)
-  public MaskedNumber Result { get; set; }  // current result of transform - this acts as a halt condition when it is empty (false)
-                                            // result goes away. Result is Left and Right at the power ratio endpoints.										  
+  public Number InputRight { get; set; }								  
   public Number LeftUnitTransform { get; set; }
   public Number RightUnitTransform { get; set; }
   public Number BasisSource { get; set; } // choose Basis, 0 is self (add) 1 is domain unit (multiply). Bools are probably 0?
                                           // Q. allowing both directions (a*b, b*a) means there can be two results?
                                           // Or there is no result, the transform is applied to the input. You can save a copy of the original input if you like.
-  public Number PowerRatio { get; set; }
+  //public Number PowerRatio { get; set; }
   // decides if the calculation integrates partial results or is calculated as a step
   public bool IsCompounding { get; set; } = false;
   // sample with a T. This is for interpolation interest only, not part of the calculation.
@@ -91,19 +86,30 @@ public class Transform : ITransform
 
     yield return Result;
   }
-
-  public Transform(Number left, Number? right, OperationKind kind) // todo: add default numbers (0, 1, unot, -1 etc) in global domain.
+  private OperationBase Operation { get; set; }
+  public Number Left => Operation.Left;//{ get; set; } // the object being transformed
+  public Number Right => Operation.Right;// { get; set; } // the amount to transform (can change per repeat)
+  public MaskedNumber Result => Operation.Result;// { get; set; } 	
+  public OperationKind OperationKind
   {
-    InputLeft = left.Clone(false);
-    Right = right ?? left.Domain.One(false);
-    InputRight = right.Clone(false);
-    Left = left;
-    Right = right;
-    PowerRatio = new Whole(1);
+    get => Operation.OperationKind;//{ get; set; }
+    set
+    {
+      Operation = OperationBase.CreateOperation(Operation.Left, Operation.Right, value);
+    }
+  }
+  public Transform(Number left, Number right, OperationKind operationKind) // todo: add default numbers (0, 1, unot, -1 etc) in global domain.
+  {
+    Operation = OperationBase.CreateOperation(left, right, operationKind);
+    //InputLeft = left.Clone(false);
+    //Right = right ?? left.Domain.One(false);
+    //InputRight = right.Clone(false);
+    //Left = left;
+    //Right = right;
 
-    Result = new MaskedNumber(Left);// left.Clone(false);
-    OperationKind = kind;
-    Brain = Left.Brain;
+    //Result = new MaskedNumber(Left);// left.Clone(false);
+    //OperationKind = operationKind;
+    Brain = left.Brain;
     Id = Brain.NextTransformId();
   }
 
@@ -119,73 +125,20 @@ public class Transform : ITransform
   }
   public void ApplyStart()
   {
-    Result.SetWith(Left);
-    if (Result.Domain == null)
-    {
-      Left.Domain.AddNumber(Result);
-    }
+    Operation.ApplyStart();
     //Result.SetWith(Left);
+    //if (Result.Domain == null)
+    //{
+    //  Left.Domain.AddNumber(Result);
+    //}
     OnStartTransformEvent(this);
     IsActive = true;
-    //Repeats?.Increment();
   }
-  public void ApplyPartial(long tickOffset) { OnTickTransformEvent(this); }
+  public void ApplyPartial(long tickOffset) { Operation.ApplyPartial(tickOffset); OnTickTransformEvent(this); }
   public void ApplyEnd()
   {
-    if (PowerRatio.EndValue == 1)
-    {
-      Result.ComputeWith(Right, OperationKind);
-    }
-    else if (Right != null)
-    {
-      Number val;
-      switch (OperationKind)
-      {
-        case OperationKind.Add:
-        case OperationKind.Subtract:
-          val = Right.Clone();
-          val.Multiply(PowerRatio);
-          Result.ComputeWith(val, OperationKind);
-          break;
-        case OperationKind.Multiply:
-          val = Number.Pow(Right, PowerRatio.EndNumber); // todo: do both left and right
-          Result.ComputeWith(val, OperationKind);
-          break;
-        case OperationKind.Divide:
-          var one = Right.Domain.CreateNumberFromFloats(0, 1);
-          var recip = PowerRatio.EndNumber;
-          recip.Divide(one);
-          val = Number.Pow(Right, recip);
-          Result.ComputeWith(val, OperationKind);
-          break;
-        default:
-          Result.ComputeWith(Right, OperationKind);
-          break;
-      }
-    }
-    else
-    {
-      Number val;
-      switch (OperationKind)
-      {
-        case OperationKind.Add:
-        case OperationKind.Subtract:
-          Result.ComputeWith(PowerRatio.EndNumber, OperationKind.Multiply);
-          break;
-        case OperationKind.Multiply:
-          Result.Pow(PowerRatio.EndNumber);
-          break;
-        case OperationKind.Divide:
-          var one = Left.Domain.CreateNumberFromFloats(0, 1);
-          var recip = PowerRatio.EndNumber.Clone();
-          recip.Divide(one);
-          Result.Pow(recip);
-          break;
-        default:
-          Result.ComputeWith(Left, OperationKind);
-          break;
-      }
-    }
+    Operation.ApplyEnd();
+    //Result.ComputeWith(Right, OperationKind);
     OnEndTransformEvent(this);
     IsActive = false;
   }
@@ -216,8 +169,8 @@ public class Transform : ITransform
 public delegate void TransformEventHandler(object sender, ITransform e);
 public interface ITransform : IMathElement
 {
-  Number Left { get; set; } // the object being transformed
-  Number? Right { get; set; } // the amount to transform (can change per repeat)
+  Number Left { get;} // the object being transformed
+  Number? Right { get;} // the amount to transform (can change per repeat)
                               //MaskedNumber Result { get; set; } // current result of transform - this acts as a halt condition when it is empty (false)
                               //Number Repeats { get; set; } 
 

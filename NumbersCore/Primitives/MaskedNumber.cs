@@ -86,11 +86,6 @@ public class MaskedNumber : Number
         return MaskedFocal.GetMaskAtPosition(num.Focal.StartPosition);
     }
 
-    public void ComputeWith(Number? num, OperationKind operationKind)
-    {
-        base.ComputeWith(num, operationKind);
-    }
-
     private static MaskedFocal ValidatePositions(bool firstMaskIsTrue, long[] maskPositions)
     {
         return new MaskedFocal(firstMaskIsTrue, maskPositions);

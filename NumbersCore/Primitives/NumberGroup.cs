@@ -126,18 +126,18 @@ public class NumberGroup : Number, IMathElement
     // todo: account for polarity
     public Focal CreateFocalFromRange(PRange value) => Domain.CreateFocalFromRange(value);
 
-    public override void ComputeBoolOp(Number other, OperationKind operationKind)
-    {
-        var (_, table) = SegmentedTable(Domain, true, this, other);
-        var (focals, polarities, dir) = ApplyOpToSegmentedTable(table, operationKind);
-        ClearInternalPositions();
-        _focalGroup.AddPositions(focals);
-        _polarityGroup.AddRange(polarities);
-    }
-    public override void ComputeBoolCompare(Number num, OperationKind operationKind)
-    {
-        _focalGroup.ComputeWith(num.Focal, operationKind);
-    }
+    //public override void ComputeBoolOp(Number other, OperationKind operationKind)
+    //{
+    //    var (_, table) = SegmentedTable(Domain, true, this, other);
+    //    var (focals, polarities, dir) = ApplyOpToSegmentedTable(table, operationKind);
+    //    ClearInternalPositions();
+    //    _focalGroup.AddPositions(focals);
+    //    _polarityGroup.AddRange(polarities);
+    //}
+    //public override void ComputeBoolCompare(Number num, OperationKind operationKind)
+    //{
+    //    _focalGroup.ComputeWith(num.Focal, operationKind);
+    //}
     public override void AddPosition(long start, long end)
     {
         _focalGroup.AddPosition(start, end);

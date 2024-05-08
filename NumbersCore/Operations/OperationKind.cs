@@ -48,6 +48,8 @@ public enum OperationKind
     Multiply,
     Divide, // just multiply reciprocal
 
+    Power,
+
     Repeat, // powers
     RepeatInPlace, // additive powers
     Root, // inverted powers
@@ -80,12 +82,6 @@ public enum OperationKind
     EvaluateLessThanOrEqual, // T/F division: no part of A to right of B
     EvaluateLessThan, // T/F division: A all to left of B
 
-
-    // ternary
-    PowerAdd,
-    PowerMultiply,
-
-
     AppendAll, // repeat are added together ('regular' multiplication)
     MultiplyAll, // repeat are multiplied together (exponents)
     Average,
@@ -107,10 +103,6 @@ public static class OperationKindExtension
     public static bool IsBinary(this OperationKind kind)
     {
         return kind >= OperationKind.Add && kind <= OperationKind.Blend;
-    }
-    public static bool IsTernary(this OperationKind kind)
-    {
-        return kind >= OperationKind.PowerAdd && kind <= OperationKind.PowerMultiply;
     }
     public static bool IsMultipleOp(this OperationKind kind)
     {
@@ -330,11 +322,8 @@ public static class OperationKindExtension
             case OperationKind.Blend:
                 result = "Blend";
                 break;
-            case OperationKind.PowerAdd:
-                result = "+^";
-                break;
-            case OperationKind.PowerMultiply:
-                result = "*^";
+            case OperationKind.Power:
+                result = "^";
                 break;
             case OperationKind.AppendAll:
                 result = "AppendAll";
@@ -502,11 +491,8 @@ public static class OperationKindExtension
                 result = "LessThan";
                 break;
 
-            case OperationKind.PowerAdd:
-                result = "PowerAdd";
-                break;
-            case OperationKind.PowerMultiply:
-                result = "PowerMultiply";
+            case OperationKind.Power:
+                result = "Power";
                 break;
             case OperationKind.AppendAll:
                 result = "AppendAll";

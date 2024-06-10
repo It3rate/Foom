@@ -1,7 +1,7 @@
-﻿namespace Numbers.Mappers;
+﻿namespace NumbersSkia.Mappers;
 
-using Numbers.Agent;
-using Numbers.Drawing;
+using NumbersSkia.Agent;
+using NumbersSkia.Drawing;
 using NumbersCore.Primitives;
 using SkiaSharp;
 using System;

@@ -1,5 +1,5 @@
 ﻿namespace NumbersAPI.CoreTasks;
 
-internal class SelectionClearTask
+public class SelectionClearTask
 {
 }

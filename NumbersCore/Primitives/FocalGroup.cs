@@ -122,7 +122,7 @@ public class FocalGroup : Focal
         ComputeWith(right, operationKind);
     }
     /// <summary>
-    /// Merge existing focals to each other by iterating over each one using the internal operation.
+    /// Merge existing focals to each other by iterating over each one using the public operation.
     /// </summary>
     public void MergeRange(IEnumerable<Focal> focals)
     {

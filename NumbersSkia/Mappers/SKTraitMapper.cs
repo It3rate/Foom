@@ -1,10 +1,10 @@
-﻿using Numbers.Agent;
+﻿using NumbersSkia.Agent;
 using NumbersCore.Utils;
 using SkiaSharp;
 
-namespace Numbers.Mappers;
+namespace NumbersSkia.Mappers;
 
-using Numbers.Drawing;
+using NumbersSkia.Drawing;
 using System;
 
 public class SKTraitMapper : SKMapper

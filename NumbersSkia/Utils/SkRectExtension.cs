@@ -1,8 +1,8 @@
-﻿using Numbers.Drawing;
+﻿using NumbersSkia.Drawing;
 using SkiaSharp;
 using System.Drawing;
 
-namespace Numbers.Utils;
+namespace NumbersSkia.Utils;
 
 public static class SkRectExtension
 {

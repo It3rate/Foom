@@ -1,17 +1,18 @@
-﻿using Numbers.Commands;
-using Numbers.Drawing;
-using Numbers.Mappers;
-using Numbers.Renderer;
-using Numbers.Utils;
+﻿using NumbersSkia.Commands;
+using NumbersSkia.Drawing;
+using NumbersSkia.Mappers;
+using NumbersSkia.Renderer;
+using NumbersSkia.Utils;
+using NumbersSkia.Demo;
+
 using NumbersAPI.CommandEngine;
 using NumbersAPI.Motion;
 using NumbersCore.Operations;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
-using NumbersSkia.Agent;
 using SkiaSharp;
 
-namespace Numbers.Agent;
+namespace NumbersSkia.Agent;
 
 public class MouseAgent : CommandAgent, IMouseAgent
 {

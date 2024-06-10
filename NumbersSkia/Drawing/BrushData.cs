@@ -1,4 +1,4 @@
-﻿namespace Numbers.Utils;
+﻿namespace NumbersSkia.Utils;
 public class BrushData
 {
     public float BrushSize = 20f; // can't be property as used as ref parameter

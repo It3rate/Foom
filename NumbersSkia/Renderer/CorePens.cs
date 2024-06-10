@@ -1,6 +1,6 @@
 ﻿using SkiaSharp;
 
-namespace Numbers.Renderer;
+namespace NumbersSkia.Renderer;
 
 public enum ColorTheme
 {

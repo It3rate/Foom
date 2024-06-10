@@ -12,7 +12,7 @@ public abstract class PolyDomain : IMathElement
     // These single domains are primitives (temperature), or combinations so common/complex the joins are not normally computed (weight (m*g), happiness)
 
     public virtual MathElementKind Kind => MathElementKind.PolyDomain;
-    public int Id { get; internal set; }
+    public int Id { get; set; }
     private static int _idCounter = 1 + (int)MathElementKind.PolyDomain;
     public int CreationIndex => Id - (int)Kind - 1;
     private bool _isDirty = true;

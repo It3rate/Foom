@@ -1,11 +1,11 @@
-﻿using Numbers.Agent;
-using Numbers.Drawing;
-using Numbers.Mappers;
+﻿using NumbersSkia.Agent;
+using NumbersSkia.Drawing;
+using NumbersSkia.Mappers;
 using NumbersAPI.CoreTasks;
 using NumbersCore.CoreConcepts.Time;
 using NumbersCore.Primitives;
 
-namespace Numbers.Commands;
+namespace NumbersSkia.Commands;
 
 public class AddSKDomainCommand : SKCommandBase
 {

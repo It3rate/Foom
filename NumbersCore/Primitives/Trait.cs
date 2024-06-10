@@ -7,11 +7,11 @@ namespace NumbersCore.Primitives;
 /// </summary>
 public class Trait : IMathElement
 {
-    public Brain MyBrain { get; internal set; }
+    public Brain MyBrain { get; set; }
     public MathElementKind Kind => MathElementKind.Trait;
 
     private static int _traitCounter = 1 + (int)MathElementKind.Trait;
-    public int Id { get; internal set; }
+    public int Id { get; set; }
     public int CreationIndex => Id - (int)Kind - 1;
 
     public bool IsDirty { get; set; } = true;

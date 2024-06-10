@@ -1,12 +1,12 @@
-﻿using Numbers.Agent;
-using Numbers.Drawing;
-using Numbers.Renderer;
+﻿using NumbersSkia.Agent;
+using NumbersSkia.Drawing;
+using NumbersSkia.Renderer;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
 using SkiaSharp;
 // using OpenTK.Graphics.ES30;
 
-namespace Numbers.Mappers;
+namespace NumbersSkia.Mappers;
 
 public abstract class SKMapper : IDrawableElement
 {

@@ -1,15 +1,14 @@
 ﻿namespace MathDemo;
 
+using NumbersSkia.Demo;
 using MathDemo.Controls;
-using Numbers;
-using Numbers.Agent;
-using Numbers.Drawing;
-using Numbers.Mappers;
-using Numbers.Renderer;
+using NumbersSkia.Agent;
+using NumbersSkia.Drawing;
+using NumbersSkia.Mappers;
+using NumbersSkia.Renderer;
 using NumbersCore.CoreConcepts.Temperature;
 using NumbersCore.Operations;
 using NumbersCore.Primitives;
-using NumbersSkia.Mappers;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;

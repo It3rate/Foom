@@ -1,8 +1,8 @@
 ﻿namespace MathDemo;
 
-using Numbers;
-using Numbers.Agent;
-using Numbers.Mappers;
+using NumbersSkia.Demo;
+using NumbersSkia.Agent;
+using NumbersSkia.Mappers;
 using System.Collections.Generic;
 
 public abstract class DemoBase : IDemos

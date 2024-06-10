@@ -5,6 +5,10 @@ using NumbersCore.Utils;
 using System.Collections.Generic;
 using System.Linq;
 
+// Q. Why is this not just a domain?
+// A. A domain defines a class of a certain situation, and there can be many instances.
+// e.g. two domains can define an environment for 2D shapes. A group can define a shape, but the domain can have many shapes. It is important to keep these groups (instances) seperable.
+
 /// <summary>
 /// These are an ordered Group of numbers. They share a domain, but can have any polarity and direction. Can be empty.
 /// </summary>
@@ -172,7 +176,7 @@ public class NumberGroup : Number, IMathElement
         return result;
     }
 
-    // todo: Add/Multiply all the internal segments as well. Adding may be ok as is, multiply needs to interpolate stretches
+    // todo: Add/Multiply all the public segments as well. Adding may be ok as is, multiply needs to interpolate stretches
     public override void Add(Number q) { base.Add(q); }
     public override void Subtract(Number q) { base.Subtract(q); }
     public override void Multiply(Number q) { base.Multiply(q); }

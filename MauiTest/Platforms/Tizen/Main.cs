@@ -4,7 +4,7 @@ using Microsoft.Maui.Hosting;
 
 namespace MauiTest
 {
-    internal class Program : MauiApplication
+    public class Program : MauiApplication
     {
         protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
 

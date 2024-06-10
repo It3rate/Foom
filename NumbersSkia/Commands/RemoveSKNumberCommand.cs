@@ -1,6 +1,6 @@
-﻿namespace Numbers.Commands;
-using Numbers.Drawing;
-using Numbers.Mappers;
+﻿namespace NumbersSkia.Commands;
+using NumbersSkia.Drawing;
+using NumbersSkia.Mappers;
 using NumbersAPI.CoreTasks;
 using NumbersCore.CoreConcepts.Time;
 using NumbersCore.Primitives;

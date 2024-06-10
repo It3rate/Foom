@@ -1,4 +1,4 @@
 ﻿namespace NumbersAPI.CoreTasks;
-internal class CreateTransformTask
+public class CreateTransformTask
 {
 }

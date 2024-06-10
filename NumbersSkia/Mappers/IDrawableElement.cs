@@ -1,6 +1,6 @@
-﻿namespace Numbers.Mappers;
-using Numbers.Agent;
-using Numbers.Renderer;
+﻿namespace NumbersSkia.Mappers;
+using NumbersSkia.Agent;
+using NumbersSkia.Renderer;
 using SkiaSharp;
 
 public interface IDrawableElement

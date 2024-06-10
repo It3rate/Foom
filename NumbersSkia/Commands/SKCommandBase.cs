@@ -1,12 +1,12 @@
-﻿using Numbers.Agent;
-using Numbers.Mappers;
+﻿using NumbersSkia.Agent;
+using NumbersSkia.Mappers;
 using NumbersAPI.CommandEngine;
 using NumbersCore.CoreConcepts.Time;
 using NumbersCore.Primitives;
 
-namespace Numbers.Commands;
+namespace NumbersSkia.Commands;
 
-using Numbers.Drawing;
+using NumbersSkia.Drawing;
 using System.Collections.Generic;
 
 public class SKCommandBase : CommandBase

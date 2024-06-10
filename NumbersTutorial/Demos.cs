@@ -1,8 +1,9 @@
-﻿using Numbers;
-using Numbers.Agent;
-using Numbers.Commands;
-using Numbers.Drawing;
-using Numbers.Mappers;
+﻿
+using NumbersSkia.Demo;
+using NumbersSkia.Agent;
+using NumbersSkia.Commands;
+using NumbersSkia.Drawing;
+using NumbersSkia.Mappers;
 using NumbersCore.Operations;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;

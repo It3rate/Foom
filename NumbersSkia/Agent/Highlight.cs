@@ -1,8 +1,8 @@
-﻿using Numbers.Mappers;
+﻿using NumbersSkia.Mappers;
 using NumbersCore.Utils;
 using SkiaSharp;
 
-namespace Numbers.Agent;
+namespace NumbersSkia.Agent;
 
 /// <summary>
 /// Highlight is a sub-selection for UI purposes, can select parts of an equation to drag, like a orgPoint on a segment, or segment in a transform.

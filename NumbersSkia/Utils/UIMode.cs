@@ -1,4 +1,4 @@
-﻿namespace Numbers.Utils;
+﻿namespace NumbersSkia.Utils;
 
 using System;
 

@@ -1,4 +1,4 @@
 ﻿namespace NumbersAPI.CoreTasks;
-internal class DomainAdjustBasisTask
+public class DomainAdjustBasisTask
 {
 }

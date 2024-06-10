@@ -1,5 +1,5 @@
-﻿using Numbers.Agent;
-using Numbers.Mappers;
+﻿using NumbersSkia.Agent;
+using NumbersSkia.Mappers;
 using NumbersCore.Primitives;
 using SkiaSharp;
 using System;

@@ -15,7 +15,7 @@ public class Number : IMathElement
   #region MathElement
   public virtual MathElementKind Kind => MathElementKind.Number;
 
-  public int Id { get; internal set; }
+  public int Id { get; set; }
   private static int _numberCounter = 1 + (int)MathElementKind.Number;
   public static int NextNumberId() => _numberCounter++;
   public int CreationIndex => Id - (int)Kind - 1;
@@ -412,7 +412,7 @@ public class Number : IMathElement
   }
   #endregion
   #region Internal Segments
-  // todo: internal segments should be a class added with composition
+  // todo: public segments should be a class added with composition
   /// <summary>
   /// The number of subnumbers, will always be 1 for normal numbers, can be 0->n for masked or groups numbers.
   /// </summary>

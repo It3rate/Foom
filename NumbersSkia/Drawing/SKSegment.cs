@@ -1,8 +1,8 @@
-﻿using Numbers.Utils;
+﻿using NumbersSkia.Utils;
 using NumbersCore.Utils;
 using SkiaSharp;
 
-namespace Numbers.Drawing;
+namespace NumbersSkia.Drawing;
 
 public class SKSegment
 {

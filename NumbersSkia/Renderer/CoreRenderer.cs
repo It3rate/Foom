@@ -1,10 +1,10 @@
-﻿using Numbers.Agent;
-using Numbers.Drawing;
-using Numbers.Mappers;
+﻿using NumbersSkia.Agent;
+using NumbersSkia.Drawing;
+using NumbersSkia.Mappers;
 using NumbersCore.Primitives;
 using SkiaSharp;
 
-namespace Numbers.Renderer;
+namespace NumbersSkia.Renderer;
 
 public class CoreRenderer
 {

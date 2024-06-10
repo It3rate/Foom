@@ -1,8 +1,8 @@
-﻿namespace Numbers.Mappers;
+﻿namespace NumbersSkia.Mappers;
 
-using Numbers.Agent;
-using Numbers.Drawing;
-using Numbers.Primitives;
+using NumbersSkia.Agent;
+using NumbersSkia.Drawing;
+using NumbersSkia.Primitives;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;

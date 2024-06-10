@@ -1,9 +1,9 @@
-﻿namespace Numbers.Mappers;
+﻿namespace NumbersSkia.Mappers;
 
-using Numbers.Agent;
-using Numbers.Drawing;
-using Numbers.Renderer;
-using Numbers.Utils;
+using NumbersSkia.Agent;
+using NumbersSkia.Drawing;
+using NumbersSkia.Renderer;
+using NumbersSkia.Utils;
 using NumbersCore.CoreConcepts.Spatial;
 using SkiaSharp;
 using System;

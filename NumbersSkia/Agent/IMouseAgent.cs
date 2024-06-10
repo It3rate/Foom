@@ -3,7 +3,7 @@ using NumbersAPI.CommandEngine;
 using NumbersCore.Utils;
 using NumbersSkia.Agent;
 
-namespace Numbers.Agent;
+namespace NumbersSkia.Agent;
 
 public interface IMouseAgent : IAgent
 {

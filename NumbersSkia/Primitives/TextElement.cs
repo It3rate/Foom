@@ -1,4 +1,4 @@
-﻿namespace Numbers.Primitives;
+﻿namespace NumbersSkia.Primitives;
 
 using NumbersCore.Utils;
 using System.Collections.Generic;

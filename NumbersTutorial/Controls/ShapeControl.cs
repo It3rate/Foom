@@ -1,8 +1,8 @@
 ﻿namespace MathDemo.Controls;
-using Numbers.Agent;
-using Numbers.Controls;
-using Numbers.Mappers;
-using Numbers.Renderer;
+using NumbersSkia.Agent;
+using NumbersSkia.Controls;
+using NumbersSkia.Mappers;
+using NumbersSkia.Renderer;
 using NumbersCore.CoreConcepts.Optical;
 using NumbersCore.CoreConcepts.Spatial;
 using NumbersCore.Primitives;

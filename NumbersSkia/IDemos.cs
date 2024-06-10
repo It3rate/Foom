@@ -1,7 +1,7 @@
-﻿using Numbers.Agent;
-using Numbers.Mappers;
+﻿using NumbersSkia.Agent;
+using NumbersSkia.Mappers;
 
-namespace Numbers;
+namespace NumbersSkia.Demo;
 
 public delegate SKWorkspaceMapper PageCreator();
 public interface IDemos

@@ -1,9 +1,9 @@
-﻿using Numbers.Drawing;
-using Numbers.Mappers;
+﻿using NumbersSkia.Drawing;
+using NumbersSkia.Mappers;
 using NumbersCore.Primitives;
 using SkiaSharp;
 
-namespace Numbers.Agent;
+namespace NumbersSkia.Agent;
 
 public class HighlightSet
 {

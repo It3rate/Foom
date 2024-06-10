@@ -2,7 +2,7 @@
 using System.Diagnostics;
 
 namespace NumbersCore.Primitives;
-public class MaskedFocal : Focal // todo: maybe this should just do the internal masks if they are present, as an optional property of focal?
+public class MaskedFocal : Focal // todo: maybe this should just do the public masks if they are present, as an optional property of focal?
 {
     public override int Count => StartState.IsTrue() ? _positions.Length / 2 : (_positions.Length - 1) / 2;
 

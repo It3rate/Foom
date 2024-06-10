@@ -1,8 +1,8 @@
-﻿namespace Numbers.Controls;
+﻿namespace NumbersSkia.Controls;
 
-using Numbers.Agent;
-using Numbers.Mappers;
-using Numbers.Renderer;
+using NumbersSkia.Agent;
+using NumbersSkia.Mappers;
+using NumbersSkia.Renderer;
 using NumbersCore.CoreConcepts.Counter;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;

@@ -1,10 +1,10 @@
-﻿using Numbers.Agent;
-using Numbers.Mappers;
+﻿using NumbersSkia.Agent;
+using NumbersSkia.Mappers;
 using NumbersAPI.Commands;
 
-namespace Numbers.Commands;
+namespace NumbersSkia.Commands;
 
-using Numbers.Drawing;
+using NumbersSkia.Drawing;
 using System.Collections.Generic;
 
 public interface ISKCommand : ICommand

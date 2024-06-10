@@ -1,12 +1,12 @@
 ﻿using System.Runtime.ConstrainedExecution;
-using Numbers.Agent;
-using Numbers.Drawing;
+using NumbersSkia.Agent;
+using NumbersSkia.Drawing;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
 using NumbersSkia.Mappers;
 using SkiaSharp;
 
-namespace Numbers.Mappers;
+namespace NumbersSkia.Mappers;
 
 public class SKDomainMapper : SKMapper
 {

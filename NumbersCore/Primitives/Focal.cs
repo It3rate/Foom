@@ -116,7 +116,7 @@ public class Focal : IMathElement, IEquatable<Focal>
 	}
     public virtual void ClearInternalPositions() { }
 
-	protected virtual double[] GetTPositions() => []; // no internal mask positions in Focal
+	protected virtual double[] GetTPositions() => []; // no public mask positions in Focal
     protected virtual void SetTPositions(double[] tPositions) { }
     public virtual BoolState GetMaskAtPosition(long position) => BoolState.True;
 

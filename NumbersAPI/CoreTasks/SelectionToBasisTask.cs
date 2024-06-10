@@ -1,4 +1,4 @@
 ﻿namespace NumbersAPI.CoreTasks;
-internal class SelectionToBasisTask
+public class SelectionToBasisTask
 {
 }

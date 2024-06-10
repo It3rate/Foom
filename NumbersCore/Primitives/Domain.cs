@@ -16,7 +16,7 @@ public class Domain : IMathElement
 {
     public MathElementKind Kind => MathElementKind.Domain;
     private static int _idCounter = 1 + (int)MathElementKind.Domain;
-    public int Id { get; internal set; }
+    public int Id { get; set; }
     public int CreationIndex => Id - (int)Kind - 1;
     public bool IsDirty { get; set; } = true;
 

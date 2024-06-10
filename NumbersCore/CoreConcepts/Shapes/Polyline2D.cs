@@ -1,4 +1,4 @@
-﻿namespace NumbersCore.CoreConcepts.Spatial;
+﻿namespace NumbersCore.CoreConcepts.Shapes;
 using NumbersCore.Primitives;
 
 public class Polyline2D

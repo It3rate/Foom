@@ -1,7 +1,7 @@
-﻿using Numbers.Agent;
-using Numbers.Drawing;
-using Numbers.Renderer;
-using Numbers.Utils;
+﻿using NumbersSkia.Agent;
+using NumbersSkia.Drawing;
+using NumbersSkia.Renderer;
+using NumbersSkia.Utils;
 using NumbersCore.Operations;
 using NumbersCore.Primitives;
 using NumbersSkia.Agent;
@@ -9,7 +9,7 @@ using NumbersSkia.Agent;
 //using OpenTK.Graphics.ES30;
 using SkiaSharp;
 
-namespace Numbers.Mappers;
+namespace NumbersSkia.Mappers;
 
 public class SKWorkspaceMapper : SKMapper
 {

@@ -1,7 +1,7 @@
-﻿using Numbers.Utils;
+﻿using NumbersSkia.Utils;
 using SkiaSharp;
 
-namespace Numbers.Drawing;
+namespace NumbersSkia.Drawing;
 
 public class SkPolyline// : SkiaShapeAdapter, ISelectableElement
 {
@@ -79,6 +79,7 @@ public class SkPolyline// : SkiaShapeAdapter, ISelectableElement
         Transparency = brushData.Transparency;
         ColorValue = brushData.ColorValue;
     }
+
     //protected override PolyNumberSet CreatePolyset(int width, int height)
     //{
     //    var trait = PositionTrait.Instance;

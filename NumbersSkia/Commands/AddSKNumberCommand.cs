@@ -1,10 +1,10 @@
-﻿using Numbers.Agent;
-using Numbers.Mappers;
+﻿using NumbersSkia.Agent;
+using NumbersSkia.Mappers;
 using NumbersCore.CoreConcepts.Time;
 using NumbersCore.Primitives;
 using NumbersCore.Utils;
 
-namespace Numbers.Commands;
+namespace NumbersSkia.Commands;
 
 using NumbersAPI.CoreTasks;
 using System;

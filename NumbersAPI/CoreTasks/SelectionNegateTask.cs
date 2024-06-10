@@ -1,4 +1,4 @@
 ﻿namespace NumbersAPI.CoreTasks;
-internal class SelectionNegateTask
+public class SelectionNegateTask
 {
 }

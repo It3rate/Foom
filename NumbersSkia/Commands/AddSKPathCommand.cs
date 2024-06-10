@@ -1,7 +1,7 @@
-﻿namespace Numbers.Commands;
-using Numbers.Agent;
-using Numbers.Drawing;
-using Numbers.Mappers;
+﻿namespace NumbersSkia.Commands;
+using NumbersSkia.Agent;
+using NumbersSkia.Drawing;
+using NumbersSkia.Mappers;
 using NumbersCore.CoreConcepts.Time;
 using SkiaSharp;
 

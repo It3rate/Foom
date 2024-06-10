@@ -1,4 +1,4 @@
-﻿namespace Numbers.Mappers;
+﻿namespace NumbersSkia.Mappers;
 
 //public interface ISelectableElement : IBrushState
 //{

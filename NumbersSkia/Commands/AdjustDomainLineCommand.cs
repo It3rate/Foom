@@ -1,4 +1,4 @@
-﻿namespace Numbers.Commands;
-internal class AdjustDomainLineCommand
+﻿namespace NumbersSkia.Commands;
+public class AdjustDomainLineCommand
 {
 }

@@ -140,7 +140,7 @@ public class Slides : DemoBase
             path.Pen = CorePens.GetPen(SKColor.FromHsl(i * 4f + 150, 70, 50), 8); ;
             var x = 500 + i * w;
             var y = 700;
-            path.SetOval(new SKPoint(x, y), new SKPoint(x + w, y + w));
+            path.AddOval(new SKPoint(x, y), new SKPoint(x + w, y + w));
         }
         return wm;
     }
@@ -193,7 +193,7 @@ public class Slides : DemoBase
             var path = wm.CreatePathMapper();
             path.DefaultBrush = CorePens.GetBrush(new SKColor((byte)(midH + val), green, (byte)(midH - val)));
             path.Pen = CorePens.GetPen(SKColor.FromHsl(hue, 80, 20), 5);
-            path.SetStar(new SKPoint(x, y), new SKPoint(x + w, y + w), pts++);
+            path.AddStar(new SKPoint(x, y), new SKPoint(x + w, y + w), pts++);
             y += 100;
             hue += 150 / count;
             paths.Add(path);
@@ -1047,7 +1047,7 @@ public class Slides : DemoBase
             path.Pen = CorePens.GetPen(SKColor.FromHsl((rnd.Next(100) + 150), 70, 50), 8);
             var x = (rnd.Next(minXt, maxXt)) + 750;
             var y = (rnd.Next(minYt, maxYt)) + 450;
-            path.SetOval(new SKPoint(x, y), new SKPoint(x + w, y + w));
+            path.AddOval(new SKPoint(x, y), new SKPoint(x + w, y + w));
         }
     }
     private SKPathMapper AddCircle(SKWorkspaceMapper wm, SKPoint pt, int radius, int hue)
@@ -1056,7 +1056,7 @@ public class Slides : DemoBase
         path.Pen = CorePens.GetPen(SKColor.FromHsl(hue, 80, 60), 4);
         var x = pt.X + radius;
         var y = pt.Y + radius;
-        path.SetOval(new SKPoint(x - radius, y - radius), new SKPoint(x + radius * 2, y + radius * 2));
+        path.AddOval(new SKPoint(x - radius, y - radius), new SKPoint(x + radius * 2, y + radius * 2));
         path.IsPermanent = true;
         return path;
     }

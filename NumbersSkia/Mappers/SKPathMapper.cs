@@ -13,6 +13,7 @@ using System.Text;
 
 public class SKPathMapper : SKMapper
 {
+    // todo: add shape separators, allow abstraction of quad, bezier, arcs etc.
     public ExtentDomain PolylineDomain => (ExtentDomain)MathElement;
 
     private List<SKPoint> _points = new List<SKPoint>();
@@ -76,10 +77,12 @@ public class SKPathMapper : SKMapper
             //SmoothPositions();
         }
     }
-
-    public void SetRect(SKPoint p0, SKPoint p1)
+    public void AddArc(SKPoint start, SKPoint end, SKPoint center, bool clockwise)
     {
-        Reset();
+    }
+
+    public void AddRect(SKPoint p0, SKPoint p1)
+    {
         _isShape = true;
         AddPosition(p0.X, p0.Y);
         AddPosition(p1.X, p0.Y);
@@ -88,9 +91,8 @@ public class SKPathMapper : SKMapper
         AddPosition(p0.X, p0.Y);
         _pathDirty = true;
     }
-    public void SetOval(SKPoint p0, SKPoint p1)
+    public void AddOval(SKPoint p0, SKPoint p1)
     {
-        Reset();
         _isShape = true;
         var center = p0.Midpoint(p1);
         var xr = center.X - p0.X;
@@ -103,9 +105,8 @@ public class SKPathMapper : SKMapper
         }
         _pathDirty = true;
     }
-    public void SetStar(SKPoint p0, SKPoint p1, int points = -1)
+    public void AddStar(SKPoint p0, SKPoint p1, int points = -1)
     {
-        Reset();
         _isShape = true;
         var center = p0.Midpoint(p1);
         var starPoints = GenerateStar(center.X, center.Y, center.X - p0.X, center.Y - p0.Y, points, 0.5f);

@@ -3,9 +3,10 @@ using NumbersSkia.Drawing;
 using NumbersSkia.Mappers;
 using NumbersCore.Primitives;
 using SkiaSharp;
+using System;
+using Xamarin.Forms;
 
 namespace NumbersSkia.Renderer;
-
 public class CoreRenderer
 {
     private static CoreRenderer _instance;
@@ -27,7 +28,9 @@ public class CoreRenderer
 
     public int Width { get; set; }
     public int Height { get; set; }
-    public event EventHandler DrawingComplete;
+
+    public event CanvasEventHandler DrawingStart;
+    public event CanvasEventHandler DrawingComplete;
 
     public SKCanvas Canvas;
     public CorePens Pens { get; set; }
@@ -44,6 +47,7 @@ public class CoreRenderer
         Canvas.Save();
         Canvas.SetMatrix(Matrix);
         Canvas.Clear(Pens.BkgColor);
+        OnDrawingBegin();
     }
     public virtual void Draw()
     {
@@ -58,12 +62,16 @@ public class CoreRenderer
             DrawBitmap(Bitmap);
         }
 
-        Canvas = null;
         OnDrawingComplete();
+        Canvas = null;
+    }
+    protected void OnDrawingBegin()
+    {
+        DrawingStart?.Invoke(this, new CanvasEventArgs(Canvas));
     }
     protected void OnDrawingComplete()
     {
-        DrawingComplete?.Invoke(this, EventArgs.Empty);
+        DrawingComplete?.Invoke(this, new CanvasEventArgs(Canvas));
     }
 
     public void DrawSegment(SKSegment seg, SKPaint paint)
@@ -325,4 +333,15 @@ public class CoreRenderer
 
     #endregion
 
+}
+
+public delegate void CanvasEventHandler(object? sender, CanvasEventArgs e);
+public class CanvasEventArgs : EventArgs
+{
+    public SKCanvas Canvas { get; }
+
+    public CanvasEventArgs(SKCanvas canvas)
+    {
+        Canvas = canvas;
+    }
 }

@@ -5,6 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace NumbersCore.CoreConcepts.Shapes;
-public class Arc2D : Circle2D
+public class Arc2D : Oval2D
 {
 }

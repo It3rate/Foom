@@ -63,11 +63,19 @@ public abstract class PolyDomain : IMathElement
     protected int GetGroupIndex(NumberGroup group) => _numberGroup.IndexOf(group); // can't use Id as there could be repeats of the same group eventually.
     protected NumberGroup GetChainByIndex(int index) => (index >= 0 && index < _numberGroup.Count) ? _numberGroup[index] : null;
 
+    // do for points, then segments, then domains, then numbers, then formulas, then joins
+	// get segment(t0, t1)
+	// get length(t0, t1)
+	// get linear distance(t0, t1)
+	// get tangent of segment
+	// get offset of segment
+	// get contour of segment
+	// get mirror of segment
+    // angle
+    // constraints(t0, t1) isHorz, isVert, isParallel, isPerp, isTangent, point>point/line, midpt, sym, mirror, angle, inBounds, isEqual/gt/lt,
 
 
-
-
-    public Number[] NumbersAt(int index)
+	public Number[] NumbersAt(int index)
     {
         Number[] result = null;
         if (index < Count)

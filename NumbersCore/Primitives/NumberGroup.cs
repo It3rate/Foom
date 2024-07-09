@@ -7,7 +7,8 @@ using System.Linq;
 
 // Q. Why is this not just a domain?
 // A. A domain defines a class of a certain situation, and there can be many instances.
-// e.g. two domains can define an environment for 2D shapes. A group can define a shape, but the domain can have many shapes. It is important to keep these groups (instances) seperable.
+// e.g. two domains can define an environment for 2D shapes.
+// A group can define a shape, but the domain can have many shapes. It is important to keep these groups (instances) seperable.
 
 /// <summary>
 /// These are an ordered Group of numbers. They share a domain, but can have any polarity and direction. Can be empty.

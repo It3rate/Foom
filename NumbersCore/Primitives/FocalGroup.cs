@@ -12,7 +12,8 @@ using System.Linq;
 public class FocalGroup : Focal
 {
     // todo: account for direction of focal line?
-    // Perhaps the number store and bool segment capabilities should be separated? The first is like a bidirectional relative accumulator, the second a non overlapping ordered group of segments.
+    // Perhaps the number store and bool segment capabilities should be separated?
+    // The first is like a bidirectional relative accumulator, the second a non overlapping ordered group of segments.
     // - Q.Are non overlapping ordered elements a core type of value, or just a special bool case?
     //     the main difference is the bool case only allows forward direction for segments, while a path can meander. Both must be tip to tail.
     //     relative encoding may make more sense as this enforces tip to tail (2,4,3,1 vs 2,6,9,10)

@@ -16,16 +16,16 @@ public struct PRange
     public static readonly PRange MinRange = new PRange(double.MinValue, double.MinValue);
     public static readonly double Tolerance = 0.000000001;
 
-    public Polarity Polarity { get; set; }
+    public Polarity Polarity { get; private set; }
     public int PolarityDirection => IsAligned ? 1 : -1;
     public bool IsAligned => Polarity == Polarity.Aligned;
     public bool IsInverted => Polarity == Polarity.Inverted;
 
-    public double Start { get; set; }
+    public double Start { get; private set; }
     public double End
     {
         get;
-        set;
+        private set;
     }
     private readonly bool _hasValue;
     public double UnitValue
@@ -86,21 +86,12 @@ public struct PRange
         var dist = value - (-Start);
         return dist / DirectedLength();
     }
-    public void InvertPolarity()
-    {
-        Polarity = (Polarity == Polarity.Aligned) ? Polarity.Inverted : Polarity.Aligned;
-    }
-    public void InvertRange()
-    {
-        Start = -Start;
-        End = -End;
-    }
-    public void InvertPolarityAndRange()
-    {
-        Start = -Start;
-        End = -End;
-        Polarity = (Polarity == Polarity.Aligned) ? Polarity.Inverted : Polarity.Aligned;
-    }
+    public PRange InvertStart() => new(-Start, End, IsAligned);
+    public PRange InvertEnd() => new(Start, -End, IsAligned);
+    public PRange InvertPolarity() => new(Start, End, !IsAligned);
+    public PRange InvertRange() => new(-Start, -End, IsAligned);
+    public PRange InvertPolarityAndRange() => new(-Start, -End, !IsAligned);
+
     public PRange Negation() => PRange.Negation(this);
     public PRange Conjugate() => PRange.Conjugate(this);
     public PRange Reciprocal() => PRange.Reciprocal(this);
@@ -162,7 +153,7 @@ public struct PRange
     {
         var result = new PRange(left.Start * right.End + left.End * right.Start, left.End * right.End - left.Start * right.Start);
         result.Polarity = left.Polarity;
-        result.SolvePolarityWith(right.Polarity); // probably can compute this properly with unit/unot values.
+        result = result.SolvePolarityWith(right.Polarity); // probably can compute this properly with unit/unot values.
         return result;
     }
     public static PRange operator /(PRange left, PRange right)
@@ -183,19 +174,21 @@ public struct PRange
             result = new PRange((-real1 + imaginary1 * num1) / (imaginary2 + real2 * num1), (imaginary1 + real1 * num1) / (imaginary2 + real2 * num1));
         }
         result.Polarity = left.Polarity;
-        result.SolvePolarityWith(right.Polarity);
+        result = result.SolvePolarityWith(right.Polarity);
         return result;
     }
-    public void SolvePolarityWith(Polarity right)
+    public PRange SolvePolarityWith(Polarity right)
     {
+        var result = this;
         if (Polarity == Polarity.Inverted && right == Polarity.Inverted)
         {
-            InvertPolarityAndRange();
+            result = InvertPolarityAndRange();
         }
         else if (Polarity == Polarity.Aligned && right == Polarity.Inverted)
         {
-            InvertPolarity();
+            result = InvertPolarity();
         }
+        return result;
     }
     public static double DirectedLength(PRange a) => a.End + a.Start;
     public static double AbsLength(PRange a) => Math.Abs(a.End + a.Start);

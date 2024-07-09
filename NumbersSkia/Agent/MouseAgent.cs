@@ -29,6 +29,7 @@ public class MouseAgent : CommandAgent, IMouseAgent
 
     public CoreRenderer Renderer { get; }
     public Runner Runner;
+    public bool HasFocus { get; set; }
     public string Text = "";
 
     public IDemos Demos { get; }
@@ -522,11 +523,10 @@ public class MouseAgent : CommandAgent, IMouseAgent
     }
     private SKNumberMapper CreateNumber(SKDomainMapper dm, SKSegment seg, bool isInverted)
     {
-        var range = dm.RangeFromSegment(seg);
-        range.Start = -range.Start;
+        var range = dm.RangeFromSegment(seg).InvertStart();
         if (isInverted)
         {
-            range.InvertPolarityAndRange();
+            range = range.InvertPolarityAndRange();
         }
         var anc = new AddSKNumberCommand(dm, range);
         Stack.Do(anc);

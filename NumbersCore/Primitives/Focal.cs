@@ -495,14 +495,6 @@ public class Focal : IMathElement, IEquatable<Focal>
     public long Nand(long a, long b) { return ~(a & b); }
     public long Always(long a, long b) { return -1; }
 
-    public long Equals(long a, long b) { return ~(a ^ b); } // xnor
-    public long NotEquals(long a, long b) { return a ^ b; } // xor
-    public long GreaterThan(long a, long b) { return ~a & b; } // b > a
-    public long LessThan(long a, long b) { return a & ~b; } // a > b
-    public long GreaterThanOrEqual(long a, long b) { return ~a | b; } // a implies b
-    public long LessThanOrEqual(long a, long b) { return a | ~b; } // b implies a
-
-
 
     public static Focal CreateZeroFocal(long ticks) { return new Focal(0, ticks); }
     public static Focal CreateBalancedFocal(long halfTicks) { return new Focal(-halfTicks, halfTicks); }

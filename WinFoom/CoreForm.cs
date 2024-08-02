@@ -29,6 +29,7 @@ public partial class CoreForm : Form
         _control = new SKControl();
         _control.Width = Width;
         _control.Height = Height;
+        _control.Dock = DockStyle.Fill;
         _renderer.Width = Width;
         _renderer.Height = Height;
         corePanel.Controls.Add(_control);
@@ -40,6 +41,7 @@ public partial class CoreForm : Form
         _control.MouseDoubleClick += OnMouseDoubleClick;
         _control.MouseWheel += OnMouseWheel;
         _control.PreviewKeyDown += OnPreviewKeyDown;
+        corePanel.Resize += OnResize;
         KeyDown += OnKeyDown;
         KeyUp += OnKeyUp;
 
@@ -50,6 +52,12 @@ public partial class CoreForm : Form
         _runner = _mouseAgent.Runner;
         _runner.OnContextStringChanged += _runner_OnContextStringChanged;
         _ = Execute(null, 50);
+    }
+
+    private void OnResize(object? sender, EventArgs e)
+    {
+        _renderer.Width = corePanel.Width;
+        _renderer.Height = corePanel.Height;
     }
 
     private void _runner_OnContextStringChanged(object? sender, EventArgs e)

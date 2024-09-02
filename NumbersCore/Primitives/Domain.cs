@@ -249,4 +249,22 @@ public class Domain : IMathElement
         result.IsVisible = IsVisible;
         return result;
     }
+
+
+    private long TickValueAligned(double value)
+    {
+        var result = (long)(BasisFocal.StartPosition + (value * BasisFocal.LengthInTicks));
+        // todo: Clamp to limits, account for basis direction.
+        return result;
+    }
+    private long TickValueInverted(double value)
+    {
+        var result = (long)(BasisFocal.StartPosition - (value * BasisFocal.LengthInTicks));
+        // todo: Clamp to limits, account for basis direction.
+        return result;
+    }
+    public Focal FocalFromDecimalRaw(double startValue, double endValue) =>
+        new Focal(TickValueAligned(startValue), TickValueAligned(endValue));
+    public Focal FocalFromDecimalSigned(double startValue, double endValue) =>
+        new Focal(TickValueInverted(startValue), TickValueAligned(endValue));
 }

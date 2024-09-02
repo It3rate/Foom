@@ -208,17 +208,41 @@ public class NumberGroup : Number, IMathElement
         }
     }
     #endregion
+
+
     public override string ToString()
     {
-        var result = "ng(0)";
-        if (Count > 0)
+        string result;
+        var val = Value;
+        if (Polarity == Polarity.None)
         {
-            var v = Value;
-            var midSign = v.End > 0 ? " + " : " ";
-            result = IsAligned ?
-                $"ng{Count}:({v.UnotValue:0.##}i {midSign}{v.UnitValue}r)" :
-                $"ng{Count}:~({v.UnitValue:0.##}r {midSign}{v.UnotValue:0.##}i)";
+            result = $"x({val.Start:0.##}_{val.End:0.##})"; // no polarity, so just list values
+        }
+        else
+        {
+            var midSign = val.End > 0 ? " + " : " ";
+            var pol = Polarity == Polarity.Inverted ? "~" : "";
+            var start = val.Start == 0 ? "0" :
+                val.Start == 1 ? "" :
+                val.Start == -1 ? "-" :
+                $"{val.Start:0.##}";
+
+            var end = val.End == 0 ? "0" : $"{val.End:0.##}";
+            result = $"{pol}({start}i{midSign}{end})";
         }
         return result;
     }
+    //public override string ToString()
+    //{
+    //    var result = "ng(0)";
+    //    if (Count > 0)
+    //    {
+    //        var v = Value;
+    //        var midSign = v.End > 0 ? " + " : " ";
+    //        result = IsAligned ?
+    //            $"ng{Count}:({v.UnotValue:0.##}i {midSign}{v.UnitValue}r)" :
+    //            $"ng{Count}:~({v.UnitValue:0.##}r {midSign}{v.UnotValue:0.##}i)";
+    //    }
+    //    return result;
+    //}
 }

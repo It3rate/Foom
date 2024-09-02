@@ -633,26 +633,48 @@ public class Number : IMathElement
       return hashCode;
     }
   }
-  #endregion
+    #endregion
 
-  public override string ToString()
-  {
-    var result = "x";
-    if (IsValid)
+    public override string ToString()
     {
-      var v = Value;
-      if (Polarity == Polarity.None)
-      {
-        result = $"x({v.Start:0.##}_{-v.End:0.##})"; // no polarity, so just list values
-      }
-      else
-      {
-        var midSign = v.End > 0 ? " + " : " ";
-        result = IsAligned ?
-            $"({v.UnotValue:0.##}i{midSign}{v.UnitValue}r)" :
-            $"~({v.UnitValue:0.##}r{midSign}{v.UnotValue:0.##}i)";
-      }
+        string result;
+        var val = Value;
+        if (Polarity == Polarity.None)
+        {
+            result = $"x({val.Start:0.##}_{val.End:0.##})"; // no polarity, so just list values
+        }
+        else
+        {
+            var midSign = val.End > 0 ? " + " : " ";
+            var pol = Polarity == Polarity.Inverted ? "~" : "";
+            var start = val.Start == 0 ? "0" :
+                val.Start == 1 ? "" :
+                val.Start == -1 ? "-" :
+                $"{val.Start:0.##}";
+
+            var end = val.End == 0 ? "0" : $"{val.End:0.##}";
+            result = $"{pol}({start}i{midSign}{end})";
+        }
+        return result;
     }
-    return result;
-  }
+  //  public override string ToString()
+  //{
+  //  var result = "x";
+  //  if (IsValid)
+  //  {
+  //    var v = Value;
+  //    if (Polarity == Polarity.None)
+  //    {
+  //      result = $"x({v.Start:0.##}_{-v.End:0.##})"; // no polarity, so just list values
+  //    }
+  //    else
+  //    {
+  //      var midSign = v.End > 0 ? " + " : " ";
+  //      result = IsAligned ?
+  //          $"({v.UnotValue:0.##}i{midSign}{v.UnitValue}r)" :
+  //          $"~({v.UnitValue:0.##}r{midSign}{v.UnotValue:0.##}i)";
+  //    }
+  //  }
+  //  return result;
+  //}
 }

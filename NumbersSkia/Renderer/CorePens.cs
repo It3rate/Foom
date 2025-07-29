@@ -393,7 +393,7 @@ public class CorePens
         return result;
     }
 
-    public static SKPaint GetText(SKColor color, int fontSize, string fontName = "Arial", bool isBold = false, bool isCentered = false)
+    public static SKPaint GetText(SKColor color, float fontSize, string fontName = "Arial", bool isBold = false, bool isCentered = false)
     {
         var result = new SKPaint { TextSize = fontSize, Color = color };
         result.IsAntialias = true;

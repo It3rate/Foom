@@ -228,7 +228,7 @@ public class SKSegment
             var e2 = p - StartPoint;
             var dp = e1.DotProduct(e2);
             var len2 = e1.SquaredLength();
-            if (len2 < 0.1f)
+            if (len2 < 0.001f)
             {
                 result = p;
             }

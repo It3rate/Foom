@@ -50,6 +50,42 @@ public class SKRotatedRect
 		return new SKRect(XMin, YMin, XMax, YMax);
 	}
 	public SKPoint[] GetPoints() =>  [BottomLeft, TopLeft, TopRight, BottomRight];
-	public bool IsEmpty =>  BottomLeft == SKPoint.Empty && TopLeft == SKPoint.Empty &&
+
+    public SKPoint[,] GetGrid(int rows, int columns)
+    {
+        if (rows < 1 || columns < 1)
+        {
+            return new SKPoint[0, 0];
+        }
+
+        SKPoint[,] grid = new SKPoint[rows, columns];
+
+        for (int i = 0; i < rows; i++)
+        {
+            float v = (float)i / (rows - 1);
+
+            for (int j = 0; j < columns; j++)
+            {
+                float u = (float)j / (columns - 1);
+
+                // Lerp bottom: BottomLeft to BottomRight
+                float bottomX = BottomLeft.X + u * (BottomRight.X - BottomLeft.X);
+                float bottomY = BottomLeft.Y + u * (BottomRight.Y - BottomLeft.Y);
+
+                // Lerp top: TopLeft to TopRight
+                float topX = TopLeft.X + u * (TopRight.X - TopLeft.X);
+                float topY = TopLeft.Y + u * (TopRight.Y - TopLeft.Y);
+
+                // Lerp between bottom and top
+                float pointX = bottomX + v * (topX - bottomX);
+                float pointY = bottomY + v * (topY - bottomY);
+
+                grid[i, j] = new SKPoint(pointX, pointY);
+            }
+        }
+
+        return grid;
+    }
+    public bool IsEmpty =>  BottomLeft == SKPoint.Empty && TopLeft == SKPoint.Empty &&
 			   TopRight == SKPoint.Empty && BottomRight == SKPoint.Empty;
 }

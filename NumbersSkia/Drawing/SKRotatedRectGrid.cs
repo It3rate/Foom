@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using NumbersSkia.Utils;
 using SkiaSharp;
 
 namespace NumbersSkia.Drawing;
@@ -10,6 +13,10 @@ public class SKRotatedRectGrid
 {
     public SKRotatedRect RotatedRect { get; }
     public SKPoint[,] Grid { get; private set; }
+    private float[,] _heightMap { get; set; }
+    public bool HasHeightData { get; private set; } = false;
+
+    private float _minStepSize = -1;
     public int ColumnCount { get; set; } // Horizontal points (left to right)
     public int RowCount { get; set; }    // Vertical points (bottom to top)
     public float XMin { get; set; }
@@ -18,9 +25,6 @@ public class SKRotatedRectGrid
     public float YMax { get; set; }
     public float ZMin { get; set; }
     public float ZMax { get; set; }
-    private float[,] _heightMap { get; set; }
-
-    private float _minStepSize = -1;
     public SKRotatedRectGrid(SKRotatedRect rect, int columnCount, int rowCount)
     {
         RotatedRect = rect;
@@ -41,6 +45,7 @@ public class SKRotatedRectGrid
         {
             _heightMap[rowIndex, columnIndex] = value;
         }
+        HasHeightData = true;
     }
     public void AddValues(float[,] heightMap)
     {
@@ -48,6 +53,7 @@ public class SKRotatedRectGrid
         {
             heightMap.CopyTo(_heightMap, 0);
         }
+        CalcMinMax();
     }
 
     public float GetInterpolatedHeight(float xPosition, float yPosition)
@@ -236,5 +242,110 @@ public class SKRotatedRectGrid
             }
         }
         _heightMap = new float[RowCount, ColumnCount];
+        CalcMinMax();
+    }
+
+    //public SKRotatedRect RotatedRect { get; }
+    //public SKPoint[,] Grid { get; private set; }
+    //private float[,] _heightMap { get; set; }
+
+    //private float _minStepSize = -1;
+    public string SaveData(string targetDir, string filePath)
+    {
+        var result = "";
+        var dict = new Dictionary<string, object>
+            {
+                { "column_count", ColumnCount },
+                { "row_count", RowCount },
+                { "grid", Serialize.SKPointsToFloat3D(Grid) },
+                { "height_map", Serialize.ToJaggedArray(_heightMap) },
+            };
+
+        var options = new JsonSerializerOptions { WriteIndented = true };
+        result = JsonSerializer.Serialize(dict, options);
+        Serialize.WriteToDisk(result, targetDir, filePath);
+        return result;
+    }
+    private void CalcMinMax()
+    {
+        XMin = float.MaxValue;
+        XMax = float.MinValue;
+        YMin = float.MaxValue;
+        YMax = float.MinValue;
+        ZMin = float.MaxValue;
+        ZMax = float.MinValue;
+        if(_heightMap.Length > 0)
+        {
+            HasHeightData = true;
+        }
+        for (int row = 0; row < RowCount; row++)
+        {
+            for (int col = 0; col < ColumnCount; col++)
+            {
+                var val = Grid[col, row];
+                if (val.X < XMin)
+                {
+                    XMin = val.X;
+                }
+                else if (val.X > XMax)
+                {
+                    XMax = val.X;
+                }
+
+                if (val.Y < YMin)
+                {
+                    YMin = val.Y;
+                }
+                else if (val.Y > YMax)
+                {
+                    YMax = val.Y;
+                }
+                if (HasHeightData)
+                {
+                    var zVal = _heightMap[col, row];
+                    if (zVal < ZMin)
+                    {
+                        ZMin = zVal;
+                    }
+                    else if (zVal > ZMax)
+                    {
+                        ZMax = zVal;
+                    }
+                }
+            }
+        }
+    }
+    public void LoadData(string targetDir, string filePath)
+    {
+        var json = Serialize.ReadFromDisk(targetDir, filePath);
+        if (json != "")
+        {
+            try
+            {
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var dict = JsonSerializer.Deserialize<Dictionary<string, object>>(json, options)
+                    ?? throw new JsonException("Failed to deserialize JSON");
+
+                ColumnCount = Serialize.GetInt(dict, "row_count");
+                RowCount = Serialize.GetInt(dict, "y_count");
+
+                if (dict.TryGetValue("grid", out var gridToken))
+                {
+                    Grid = Serialize.ParseFloat3DToSKPoints(gridToken.ToString());
+                }
+
+                if (dict.TryGetValue("height_map", out var mapToken))
+                {
+                    var jagged = JsonSerializer.Deserialize<float[][]>(mapToken.ToString(), options);
+                    _heightMap = Serialize.JaggedTo2DArray(jagged)
+                        ?? throw new JsonException("Failed to deserialize JSON AutolevelMap");
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine("Error loading autolevel data: " + ex.Message);
+            }
+        }
+        CalcMinMax();
     }
 }

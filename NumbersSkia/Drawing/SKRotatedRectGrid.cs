@@ -13,18 +13,36 @@ public class SKRotatedRectGrid
 {
     public SKRotatedRect RotatedRect { get; }
     public SKPoint[,] Grid { get; private set; }
-    private float[,] _heightMap { get; set; }
+    public float[,] HeightMap { get; private set; }
     public bool HasHeightData { get; private set; } = false;
 
     private float _minStepSize = -1;
     public int ColumnCount { get; set; } // Horizontal points (left to right)
     public int RowCount { get; set; }    // Vertical points (bottom to top)
-    public float XMin { get; set; }
-    public float XMax { get; set; }
-    public float YMin { get; set; }
-    public float YMax { get; set; }
-    public float ZMin { get; set; }
-    public float ZMax { get; set; }
+
+
+    private bool _needMinMaxCalc = false;
+    private float _zMin = float.MaxValue;
+    public float ZMin
+    {
+        get
+        {
+            if (_needMinMaxCalc) { CalcMinMax(); }
+            return _zMin;
+        }
+        private set { _zMin = value; }
+    }
+    private float _zMax = float.MaxValue;
+    public float ZMax
+    {
+        get
+        {
+            if (_needMinMaxCalc)  {  CalcMinMax();  }
+            return _zMax;
+        }
+        private set { _zMax = value; }
+    }
+
     public SKRotatedRectGrid(SKRotatedRect rect, int columnCount, int rowCount)
     {
         RotatedRect = rect;
@@ -63,12 +81,13 @@ public class SKRotatedRectGrid
                 }
             }
         }
-        CalcMinMax();
+        _needMinMaxCalc = true;
     }
 
     private void GenerateGrid()
     {
         Grid = new SKPoint[RowCount, ColumnCount];
+        HeightMap = new float[RowCount, ColumnCount];
         var r = RotatedRect;
 
         for (int row = 0; row < RowCount; row++)
@@ -94,8 +113,7 @@ public class SKRotatedRectGrid
                 Grid[row, col] = new SKPoint(pointX, pointY);
             }
         }
-        _heightMap = new float[RowCount, ColumnCount];
-        CalcMinMax();
+        _needMinMaxCalc = true;
     }
     private void GenerateCounts()
     {
@@ -111,23 +129,26 @@ public class SKRotatedRectGrid
             ColumnCount = (int)Math.Ceiling(bottomLine.Length / (double)_minStepSize);
             RowCount = (int)Math.Ceiling(leftLine.Length / (double)_minStepSize);
         }
+        _needMinMaxCalc = true;
     }
 
     public void AddValue(int rowIndex, int columnIndex, float value)
     {
         if (columnIndex >= 0 && columnIndex < ColumnCount && rowIndex >= 0 && rowIndex < RowCount)
         {
-            _heightMap[rowIndex, columnIndex] = value;
+            HeightMap[rowIndex, columnIndex] = value;
         }
         HasHeightData = true;
+        _needMinMaxCalc = true;
     }
     public void AddValues(float[,] heightMap)
     {
         if (heightMap.GetLength(0) == RowCount && heightMap.GetLength(1) == ColumnCount)
         {
-            heightMap.CopyTo(_heightMap, 0);
+            heightMap.CopyTo(HeightMap, 0);
         }
-        CalcMinMax();
+        HasHeightData = true;
+        _needMinMaxCalc = true;
     }
 
     public float GetInterpolatedHeight(float xPosition, float yPosition)
@@ -263,72 +284,27 @@ public class SKRotatedRectGrid
         float tx = horizontalFrac - col;
         float ty = verticalFrac - row;
 
-        float z00 = _heightMap[row, col];
-        float z10 = _heightMap[row, col + 1];
-        float z01 = _heightMap[row + 1, col];
-        float z11 = _heightMap[row + 1, col + 1];
+        float z00 = HeightMap[row, col];
+        float z10 = HeightMap[row, col + 1];
+        float z01 = HeightMap[row + 1, col];
+        float z11 = HeightMap[row + 1, col + 1];
 
         return (1 - tx) * (1 - ty) * z00 + tx * (1 - ty) * z10 + (1 - tx) * ty * z01 + tx * ty * z11;
     }
 
-    //public SKRotatedRect RotatedRect { get; }
-    //public SKPoint[,] Grid { get; private set; }
-    //private float[,] _heightMap { get; set; }
-
-    //private float _minStepSize = -1;
-    public string SaveData(string targetDir, string filePath)
-    {
-        var result = "";
-        var dict = new Dictionary<string, object>
-            {
-                { "column_count", ColumnCount },
-                { "row_count", RowCount },
-                { "grid", Serialize.SKPointsToFloat3D(Grid) },
-                { "height_map", Serialize.ToJaggedArray(_heightMap) },
-            };
-
-        var options = new JsonSerializerOptions { WriteIndented = true };
-        result = JsonSerializer.Serialize(dict, options);
-        Serialize.WriteToDisk(result, targetDir, filePath);
-        return result;
-    }
     private void CalcMinMax()
     {
-        XMin = float.MaxValue;
-        XMax = float.MinValue;
-        YMin = float.MaxValue;
-        YMax = float.MinValue;
+        _needMinMaxCalc = false;
         ZMin = float.MaxValue;
         ZMax = float.MinValue;
-        if(_heightMap.Length > 0)
-        {
-            HasHeightData = true;
-        }
         for (int row = 0; row < RowCount; row++)
         {
             for (int col = 0; col < ColumnCount; col++)
             {
-                var val = Grid[col, row];
-                if (val.X < XMin)
-                {
-                    XMin = val.X;
-                }
-                else if (val.X > XMax)
-                {
-                    XMax = val.X;
-                }
-
-                if (val.Y < YMin)
-                {
-                    YMin = val.Y;
-                }
-                else if (val.Y > YMax)
-                {
-                    YMax = val.Y;
-                }
+                var val = Grid[row, col];
                 if (HasHeightData)
                 {
-                    var zVal = _heightMap[col, row];
+                    var zVal = HeightMap[row, col];
                     if (zVal < ZMin)
                     {
                         ZMin = zVal;
@@ -341,8 +317,26 @@ public class SKRotatedRectGrid
             }
         }
     }
-    public void LoadData(string targetDir, string filePath)
+    public string SaveData(string targetDir, string filePath)
     {
+        var result = "";
+        var dict = new Dictionary<string, object>
+            {
+                { "column_count", ColumnCount },
+                { "row_count", RowCount },
+                { "rotated_rect", Serialize.SKPointsToFloat2D(RotatedRect.GetPoints()) },
+                { "grid", Serialize.SKPointsToFloat3D(Grid) },
+                { "height_map", Serialize.ToJaggedArray(HeightMap) },
+            };
+
+        var options = new JsonSerializerOptions { WriteIndented = true };
+        result = JsonSerializer.Serialize(dict, options);
+        Serialize.WriteToDisk(result, targetDir, filePath);
+        return result;
+    }
+    public static SKRotatedRectGrid? LoadData(string targetDir, string filePath)
+    {
+        SKRotatedRectGrid? result = null;
         var json = Serialize.ReadFromDisk(targetDir, filePath);
         if (json != "")
         {
@@ -352,19 +346,30 @@ public class SKRotatedRectGrid
                 var dict = JsonSerializer.Deserialize<Dictionary<string, object>>(json, options)
                     ?? throw new JsonException("Failed to deserialize JSON");
 
-                ColumnCount = Serialize.GetInt(dict, "row_count");
-                RowCount = Serialize.GetInt(dict, "y_count");
-
-                if (dict.TryGetValue("grid", out var gridToken))
+                var columnCount = Serialize.GetInt(dict, "row_count");
+                var rowCount = Serialize.GetInt(dict, "column_count");
+                SKRotatedRect? rrect = null;
+                if (dict.TryGetValue("rotated_rect", out var rrectToken))
                 {
-                    Grid = Serialize.ParseFloat3DToSKPoints(gridToken.ToString());
+                    rrect = new SKRotatedRect( Serialize.ParseFloat2DToSKPoints(rrectToken.ToString()));
                 }
-
-                if (dict.TryGetValue("height_map", out var mapToken))
+                if(rrect != null)
                 {
-                    var jagged = JsonSerializer.Deserialize<float[][]>(mapToken.ToString(), options);
-                    _heightMap = Serialize.JaggedTo2DArray(jagged)
-                        ?? throw new JsonException("Failed to deserialize JSON AutolevelMap");
+                    result = new SKRotatedRectGrid(rrect, rowCount, columnCount);
+                    if (dict.TryGetValue("grid", out var gridToken))
+                    {
+                        result.Grid = Serialize.ParseFloat3DToSKPoints(gridToken.ToString());
+                    }
+
+                    if (dict.TryGetValue("height_map", out var mapToken))
+                    {
+                        var jagged = JsonSerializer.Deserialize<float[][]>(mapToken.ToString(), options);
+                        result.HeightMap = Serialize.JaggedTo2DArray(jagged)
+                            ?? throw new JsonException("Failed to deserialize JSON AutolevelMap");
+                    }
+
+                    result.HasHeightData = true;
+                    result.CalcMinMax();
                 }
             }
             catch (Exception ex)
@@ -372,6 +377,6 @@ public class SKRotatedRectGrid
                 Trace.WriteLine("Error loading autolevel data: " + ex.Message);
             }
         }
-        CalcMinMax();
+        return result;
     }
 }

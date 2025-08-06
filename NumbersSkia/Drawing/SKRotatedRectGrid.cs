@@ -35,11 +35,85 @@ public class SKRotatedRectGrid
     public SKRotatedRectGrid(SKRotatedRect rect, float minStepSize)
     {
         RotatedRect = rect;
-        GenerateCounts(minStepSize);
+        _minStepSize = minStepSize;
+        GenerateCounts();
         GenerateGrid();
     }
+    public IEnumerable<(int, int, SKPoint)> SerpentineIterator()
+    {
+        int rows = Grid.GetLength(0);
+        int cols = Grid.GetLength(1);
 
-    public void AddValue(int columnIndex, int rowIndex, float value)
+        for (int col = 0; col < cols; col++)
+        {
+            if (col % 2 == 0)
+            {
+                // Even column: up (from bottom to top)
+                for (int row = rows - 1; row >= 0; row--)
+                {
+                    yield return (row, col, Grid[row, col]);
+                }
+            }
+            else
+            {
+                // Odd column: down (from top to bottom)
+                for (int row = 0; row < rows; row++)
+                {
+                    yield return (row, col, Grid[row, col]);
+                }
+            }
+        }
+        CalcMinMax();
+    }
+
+    private void GenerateGrid()
+    {
+        Grid = new SKPoint[RowCount, ColumnCount];
+        var r = RotatedRect;
+
+        for (int row = 0; row < RowCount; row++)
+        {
+            float v = (float)row / (RowCount - 1);
+
+            for (int col = 0; col < ColumnCount; col++)
+            {
+                float u = (float)col / (ColumnCount - 1);
+
+                // Lerp bottom: BottomLeft to BottomRight
+                float bottomX = r.BottomLeft.X + u * (r.BottomRight.X - r.BottomLeft.X);
+                float bottomY = r.BottomLeft.Y + u * (r.BottomRight.Y - r.BottomLeft.Y);
+
+                // Lerp top: TopLeft to TopRight
+                float topX = r.TopLeft.X + u * (r.TopRight.X - r.TopLeft.X);
+                float topY = r.TopLeft.Y + u * (r.TopRight.Y - r.TopLeft.Y);
+
+                // Lerp between bottom and top
+                float pointX = bottomX + v * (topX - bottomX);
+                float pointY = bottomY + v * (topY - bottomY);
+
+                Grid[row, col] = new SKPoint(pointX, pointY);
+            }
+        }
+        _heightMap = new float[RowCount, ColumnCount];
+        CalcMinMax();
+    }
+    private void GenerateCounts()
+    {
+        var leftLine = RotatedRect.LeftLineUpward;
+        var bottomLine = RotatedRect.BottomLineLeftward;
+        if (leftLine.Length < _minStepSize || bottomLine.Length < _minStepSize)
+        {
+            ColumnCount = 2;
+            RowCount = 2;
+        }
+        else
+        {
+            ColumnCount = (int)Math.Ceiling(bottomLine.Length / (double)_minStepSize);
+            RowCount = (int)Math.Ceiling(leftLine.Length / (double)_minStepSize);
+        }
+    }
+
+    public void AddValue(int rowIndex, int columnIndex, float value)
     {
         if (columnIndex >= 0 && columnIndex < ColumnCount && rowIndex >= 0 && rowIndex < RowCount)
         {
@@ -195,54 +269,6 @@ public class SKRotatedRectGrid
         float z11 = _heightMap[row + 1, col + 1];
 
         return (1 - tx) * (1 - ty) * z00 + tx * (1 - ty) * z10 + (1 - tx) * ty * z01 + tx * ty * z11;
-    }
-    private void GenerateCounts(float minStepSize)
-    {
-        _minStepSize = minStepSize;
-
-        var leftLine = RotatedRect.LeftLineUpward;
-        var bottomLine = RotatedRect.BottomLineLeftward;
-        if (leftLine.Length < minStepSize || bottomLine.Length < minStepSize)
-        {
-            ColumnCount = 2;
-            RowCount = 2;
-        }
-        else
-        {
-            ColumnCount = (int)Math.Ceiling(bottomLine.Length / (double)_minStepSize);
-            RowCount = (int)Math.Ceiling(leftLine.Length / (double)_minStepSize);
-        }
-    }
-    private void GenerateGrid()
-    {
-        Grid = new SKPoint[RowCount, ColumnCount];
-        var r = RotatedRect;
-
-        for (int row = 0; row < RowCount; row++)
-        {
-            float v = (float)row / (RowCount - 1);
-
-            for (int col = 0; col < ColumnCount; col++)
-            {
-                float u = (float)col / (ColumnCount - 1);
-
-                // Lerp bottom: BottomLeft to BottomRight
-                float bottomX = r.BottomLeft.X + u * (r.BottomRight.X - r.BottomLeft.X);
-                float bottomY = r.BottomLeft.Y + u * (r.BottomRight.Y - r.BottomLeft.Y);
-
-                // Lerp top: TopLeft to TopRight
-                float topX = r.TopLeft.X + u * (r.TopRight.X - r.TopLeft.X);
-                float topY = r.TopLeft.Y + u * (r.TopRight.Y - r.TopLeft.Y);
-
-                // Lerp between bottom and top
-                float pointX = bottomX + v * (topX - bottomX);
-                float pointY = bottomY + v * (topY - bottomY);
-
-                Grid[row, col] = new SKPoint(pointX, pointY);
-            }
-        }
-        _heightMap = new float[RowCount, ColumnCount];
-        CalcMinMax();
     }
 
     //public SKRotatedRect RotatedRect { get; }

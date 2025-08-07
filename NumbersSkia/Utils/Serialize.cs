@@ -6,7 +6,6 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using SkiaSharp;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace NumbersSkia.Utils;
 public class Serialize

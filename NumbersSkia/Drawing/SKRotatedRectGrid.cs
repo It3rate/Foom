@@ -42,20 +42,25 @@ public class SKRotatedRectGrid
         }
         private set { _zMax = value; }
     }
-
-    public SKRotatedRectGrid(SKRotatedRect rect, int columnCount, int rowCount)
+    public SKRotatedRectGrid(SKRotatedRect rect, int columnCount, int rowCount, int xDir = 1, int yDir = 1)
     {
         RotatedRect = rect;
         ColumnCount = columnCount;
         RowCount = rowCount;
-        GenerateGrid();
+        Grid = GenerateGrid();
+        HeightMap = new float[RowCount, ColumnCount];
     }
-    public SKRotatedRectGrid(SKRotatedRect rect, float minStepSize)
+    public SKRotatedRectGrid(SKRotatedRect rect, float minStepSize, int xDir, int yDir)
     {
         RotatedRect = rect;
         _minStepSize = minStepSize;
         GenerateCounts();
-        GenerateGrid();
+        Grid = GenerateGrid(xDir, yDir);
+        HeightMap = new float[RowCount, ColumnCount];
+    }
+    public SKMatrix GetOriginTranslationMatrix(RectOrientation jobOrientation)
+    {
+        return SKMatrix.Identity;
     }
     public IEnumerable<(int, int, SKPoint)> SerpentineIterator()
     {
@@ -84,36 +89,29 @@ public class SKRotatedRectGrid
         _needMinMaxCalc = true;
     }
 
-    private void GenerateGrid()
+    private SKPoint[,] GenerateGrid(int xDir = 1, int yDir = 1)
     {
-        Grid = new SKPoint[RowCount, ColumnCount];
-        HeightMap = new float[RowCount, ColumnCount];
+        var result = new SKPoint[RowCount, ColumnCount];
         var r = RotatedRect;
 
-        for (int row = 0; row < RowCount; row++)
+        var bottomSeg = xDir == 1 ? r.BottomLineRightward : r.BottomLineLeftward;// new SKSegment(r.BottomLeft, r.BottomRight);
+        var topSeg = xDir == 1 ? r.TopLineRightward : r.TopLineLeftward; // new SKSegment(r.TopLeft, r.TopRight);
+
+        for (int col = 0; col < ColumnCount; col++)
         {
-            float v = (float)row / (RowCount - 1);
-
-            for (int col = 0; col < ColumnCount; col++)
+            float u = (float)col / (ColumnCount - 1);
+            var b = bottomSeg.PointAlongLine(u);
+            var t = topSeg.PointAlongLine(u);
+            var seg = yDir == 1 ? new SKSegment(b, t) : new SKSegment(t, b);
+            for (int row = 0; row < RowCount; row++)
             {
-                float u = (float)col / (ColumnCount - 1);
+                float v = (float)row / (RowCount - 1);
 
-                // Lerp bottom: BottomLeft to BottomRight
-                float bottomX = r.BottomLeft.X + u * (r.BottomRight.X - r.BottomLeft.X);
-                float bottomY = r.BottomLeft.Y + u * (r.BottomRight.Y - r.BottomLeft.Y);
-
-                // Lerp top: TopLeft to TopRight
-                float topX = r.TopLeft.X + u * (r.TopRight.X - r.TopLeft.X);
-                float topY = r.TopLeft.Y + u * (r.TopRight.Y - r.TopLeft.Y);
-
-                // Lerp between bottom and top
-                float pointX = bottomX + v * (topX - bottomX);
-                float pointY = bottomY + v * (topY - bottomY);
-
-                Grid[row, col] = new SKPoint(pointX, pointY);
+                result[row, col] = seg.PointAlongLine(v);
             }
         }
         _needMinMaxCalc = true;
+        return result;
     }
     private void GenerateCounts()
     {
@@ -348,28 +346,28 @@ public class SKRotatedRectGrid
 
                 var columnCount = Serialize.GetInt(dict, "row_count");
                 var rowCount = Serialize.GetInt(dict, "column_count");
-                SKRotatedRect? rrect = null;
+
                 if (dict.TryGetValue("rotated_rect", out var rrectToken))
                 {
-                    rrect = new SKRotatedRect( Serialize.ParseFloat2DToSKPoints(rrectToken.ToString()));
-                }
-                if(rrect != null)
-                {
-                    result = new SKRotatedRectGrid(rrect, rowCount, columnCount);
-                    if (dict.TryGetValue("grid", out var gridToken))
+                    var rrect = new SKRotatedRect(Serialize.ParseFloat2DToSKPoints(rrectToken.ToString()));
+                    if (rrect != null)
                     {
-                        result.Grid = Serialize.ParseFloat3DToSKPoints(gridToken.ToString());
-                    }
+                        result = new SKRotatedRectGrid(rrect, rowCount, columnCount);
+                        if (dict.TryGetValue("grid", out var gridToken))
+                        {
+                            result.Grid = Serialize.ParseFloat3DToSKPoints(gridToken.ToString());
+                        }
 
-                    if (dict.TryGetValue("height_map", out var mapToken))
-                    {
-                        var jagged = JsonSerializer.Deserialize<float[][]>(mapToken.ToString(), options);
-                        result.HeightMap = Serialize.JaggedTo2DArray(jagged)
-                            ?? throw new JsonException("Failed to deserialize JSON AutolevelMap");
-                    }
+                        if (dict.TryGetValue("height_map", out var mapToken))
+                        {
+                            var jagged = JsonSerializer.Deserialize<float[][]>(mapToken.ToString(), options);
+                            result.HeightMap = Serialize.JaggedTo2DArray(jagged)
+                                ?? throw new JsonException("Failed to deserialize JSON AutolevelMap");
+                        }
 
-                    result.HasHeightData = true;
-                    result.CalcMinMax();
+                        result.HasHeightData = true;
+                        result.CalcMinMax();
+                    }
                 }
             }
             catch (Exception ex)

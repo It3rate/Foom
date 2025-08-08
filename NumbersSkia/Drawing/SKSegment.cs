@@ -91,6 +91,11 @@ public class SKSegment
     public (SKPoint, SKPoint) PerpendicularLine(float t, float offset) => (PointAlongLine(t), OrthogonalPoint(PointAlongLine(t), offset));
     public SKPoint RelativeOffset(float offset) => OrthogonalPoint(SKPoint.Empty, offset);
     public SKPoint OffsetAlongLine(float t, float offset) => OrthogonalPoint(PointAlongLine(t), offset);
+    public SKPoint DistanceOffsetAlongLine(float offsetAlong, float offsetOrthogonal)
+    {
+        var shiftSeg = ShiftOffLine(offsetOrthogonal);
+        return shiftSeg.SKPointFromStart(offsetAlong);
+    }
     public SKPoint SKPointFromStart(float dist) => PointAlongLine(dist / Math.Max(MathFUtils.tolerance, Length));
     public SKPoint SKPointFromEnd(float dist) => PointAlongLine(1 - dist / Math.Max(MathFUtils.tolerance, Length));
     public SKPoint Vector => EndPoint - StartPoint;

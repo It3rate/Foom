@@ -348,8 +348,8 @@ public class SKRotatedRectGrid
                 var dict = JsonSerializer.Deserialize<Dictionary<string, object>>(json, options)
                     ?? throw new JsonException("Failed to deserialize JSON");
 
-                var columnCount = Serialize.GetInt(dict, "row_count");
-                var rowCount = Serialize.GetInt(dict, "column_count");
+                var rowCount = Serialize.GetInt(dict, "row_count");
+                var columnCount = Serialize.GetInt(dict, "column_count");
                 var origin = (RectDirections)Serialize.GetInt(dict, "origin");
 
                 if (dict.TryGetValue("rotated_rect", out var rrectToken))

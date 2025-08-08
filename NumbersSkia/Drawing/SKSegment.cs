@@ -149,19 +149,19 @@ public class SKSegment
     }
     public bool IsParallelTo(SKSegment segment)
     {
-        var angleA = Angle;
-        var angleB = segment.Angle;
+        var angleA = AngleRadians;
+        var angleB = segment.AngleRadians;
         var rem = Math.IEEERemainder(angleA - angleB, MathFUtils.PI);
         return Math.Abs(rem) < MathFUtils.tolerance;
     }
     public bool IsPerpendicularTo(SKSegment segment)
     {
-        var angleA = Angle;
-        var angleB = segment.Angle;
+        var angleA = AngleRadians;
+        var angleB = segment.AngleRadians;
         var rem = Math.IEEERemainder(angleA - angleB, MathF.PI);
         return Math.Abs(Math.Abs(rem) - MathFUtils.HalfPI) < MathFUtils.tolerance;
     }
-    public float Angle
+    public float AngleRadians
     {
         get
         {
@@ -178,8 +178,8 @@ public class SKSegment
     }
     public float AngleDegrees
     {
-        get => MathFUtils.ToDegrees(Angle);
-        set => Angle = MathFUtils.ToRadians(value);
+        get => MathFUtils.ToDegrees(AngleRadians);
+        set => AngleRadians = MathFUtils.ToRadians(value);
     }
     private static float SnapAngle(float radians, int stepDegrees = 15)
     {
@@ -203,7 +203,7 @@ public class SKSegment
 
     public SKPoint SnapAngleToStep(int stepDegrees = 15)
     {
-        Angle = SnapAngle(Angle, stepDegrees);
+        AngleRadians = SnapAngle(AngleRadians, stepDegrees);
         return EndPoint;
     }
 

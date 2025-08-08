@@ -17,7 +17,8 @@ public static class SkPointExtension
     public static SKPoint PointAtDegreesAndDistance(this SKPoint a, float angle, float distance) =>
         PointAtRadiansAndDistance(a, angle / 180f * 2f, distance);
 
-    public static SKPoint Add(this SKPoint a, float xValue, float yValue) => new SKPoint(a.X + xValue, a.Y + yValue);
+	public static SKPoint Negate(this SKPoint a) => new SKPoint(-a.X, -a.Y);
+	public static SKPoint Add(this SKPoint a, float xValue, float yValue) => new SKPoint(a.X + xValue, a.Y + yValue);
     public static SKPoint Add(this SKPoint a, float value) => new SKPoint(a.X + value, a.Y + value);
     public static SKPoint Subtract(this SKPoint a, float xValue, float yValue) => new SKPoint(a.X - xValue, a.Y - yValue);
     public static SKPoint Subtract(this SKPoint a, float value) => new SKPoint(a.X - value, a.Y - value);

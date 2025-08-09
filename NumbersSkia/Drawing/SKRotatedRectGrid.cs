@@ -51,6 +51,7 @@ public class SKRotatedRectGrid
         _origin = origin;
         Grid = GenerateGrid();
         HeightMap = new float[RowCount, ColumnCount];
+        ResetHeights();
     }
     public SKRotatedRectGrid(SKRotatedRect rect, float minStepSize, RectDirections origin)
     {
@@ -60,6 +61,14 @@ public class SKRotatedRectGrid
         GenerateCounts();
         Grid = GenerateGrid();
         HeightMap = new float[RowCount, ColumnCount];
+        ResetHeights();
+    }
+    public bool HasValueAt(int row, int column)
+    {
+        return row >= 0 && column >= 0 && 
+            row < HeightMap.GetLength(0) &&
+             column < HeightMap.GetLength(1) && 
+            HeightMap[row, column] > float.MinValue;
     }
     public SKMatrix GetOriginTranslationMatrix(RectDirections jobOrientation)
     {
@@ -135,25 +144,48 @@ public class SKRotatedRectGrid
 
     public void AddValue(int rowIndex, int columnIndex, float value)
     {
-        if (columnIndex >= 0 && columnIndex < ColumnCount && rowIndex >= 0 && rowIndex < RowCount)
+        if (value > float.MinValue)
         {
-            HeightMap[rowIndex, columnIndex] = value;
+            if (columnIndex >= 0 && columnIndex < ColumnCount && rowIndex >= 0 && rowIndex < RowCount)
+            {
+                HeightMap[rowIndex, columnIndex] = value;
+            }
+            HasHeightData = true;
+            _needMinMaxCalc = true;
         }
-        HasHeightData = true;
-        _needMinMaxCalc = true;
     }
+    public bool AllHeightDataValid => AllDataValid(HeightMap);
+    public bool AllDataValid(float[,] map) => !map.Cast<float>().Contains(float.MinValue);
     public void AddValues(float[,] heightMap)
     {
-        if (heightMap.GetLength(0) == RowCount && heightMap.GetLength(1) == ColumnCount)
+        if (AllDataValid(heightMap))
         {
-            heightMap.CopyTo(HeightMap, 0);
+            if (heightMap.GetLength(0) == RowCount && heightMap.GetLength(1) == ColumnCount)
+            {
+                heightMap.CopyTo(HeightMap, 0);
+            }
+            HasHeightData = true;
+            _needMinMaxCalc = true;
         }
-        HasHeightData = true;
-        _needMinMaxCalc = true;
     }
 
+    public void ResetHeights()
+    {
+        HasHeightData = false;
+        for (int i = 0; i < HeightMap.GetLength(0); i++)
+        {
+            for (int j = 0; j < HeightMap.GetLength(1); j++)
+            {
+                HeightMap[i, j] = float.MinValue;
+            }
+        }
+    }
     public float GetInterpolatedHeight(float xPosition, float yPosition)
     {
+        if (!HasHeightData || !AllHeightDataValid)
+        {
+            return 0;
+        }
         SKPoint A = RotatedRect.BottomLeft;
         SKPoint B = RotatedRect.BottomRight;
         SKPoint C = RotatedRect.TopRight;
@@ -303,7 +335,7 @@ public class SKRotatedRectGrid
             for (int col = 0; col < ColumnCount; col++)
             {
                 var val = Grid[row, col];
-                if (HasHeightData)
+                if (HasValueAt(row, col))
                 {
                     var zVal = HeightMap[row, col];
                     if (zVal < ZMin)

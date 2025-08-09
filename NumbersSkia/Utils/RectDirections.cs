@@ -61,4 +61,24 @@ public static class RectDirectionsExtensions
 
         return result;
     }
+    public static RectDirections TRBLFromIndex(int index)
+    {
+        var result = RectDirections.None;
+        switch (index)
+        {
+            case 0:
+                result = RectDirections.Top;
+                break;
+            case 1:
+                result = RectDirections.Right;
+                break;
+            case 2:
+                result = RectDirections.Bottom;
+                break;
+            case 3:
+                result = RectDirections.Left;
+                break;
+        }
+        return result;
+    }
 }

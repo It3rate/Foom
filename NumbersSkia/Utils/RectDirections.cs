@@ -18,7 +18,23 @@ public class RectOrientation
         _xRightDirection = xRightDirection;
         _yDownDirection = yDownDirection;
     }
-    public SKPoint DirectionToCenter => State.DirectionToCenter(_xRightDirection, _yDownDirection);
+    public static RectOrientation FromNearestPoint(SKRect rect, SKPoint point, int xRightDirection = 1, int yDownDirection = 1)
+    {
+        var horz = RectDirections.Left;
+        var vert = RectDirections.Top;
+        if (((xRightDirection > 0) && (point.X > rect.MidX)) || ((xRightDirection < 0) && (point.X < rect.MidX)))
+        {
+            horz = RectDirections.Right;
+        }
+
+        if (((yDownDirection < 0) && (point.Y < rect.MidY)) || ((yDownDirection > 0) && (point.Y > rect.MidY)))
+        {
+            vert = RectDirections.Bottom;
+        }
+        return new RectOrientation( vert | horz, xRightDirection, yDownDirection);
+    }
+
+	public SKPoint DirectionToCenter => State.DirectionToCenter(_xRightDirection, _yDownDirection);
 }
 
 [Flags]

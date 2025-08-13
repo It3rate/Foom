@@ -38,12 +38,19 @@ public class SKRotatedRect
     public SKSegment LeftLineDownWard => new SKSegment(TopLeft, BottomLeft);
     public SKSegment TopLineLeftward => new SKSegment(TopRight, TopLeft);
     public SKSegment RightLineUpward => new SKSegment(BottomRight, TopRight);
-    public SKSegment BottomLineRightward => new SKSegment(BottomLeft, BottomRight);
+	public SKSegment BottomLineRightward => new SKSegment(BottomLeft, BottomRight);
+	public SKSegment BLtoTR => new SKSegment(BottomLeft, TopRight);
+	public SKSegment TLtoBR => new SKSegment(TopLeft, BottomRight);
 
-    public float XMin => Math.Min(BottomLeft.X, Math.Min(TopLeft.X, Math.Min(TopRight.X, BottomRight.X)));
+	public float XMin => Math.Min(BottomLeft.X, Math.Min(TopLeft.X, Math.Min(TopRight.X, BottomRight.X)));
 	public float XMax => Math.Max(BottomLeft.X, Math.Max(TopLeft.X, Math.Max(TopRight.X, BottomRight.X)));
 	public float YMin => Math.Min(BottomLeft.Y, Math.Min(TopLeft.Y, Math.Min(TopRight.Y, BottomRight.Y)));
 	public float YMax => Math.Max(BottomLeft.Y, Math.Max(TopLeft.Y, Math.Max(TopRight.Y, BottomRight.Y)));
+	public SKPoint Center => BLtoTR.Midpoint;
+	public SKSize Size()
+	{
+		return new SKSize(MathF.Abs(XMax - XMin), MathF.Abs(YMax - YMin));
+	}
 	public SKRect Bounds()
 	{
 		return new SKRect(XMin, YMin, XMax, YMax);

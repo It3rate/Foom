@@ -12,6 +12,10 @@ public static class SkRectExtension
     public static SKRect SKRect(this Rectangle rect) =>
         new SKRect(rect.Left, rect.Top, rect.Right, rect.Bottom);
 
+	public static SKPoint Center(this SKRect self) =>
+		new SKPoint(
+			(self.Right - self.Left) / 2f + self.Left, 
+			(self.Bottom - self.Top) / 2f + self.Top);
 	public static SKPoint BottomLeft(this SKRect self) => new(self.Left, self.Bottom);
 	public static SKPoint TopLeft(this SKRect self) => new(self.Left, self.Top);
 	public static SKPoint TopRight(this SKRect self) => new(self.Right, self.Top);

@@ -27,4 +27,17 @@ public static class SkRectExtension
 
 	public static SKPoint[] ClockWisePointsFromBL(this SKRect self) =>
         [self.BottomLeft(), self.TopLeft(), self.TopRight(), self.BottomRight()];
+	public static SKPoint CornerFromOrientaion(this SKRect self, RectDirections rd) =>
+		new SKPoint(rd.HasLeft() ? self.Left : self.Right, rd.HasTop() ? self.Top : self.Bottom);
+
+	public static (SKSegment, SKSegment) CornerLinesFromOrientaion(this SKRect self, RectDirections rd)
+	{
+		var corner = self.CornerFromOrientaion(rd);
+		var endX = rd.HasLeft() ? self.Right : self.Left;
+		var endY = rd.HasTop() ? self.Bottom : self.Top;
+		return (
+			new SKSegment(corner, new SKPoint(corner.X, endY)), 
+			new SKSegment(corner, new SKPoint(endX, corner.Y))
+			);
+	}
 }

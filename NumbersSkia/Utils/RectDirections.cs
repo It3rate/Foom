@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using SkiaSharp;
@@ -53,7 +54,12 @@ public enum RectDirections
 }
 public static class RectDirectionsExtensions
 {
-    public static SKPoint DirectionToCenter(this RectDirections state, int xRightDirection = 1, int yDownDirection = 1)
+	public static bool HasLeft(this RectDirections state) => (state & RectDirections.Left) != 0;
+	public static bool HasRight(this RectDirections state) => (state & RectDirections.Right) != 0;
+	public static bool HasTop(this RectDirections state) => (state & RectDirections.Top) != 0;
+	public static bool HasBottom(this RectDirections state) => (state & RectDirections.Bottom) != 0;
+
+	public static SKPoint DirectionToCenter(this RectDirections state, int xRightDirection = 1, int yDownDirection = 1)
     {
         var result = SKPoint.Empty;
 

@@ -110,9 +110,10 @@ public class SKSegment
         var p0 = landmark.OrthogonalPoint(StartPoint, shift);
         var p1 = landmark.OrthogonalPoint(EndPoint, shift);
         return new SKSegment(p0, p1);
-    }
-    public SKSegment LeftToRight() => StartPoint.X < EndPoint.X ? this : Inverted();
-    public SKSegment Inverted() => new SKSegment(EndPoint, StartPoint);
+	}
+	public SKSegment LeftToRight() => StartPoint.X < EndPoint.X ? this : Inverted();
+	public SKSegment RightToLeft() => StartPoint.X < EndPoint.X ? Inverted() : this;
+	public SKSegment Inverted() => new SKSegment(EndPoint, StartPoint);
     public SKSegment SegmentAlongLine(PRange ratios, float offsetT = 0) => SegmentAlongLine(ratios.StartF, ratios.EndF, offsetT);
     public SKSegment SegmentAlongLine(float startT, float endT, float offsetT = 0)
     {

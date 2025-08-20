@@ -112,7 +112,12 @@ public static class RectDirectionsExtensions
         return start.CounterClockwise45DegreeStepsTo(end) * 45 * MathF.PI / 180f;
     }
 
-    public static SKPoint DirectionToCenter(this RectDirections state, int xRightDirection = 1, int yDownDirection = 1)
+	public static RectDirections HorizontalOpposite(this RectDirections state) =>
+		state ^ (RectDirections.Left | RectDirections.Right);
+	public static RectDirections VerticalOpposite(this RectDirections state) =>
+		state ^ (RectDirections.Top | RectDirections.Bottom);
+
+	public static SKPoint DirectionToCenter(this RectDirections state, int xRightDirection = 1, int yDownDirection = 1)
     {
         var result = SKPoint.Empty;
 

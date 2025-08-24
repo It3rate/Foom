@@ -12,7 +12,6 @@ namespace NumbersSkia.Drawing;
 public class SKRotatedRectGrid
 {
     public SKRotatedRect RotatedRect { get; }
-    private RectDirections _origin;
     public SKPoint[,] Grid { get; private set; }
     public float[,] HeightMap { get; private set; }
     public bool HasHeightData { get; private set; } = false;
@@ -43,21 +42,19 @@ public class SKRotatedRectGrid
         }
         private set { _zMax = value; }
     }
-    public SKRotatedRectGrid(SKRotatedRect rect, int rowCount, int columnCount, RectDirections origin)
+    public SKRotatedRectGrid(SKRotatedRect rect, int rowCount, int columnCount)
     {
         RotatedRect = rect;
         ColumnCount = columnCount;
         RowCount = rowCount;
-        _origin = origin;
         Grid = GenerateGrid();
         HeightMap = new float[RowCount, ColumnCount];
         ResetHeights();
     }
-    public SKRotatedRectGrid(SKRotatedRect rect, float minStepSize, RectDirections origin)
+    public SKRotatedRectGrid(SKRotatedRect rect, float minStepSize)
     {
         RotatedRect = rect;
         _minStepSize = minStepSize;
-        _origin = origin;
         GenerateCounts();
         Grid = GenerateGrid();
         HeightMap = new float[RowCount, ColumnCount];
@@ -357,7 +354,6 @@ public class SKRotatedRectGrid
             {
                 { "column_count", ColumnCount },
                 { "row_count", RowCount },
-                { "origin", (int)_origin },
                 { "rotated_rect", Serialize.SKPointsToFloat2D(RotatedRect.GetPoints()) },
                 { "grid", Serialize.SKPointsToFloat3D(Grid) },
                 { "height_map", Serialize.ToJaggedArray(HeightMap) },
@@ -382,14 +378,13 @@ public class SKRotatedRectGrid
 
                 var rowCount = Serialize.GetInt(dict, "row_count");
                 var columnCount = Serialize.GetInt(dict, "column_count");
-                var origin = (RectDirections)Serialize.GetInt(dict, "origin");
 
                 if (dict.TryGetValue("rotated_rect", out var rrectToken))
                 {
                     var rrect = new SKRotatedRect(Serialize.ParseFloat2DToSKPoints(rrectToken.ToString()));
                     if (rrect != null)
                     {
-                        result = new SKRotatedRectGrid(rrect, rowCount, columnCount, origin);
+                        result = new SKRotatedRectGrid(rrect, rowCount, columnCount);
                         if (dict.TryGetValue("grid", out var gridToken))
                         {
                             result.Grid = Serialize.ParseFloat3DToSKPoints(gridToken.ToString());

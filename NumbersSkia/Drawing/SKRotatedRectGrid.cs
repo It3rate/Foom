@@ -27,8 +27,13 @@ public class SKRotatedRectGrid
     {
         get
         {
-            if (_needMinMaxCalc) { CalcMinMax(); }
-            return _zMin;
+            var result = 0f;
+            if (HasHeightData)
+            {
+                if (_needMinMaxCalc) { CalcMinMax(); }
+                result = _zMin;
+            }
+            return result;
         }
         private set { _zMin = value; }
     }
@@ -36,9 +41,14 @@ public class SKRotatedRectGrid
     public float ZMax
     {
         get
-        {
-            if (_needMinMaxCalc)  {  CalcMinMax();  }
-            return _zMax;
+		{
+			var result = 0f;
+			if (HasHeightData)
+			{
+				if (_needMinMaxCalc) { CalcMinMax(); }
+				result = _zMax;
+			}
+            return result;
         }
         private set { _zMax = value; }
     }
@@ -397,8 +407,8 @@ public class SKRotatedRectGrid
                                 ?? throw new JsonException("Failed to deserialize JSON AutolevelMap");
                         }
 
-                        result.HasHeightData = true;
                         result.CalcMinMax();
+                        result.HasHeightData = true;
                     }
                 }
             }
